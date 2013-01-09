@@ -1,8 +1,7 @@
 Prerequisites
 =============
 
-- Install latest OPAM from <http://github.com/OCamlPro/opam> and the `cmdliner`
-  branch via `git clone -b cmdliner git://github.com/OCamlPro/opam
+- Install latest OPAM from <http://github.com/OCamlPro/opam>
 
 - Run `opam init` to set up your repository. If you want to develop packages,
   then fork <git://github.com/OCamlPro/opam-repository> and run `opam init <path>` 
