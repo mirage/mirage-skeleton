@@ -1,0 +1,34 @@
+OASISFormat: 0.3
+Name:        ping
+Version:     1.0.0
+Synopsis:    Mirage network ping application
+Authors:     Anil Madhavapeddy
+License:     ISC
+BuildTools:  ocamlbuild
+PostBuildCommand: ./gen_xen.sh ping
+
+Flag unix
+  Description: build UNIX binary
+  Default: false
+
+Flag Xen
+  Description: build Xen kernel
+  Default: false
+
+Executable "ping.unix"
+  Path:               .
+  MainIs:             ping.ml
+  Build$:             flag(unix)
+  Custom:             true
+  CompiledObject:     native
+  Install:            false
+  BuildDepends:       mirage-net
+
+Executable "ping.nobj.o"
+  Path:               .
+  MainIs:             ping.ml
+  Build$:             flag(xen)
+  Custom:             true
+  CompiledObject:     native_object
+  Install:            false
+  BuildDepends:       mirage-net

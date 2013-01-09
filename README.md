@@ -1,4 +1,5 @@
-Prerequisites:
+Prerequisites
+=============
 
 - Install latest OPAM from <http://github.com/OCamlPro/opam> and the `cmdliner`
   branch via `git clone -b cmdliner git://github.com/OCamlPro/opam
