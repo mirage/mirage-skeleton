@@ -1,0 +1,35 @@
+OASISFormat: 0.3
+Name:        dns
+Version:     1.0.0
+Synopsis:    Mirage DNS
+Authors:     Anil Madhavapeddy
+License:     ISC
+BuildTools:  ocamlbuild
+PostConfCommand: ./gen_crunch.sh
+PostBuildCommand: ./gen_xen.sh main
+
+Flag unix
+  Description: build UNIX binary
+  Default: false
+
+Flag Xen
+  Description: build Xen kernel
+  Default: false
+
+Executable "main.unix"
+  Path:               .
+  MainIs:             main.ml
+  Build$:             flag(unix)
+  Custom:             true
+  CompiledObject:     native
+  Install:            false
+  BuildDepends:       mirage-net, dns, lwt.syntax
+
+Executable "main.nobj.o"
+  Path:               .
+  MainIs:             main.ml
+  Build$:             flag(xen)
+  Custom:             true
+  CompiledObject:     native_object
+  Install:            false
+  BuildDepends:       mirage-net, dns, lwt.syntax
