@@ -34,9 +34,9 @@ module DP = Dns.Packet
 
 let dnstrie = DL.(state.db.trie)
 
-let new_buf () = OS.Io_page.(to_cstruct (get ()))
 
-let get_answer buf qname qtype id =
+let get_answer qname qtype id =
+  let buf = OS.Io_page.(to_cstruct (get ())) in
   let qname = List.map String.lowercase qname in  
   let ans = DQ.answer_query qname qtype dnstrie in
   let detail = 
@@ -53,21 +53,46 @@ let get_answer buf qname qtype id =
   in
   DP.marshal buf dp
 
-let no_memo mgr buf src dst bits =
+let no_memo mgr src dst bits =
   let names = Hashtbl.create 8 in
   DP.(
     let d = parse names bits in
     let q = List.hd d.questions in
-    let r = get_answer buf q.q_name q.q_type d.id in
+    let r = get_answer q.q_name q.q_type d.id in
     Net.Datagram.UDPv4.send mgr ~src dst r
   )
 
+(* Space leaking hash table cache, always grows *)
+module Leaking_cache = Hashtbl.Make (struct
+  type t = string list * DP.q_type
+  let equal (a:t) (b:t) = a = b
+  let hash = Hashtbl.hash
+end)
+
+let cache = Leaking_cache.create 101
+let weak_memo mgr src dst bits =
+  let open DP in
+  let names = Hashtbl.create 8 in
+  let d = parse names bits in
+  let q = List.hd d.questions in
+  let r =
+    try
+      Leaking_cache.find cache (q.q_name, q.q_type)
+    with Not_found -> begin
+      let r = get_answer q.q_name q.q_type d.id in
+      Leaking_cache.add cache (q.q_name, q.q_type) r;
+      r
+   end
+  in
+  Cstruct.BE.set_uint16 r 0 d.id;
+  Net.Datagram.UDPv4.send mgr ~src dst r
+  
 let listen ?(mode=`none) ~zb mgr src =
-  Dns.Zone.load_zone [] zb;
-  let buf = new_buf () in
+  Dns.Zone.load_zone ["0mirage-perf";"local";"net"] zb;
   Net.Datagram.UDPv4.(recv mgr src
                         (match mode with
-                          |`none -> no_memo mgr buf src
+                          |`none -> no_memo mgr src
+                          |`memo -> weak_memo mgr src
                         )
   )
 
@@ -84,5 +109,5 @@ let main () =
     let src = None, port in
     let zonefile = "zones.db" in
     lwt zb = get_file zonefile in
-    listen ~mode:`none ~zb mgr src
+    listen ~mode:`memo ~zb mgr src
   )
