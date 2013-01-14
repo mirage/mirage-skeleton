@@ -1,7 +1,5 @@
 #!/bin/sh
 
-./gen_crunch.sh
-ocamlbuild main.native
 V=9.7.3
 curl -OL  http://ftp.isc.org/isc/bind9/${V}/bind-${V}.tar.gz
 tar -zxvf bind-${V}.tar.gz
