@@ -14,10 +14,10 @@
 "_darcs": -traverse
 "_darcs": not_hygienic
 # Executable main.unix
-"main.native": pkg_mirage-net
-"main.native": pkg_dns
-"main.native": pkg_lwt.syntax
-"main.native": custom
+<main.{native,byte}>: pkg_mirage-net, pkg_unix
+<main.{native,byte}>: pkg_dns
+<main.{native,byte}>: pkg_lwt.syntax
+<main.{native,byte}>: custom
 # Executable main.nobj.o
 "main.nobj.o": pkg_mirage-net
 "main.nobj.o": pkg_dns
