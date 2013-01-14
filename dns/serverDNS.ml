@@ -96,18 +96,11 @@ let listen ?(mode=`none) ~zb mgr src =
                         )
   )
 
-let main () =
+let main ?(mode=`none) ?(ip=`DHCP) () =
   Net.Manager.create (fun mgr interface id ->
-    (*
-     let ip = Net.Nettypes.(
-      (ipv4_addr_of_tuple (10l,0l,0l,2l),
-       ipv4_addr_of_tuple (255l,255l,255l,0l),
-       [ipv4_addr_of_tuple (10l,0l,0l,1l)]
-      )) in
-    *)
-    lwt () = Net.Manager.configure interface (`DHCP) in
+    lwt () = Net.Manager.configure interface ip in
     let src = None, port in
     let zonefile = "zones.db" in
     lwt zb = get_file zonefile in
-    listen ~mode:`memo ~zb mgr src
+    listen ~mode ~zb mgr src
   )
