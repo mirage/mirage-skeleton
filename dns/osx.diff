@@ -1,0 +1,13 @@
+diff --git a/contrib/queryperf/Makefile.in b/contrib/queryperf/Makefile.in
+index 6e16cad..ebdc03d 100644
+--- a/contrib/queryperf/Makefile.in
++++ b/contrib/queryperf/Makefile.in
+@@ -3,7 +3,7 @@
+ CC = @CC@
+ LIBOBJS = @LIBOBJS@
+ LIBS = @LIBS@
+-DEFS = @DEFS@
++DEFS = -DBIND_8_COMPAT -DHAVE_CONFIG_H -lresolv
+ 
+ queryperf: queryperf.o $(LIBOBJS)
+ 	$(CC) $(CFLAGS) $(DEFS) $(LDFLAGS) queryperf.o $(LIBOBJS) $(LIBS) -lm -o queryperf
