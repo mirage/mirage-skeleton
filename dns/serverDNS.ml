@@ -14,13 +14,13 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
-open Lwt 
+open Lwt
 open Printf
 
 let port = 53
 
 (* All of this will move into ocaml-dns ... *)
-let get_file filename = 
+let get_file filename =
   OS.Devices.with_kv_ro "fs" (fun kv_ro ->
     match_lwt kv_ro#read filename with
       | None -> fail (Failure "File not found")
@@ -37,18 +37,18 @@ let dnstrie = DL.(state.db.trie)
 
 let get_answer qname qtype id =
   let buf = OS.Io_page.(to_cstruct (get ())) in
-  let qname = List.map String.lowercase qname in  
+  let qname = List.map String.lowercase qname in
   let ans = DQ.answer_query qname qtype dnstrie in
-  let detail = 
-    DP.({ qr=Response; opcode=Standard; 
-          aa=ans.DQ.aa; tc=false; rd=false; ra=false; 
-          rcode=ans.DQ.rcode })      
+  let detail =
+    DP.({ qr=Response; opcode=Standard;
+          aa=ans.DQ.aa; tc=false; rd=false; ra=false;
+          rcode=ans.DQ.rcode })
   in
   let questions = [ DP.({ q_name=qname; q_type=qtype; q_class=Q_IN }) ] in
   let dp = DP.({ id; detail; questions;
-        answers=ans.DQ.answer; 
-        authorities=ans.DQ.authority; 
-        additionals=ans.DQ.additional; 
+        answers=ans.DQ.answer;
+        authorities=ans.DQ.authority;
+        additionals=ans.DQ.additional;
       })
   in
   DP.marshal buf dp
@@ -86,7 +86,7 @@ let weak_memo mgr src dst bits =
   in
   Cstruct.BE.set_uint16 r 0 d.id;
   Net.Datagram.UDPv4.send mgr ~src dst r
-  
+
 let listen ?(mode=`none) ~zb mgr src =
   Dns.Zone.load_zone ["0mirage-perf";"local";"net"] zb;
   Net.Datagram.UDPv4.(recv mgr src
