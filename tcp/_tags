@@ -1,0 +1,24 @@
+# OASIS_START
+# DO NOT EDIT (digest: 0c51a06fb1aa07015226db3bf893619f)
+# Ignore VCS directories, you can use the same kind of rule outside 
+# OASIS_START/STOP if you want to exclude directories that contains 
+# useless stuff for the build process
+<**/.svn>: -traverse
+<**/.svn>: not_hygienic
+".bzr": -traverse
+".bzr": not_hygienic
+".hg": -traverse
+".hg": not_hygienic
+".git": -traverse
+".git": not_hygienic
+"_darcs": -traverse
+"_darcs": not_hygienic
+# Executable iperf_self.unix
+"iperf_self.native": pkg_mirage-net
+"iperf_self.native": custom
+# Executable iperf_self.nobj.o
+"iperf_self.nobj.o": pkg_mirage-net
+<*.ml{,i}>: pkg_mirage-net
+"iperf_self.nobj.o": custom
+# OASIS_STOP
+<*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
