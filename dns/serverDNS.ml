@@ -63,13 +63,22 @@ let no_memo mgr src dst bits =
   )
 
 (* Space leaking hash table cache, always grows *)
-module Leaking_cache = Hashtbl.Make (struct
+module Leaking_cache = Map.Make (struct
   type t = string list * DP.q_type
-  let equal (a:t) (b:t) = a = b
-  let hash = Hashtbl.hash
+  let rec compare_list l1 l2 = match (l1, l2) with
+    | []    ,  []    -> 0
+    | _::_  , []     -> 1
+    | []    , _::_   -> -1
+    | h1::t1, h2::t2 ->
+      match String.compare h1 h2 with
+      | 0 -> compare t1 t2
+      | i -> i
+  let compare (l1,t1) (l2,t2) = match compare_list l1 l2 with
+    | 0 -> compare t1 t2
+    | i -> i
 end)
 
-let cache = Leaking_cache.create 101
+let cache = ref Leaking_cache.empty
 let weak_memo mgr src dst bits =
   let open DP in
   let names = Hashtbl.create 8 in
@@ -77,10 +86,10 @@ let weak_memo mgr src dst bits =
   let q = List.hd d.questions in
   let r =
     try
-      Leaking_cache.find cache (q.q_name, q.q_type)
+      Leaking_cache.find (q.q_name, q.q_type) !cache
     with Not_found -> begin
       let r = get_answer q.q_name q.q_type d.id in
-      Leaking_cache.add cache (q.q_name, q.q_type) r;
+      cache := Leaking_cache.add (q.q_name, q.q_type) r !cache;
       r
    end
   in
