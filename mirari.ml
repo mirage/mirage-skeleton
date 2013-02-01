@@ -20,7 +20,7 @@ let conf_file, xen =
   | Some f -> f, !xen
 
 let gen_main_sh = "gen_main.sh"
-let gen_xen_sh = "gen_main.sh"
+let gen_xen_sh = "gen_xen.sh"
 let build_sh = "build.sh"
 let full_build_sh = Filename.concat (Filename.dirname conf_file) build_sh
 let main_ml = Filename.concat (Filename.dirname conf_file) "main.ml"
@@ -92,7 +92,7 @@ let subcommand ~prefix (command, value) =
       None
 
 let remove oc file =
-  Printf.fprintf oc "rm %s\n" file
+  Printf.fprintf oc "rm -f %s\n" file
 
 let echo oc ~file fmt =
   Printf.kprintf (fun str ->
@@ -177,7 +177,6 @@ let gen_main oc kvs =
       echo "    %s" main;
       echo "  )"
     ) in
-  remove oc main_ml;
   ip_main ();
   http_main ();
   echo "";
@@ -185,7 +184,6 @@ let gen_main oc kvs =
 
 let gen_xen_script oc =
   let echo fmt = echo oc ~file:gen_xen_sh fmt in
-  remove oc gen_xen_sh;
   echo "#!/bin/sh";
   echo "TARGET=%s" main_ml;
   echo "if [ -e ./_build/${TARGET}.nobj.o ]; then";
@@ -194,7 +192,6 @@ let gen_xen_script oc =
 
 let gen_build_script oc =
   let echo fmt = echo oc ~file:full_build_sh fmt in
-  remove oc full_build_sh;
   echo "#!/bin/sh -e";
   echo "rm -rf _build setup.data";
   echo "ocaml setup.ml -configure %s"
@@ -207,28 +204,44 @@ let run cmd =
     | i -> exit i
 
 let () =
+  if Sys.file_exists gen_main_sh then
+    Sys.remove gen_main_sh;
+
   let lines = lines_of_file conf_file in
   let kvs = filter_map key_value lines in
-  let oc = open_out gen_main_sh in
 
   Printf.printf "Generating %s.\n%!" gen_main_sh;
+  let oc = open_out gen_main_sh in
+
   gen_header oc;
+
+  (* main.ml *)
+  remove oc main_ml;
+  let add_newline () = echo oc ~file:main_ml "" in
   gen_crunch_commands oc kvs;
-  echo oc "";
+  add_newline ();
   gen_network_commands oc kvs;
-  echo oc "";
+  add_newline ();
   gen_listen_commands oc kvs;
-  echo oc "";
+  add_newline ();
   gen_main oc kvs;
-  echo oc "";
+  add_newline ();
+
+  (* build.sh *)
+  remove oc full_build_sh;
   gen_build_script oc;
-  if xen then gen_xen_script oc;
+
+  (* gen_xen.sh *)
+  if xen then(
+    remove oc gen_xen_sh;
+    gen_xen_script oc;
+  );
   close_out oc;
 
   run gen_main_sh;
-  let pwd = Sys.getcwd () in
-  Sys.chdir (Filename.dirname conf_file);
+  let dir = Filename.dirname conf_file in
+  Printf.printf "Changing to %s.\n%!" dir;
+  Sys.chdir dir;
   run build_sh;
   if xen then run gen_xen_sh
-
 
