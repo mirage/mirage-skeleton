@@ -178,7 +178,7 @@ let gen_main oc kvs =
       echo "let main () =";
       echo "  Net.Manager.create (fun mgr interface id ->";
       echo "    Net.Manager.configure interface ip >>";
-      echo "    %s ()" main;
+      echo "    %s mgr interface id" main;
       echo "  )"
     ) in
   ip_main ();

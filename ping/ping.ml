@@ -1,4 +1,4 @@
-let main () =
+let main _ _ _ =
   Printf.printf "Running\n%!";
   while_lwt true do
     print_endline "Blocked";
