@@ -5,7 +5,6 @@ Synopsis:    Mirage network ping application
 Authors:     Anil Madhavapeddy
 License:     ISC
 BuildTools:  ocamlbuild
-PostBuildCommand: ./gen_xen.sh ping
 
 Flag unix
   Description: build UNIX binary
@@ -17,7 +16,7 @@ Flag Xen
 
 Executable "ping.unix"
   Path:               .
-  MainIs:             ping.ml
+  MainIs:             main.ml
   Build$:             flag(unix)
   Custom:             true
   CompiledObject:     native
@@ -26,7 +25,7 @@ Executable "ping.unix"
 
 Executable "ping.nobj.o"
   Path:               .
-  MainIs:             ping.ml
+  MainIs:             main.ml
   Build$:             flag(xen)
   Custom:             true
   CompiledObject:     native_object
