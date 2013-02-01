@@ -117,9 +117,12 @@ let gen_crunch_commands oc kvs =
 let gen_network_commands oc kvs =
   let kvs = filter_map (subcommand ~prefix:"ip") kvs in
   let echo fmt = echo oc ~file:main_ml fmt in
-  match kvs with
-  | ["use-dhcp", "true"] -> echo "let ip = `DHCP"
-  | _ ->
+  let use_dhcp =
+    try List.assoc "use-dhcp" kvs = "true"
+    with _ -> false in
+  if use_dhcp then
+    echo "let ip = `DHCP"
+  else
     let address =
       try List.assoc "address" kvs
       with _ -> "10.0.0.2" in
@@ -174,7 +177,7 @@ let gen_main oc kvs =
       echo "let main () =";
       echo "  Net.Manager.create (fun mgr interface id ->";
       echo "    Net.Manager.configure interface ip >>";
-      echo "    %s" main;
+      echo "    %s ()" main;
       echo "  )"
     ) in
   ip_main ();
