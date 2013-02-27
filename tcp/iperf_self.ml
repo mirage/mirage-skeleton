@@ -15,7 +15,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
-open Lwt 
+open Lwt
 open Printf
 open OS.Clock
 open Gc
@@ -76,14 +76,14 @@ let iperfclient tt ip =
 	Net.Tcp.Pcb.close pcb)
   )
 
-let print_data st ts_now = 
+let print_data st ts_now =
   Printf.printf "Iperf server: t = %f, rate = %Ld KBits/s, totbytes = %Ld, live_words = %d\n%!"
     (ts_now -. st.start_time)
     (Int64.of_float (((Int64.to_float st.bin_bytes) /. (ts_now -. st.last_time)) /. 125.))
-    st.bytes Gc.((stat()).live_words); 
+    st.bytes Gc.((stat()).live_words);
   st.last_time <- ts_now;
   st.bin_bytes <- 0L;
-  st.bin_packets <- 0L 
+  st.bin_packets <- 0L
 
 
 let iperf (dip,dpt) chan =
@@ -93,7 +93,7 @@ let iperf (dip,dpt) chan =
   let rec iperf_h chan =
     match_lwt Net.Flow.read chan with
     | None ->
-	let ts_now = (OS.Clock.time ()) in 
+	let ts_now = (OS.Clock.time ()) in
 	st.bin_bytes <- st.bytes;
 	st.bin_packets <- st.packets;
 	st.last_time <- st.start_time;
@@ -106,7 +106,7 @@ let iperf (dip,dpt) chan =
 	st.packets <- (Int64.add st.packets 1L);
 	st.bin_bytes <- (Int64.add st.bin_bytes (Int64.of_int l));
 	st.bin_packets <- (Int64.add st.bin_packets 1L);
-	let ts_now = (OS.Clock.time ()) in 
+	let ts_now = (OS.Clock.time ()) in
 	if ((ts_now -. st.last_time) >= 1.0) then begin
           print_data st ts_now;
 	end;
@@ -116,7 +116,7 @@ let iperf (dip,dpt) chan =
   iperf_h chan
 
 
-let main () =
+let main _ _ _ =
   Net.Manager.create (fun mgr interface id ->
     let intfnum = int_of_string id in
     match intfnum with
@@ -141,6 +141,3 @@ let main () =
     | _ ->
 	(printf "interface %s not used\n%!" id; return ())
   )
-
-
-let _ = OS.Main.run (main ())
