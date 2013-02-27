@@ -1,14 +1,21 @@
-ifeq ($(MIRAGE_OS),xen)
-FLAGS=--enable-xen --disable-unix
-else
-FLAGS=--enable-unix --disable-xen
-endif
+PROJECT=iperf_self
 
-all: 
-	ocaml setup.ml -configure $(FLAGS)
-	ocaml setup.ml -build -classic-display
+.PHONY: all clean
 
-.PHONY:clean
+XEN?= $(shell if ocamlfind query lwt.unix >/dev/null 2>&1; then echo ""; else echo "--xen"; fi)
+
+all: build
+	@
+
+src/dist/setup:
+	mirari configure $(PROJECT).conf $(XEN) $(CONF_FLAGS)
+
+build: src/dist/setup
+	mirari build $(PROJECT).conf $(XEN)
+
+run:
+	./mir-$(PROJECT)
+
 clean:
-	ocamlbuild -clean
-	rm -f setup.log setup.data
+	obuild clean
+	rm -f main.ml main.obuild mir-$(PROJECT)* pinglog*

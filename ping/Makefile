@@ -1,4 +1,4 @@
-PROJECT=hello
+PROJECT=ping
 
 .PHONY: all clean
 
@@ -18,4 +18,4 @@ run:
 
 clean:
 	obuild clean
-	rm -f main.ml main.obuild mir-$(PROJECT)*
+	rm -f main.ml main.obuild mir-$(PROJECT)* pinglog*
