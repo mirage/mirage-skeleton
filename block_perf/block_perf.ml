@@ -4,6 +4,7 @@ open Printf
 open Perf
 
 let main _ _ _ =
+  lwt () = Blkfront.register () in
   let finished_t, u = Lwt.task () in
   let listen_t = OS.Devices.listen (fun id ->
     OS.Devices.find_blkif id >>=
