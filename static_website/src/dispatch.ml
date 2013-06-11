@@ -19,9 +19,9 @@ let rec remove_empty_tail = function
 
 (* main callback function *)
 let t conn_id ?body req =
-  let path = CL.Request.path req in
+  let path = Uri.path (CL.Request.uri req) in
   let path_elem =
-    remove_empty_tail (Re_str.split_delim (Re_str.regexp_string "/") path)
+    remove_empty_tail (Re_str.(split_delim (regexp_string "/") path))
   in
   lwt static =
     eprintf "finding the static kv_ro block device\n";
