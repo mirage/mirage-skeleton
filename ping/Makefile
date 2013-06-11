@@ -8,7 +8,7 @@ all: build
 	@
 
 src/dist/setup:
-	mirari configure $(PROJECT).conf $(XEN) $(CONF_FLAGS)
+	mirari configure --no-install $(PROJECT).conf $(XEN) $(CONF_FLAGS)
 
 build: src/dist/setup
 	mirari build $(PROJECT).conf $(XEN)
