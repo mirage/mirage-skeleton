@@ -1,7 +1,5 @@
 include ../Makefile.config
 
-PROJECT=ping
-
 .PHONY: all clean
 
 all: build
