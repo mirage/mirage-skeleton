@@ -1,3 +1,5 @@
+include ../Makefile.config
+
 PROJECT=hello
 
 .PHONY: all clean
@@ -5,13 +7,13 @@ PROJECT=hello
 all: build
 
 src/dist/setup:
-	mirari configure $(B)
+	mirari configure $(BACKEND)
 
 build: src/dist/setup
-	mirari build $(B)
+	mirari build $(BACKEND)
 
 run:
-	./mir-$(PROJECT)
+	mirari run $(BACKEND)
 
 clean:
 	mirari clean

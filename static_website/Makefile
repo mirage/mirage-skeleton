@@ -1,18 +1,18 @@
-.PHONY: all clean
+include ../Makefile.config
 
-XEN?= $(shell if ocamlfind query lwt.unix >/dev/null 2>&1; then echo ""; else echo "--xen"; fi)
+.PHONY: all clean
 
 all: build
 	@
 
 src/dist/setup:
-	cd src && mirari configure www.conf $(XEN) $(CONF_FLAGS)
+	cd src && mirari configure $(BACKEND)
 
 build: src/dist/setup
-	cd src && mirari build www.conf $(XEN)
+	cd src && mirari build $(BACKEND)
 
 run:
-	cd src && ./mir-www
+	cd src && mirari run $(BACKEND)
 
 clean:
 	cd src && mirari clean

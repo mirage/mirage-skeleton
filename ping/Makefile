@@ -1,21 +1,21 @@
+include ../Makefile.config
+
 PROJECT=ping
 
 .PHONY: all clean
-
-XEN?= $(shell if ocamlfind query lwt.unix >/dev/null 2>&1; then echo ""; else echo "--xen"; fi)
 
 all: build
 	@
 
 src/dist/setup:
-	mirari configure --no-install $(PROJECT).conf $(XEN) $(CONF_FLAGS)
+	mirari configure --no-install $(BACKEND)
 
 build: src/dist/setup
-	mirari build $(PROJECT).conf $(XEN)
+	mirari build $(BACKEND)
 
 run:
-	./mir-$(PROJECT)
+	mirari run $(BACKEND)
 
 clean:
-	obuild clean
-	rm -f main.ml main.obuild mir-$(PROJECT)* pinglog*
+	mirari clean
+	rm -f pinglog*
