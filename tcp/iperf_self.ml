@@ -30,22 +30,6 @@ type stats = {
   mutable last_time: float;
 }
 
-
-let ip1 =
-  let open Net.Nettypes in
-  ( ipv4_addr_of_tuple (10l,100l,100l,101l),
-    ipv4_addr_of_tuple (255l,255l,255l,0l),
-   [ipv4_addr_of_tuple (10l,100l,100l,101l)]
-  )
-
-let ip2 =
-  let open Net.Nettypes in
-  ( ipv4_addr_of_tuple (10l,100l,100l,102l),
-    ipv4_addr_of_tuple (255l,255l,255l,0l),
-   [ipv4_addr_of_tuple (10l,100l,100l,102l)]
-  )
-
-
 let port = 5001
 
 let msg = "01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890"
@@ -114,25 +98,32 @@ let iperf (dip,dpt) chan =
   iperf_h chan
 
 
+let server_ready, server_u = Lwt.wait ()
+
 let main mgr interface id =
-  let intfnum = int_of_string id in
-  match intfnum with
-  | 0 ->
-	  OS.Time.sleep 2. >>
-	  (printf "Setting up iperf client on interface %s\n%!" id;
-	   Net.Manager.configure interface (`IPv4 ip2) >>
-	   let (src_ip,_,_) = ip2 in
-	   let (dest_ip,_,_) = ip1 in
-	   iperfclient mgr src_ip dest_ip port >>
-	   return()
-	  )
-  | 1 ->
-	  OS.Time.sleep 1. >>
-	  (printf "Setting up iperf server on interface %s\n%!" id;
-	   Net.Manager.configure interface (`IPv4 ip1) >>
-	   let _ = Net.Flow.listen mgr (`TCPv4 ((None, port), iperf)) in
-	   printf "Done setting up server \n%!";
-	   return ()
-	  )
+  let first, second = match Net.Manager.get_intfs mgr with
+    | [] | [_] -> failwith "iperf_self require at least 2 network interfaces, exiting."
+    | h::t  -> fst h, fst (List.hd t) in
+  match id with
+  | id when id = second -> (* client *)
+    (
+      server_ready >>
+      let () = printf "Setting up iperf client on interface %s\n%!" (OS.Netif.string_of_id id) in
+      let src_ip = Net.Manager.get_intf_ipv4addr mgr first in
+      let dest_ip = Net.Manager.get_intf_ipv4addr mgr second in
+      let src_ip_str = Net.Nettypes.ipv4_addr_to_string src_ip in
+      let dest_ip_str = Net.Nettypes.ipv4_addr_to_string dest_ip in
+      OS.Console.log (Printf.sprintf "I have IP %s, trying to connect to %s" src_ip_str dest_ip_str);
+      iperfclient mgr src_ip dest_ip port >>
+      return ()
+    )
+  | id when id = first -> (* server *)
+    (
+      printf "Setting up iperf server on interface %s port %d\n%!" (OS.Netif.string_of_id id) port;
+      let _ = Net.Flow.listen mgr (`TCPv4 ((None, port), iperf)) in
+      printf "Done setting up server \n%!";
+      Lwt.wakeup server_u ();
+      return ()
+    )
   | _ ->
-	  (printf "interface %s not used\n%!" id; return ())
+    (printf "interface %s not used\n%!" (OS.Netif.string_of_id id); return ())
