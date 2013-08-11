@@ -2,8 +2,12 @@ include Makefile.config
 
 SUBDIRS=basic block_perf dns io_page ping static_website suspend tcp
 
+build: $(patsubst %,build-%,$(SUBDIRS))
 clean: $(patsubst %,clean-%,$(SUBDIRS))
 configure: $(patsubst %,configure-%,$(SUBDIRS))
+
+build-%: configure-%
+	$(MAKE) -C $* build
 
 configure-static_website:
 	@echo "\n###static_website: configure"
@@ -30,5 +34,5 @@ clean-%:
 	if [ ! -r $*/Makefile ]; then \
 		$(MAKE) configure-$* ;\
 	fi ; \
-	$(MAKE) -C $* clean ;\
+	cd $* && mirari clean ;\
 	$(RM) $*/myocamlbuild.ml $*/Makefile
