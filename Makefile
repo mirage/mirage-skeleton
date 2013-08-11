@@ -11,7 +11,7 @@ build-static_website:
 	$(MAKE) -C static_website build
 
 build-%: configure-%
-	$(MAKE) -C $* build
+	cd $* && mirari build $(BACKEND)
 
 configure-static_website:
 	@echo "\n### static_website: configure"
@@ -39,4 +39,8 @@ clean-%:
 		$(MAKE) configure-$* ;\
 	fi ; \
 	cd $* && mirari clean ;\
-	$(RM) $*/myocamlbuild.ml $*/Makefile
+	$(RM) $*/myocamlbuild.ml $*/Makefile $*/*.xl
+
+run-%:
+	cd $* && mirari run $(BACKEND)
+
