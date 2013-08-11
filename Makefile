@@ -6,11 +6,15 @@ build: $(patsubst %,build-%,$(SUBDIRS))
 clean: $(patsubst %,clean-%,$(SUBDIRS))
 configure: $(patsubst %,configure-%,$(SUBDIRS))
 
+build-static_website:
+	$@echo "\n### static_website: build"
+	$(MAKE) -C static_website build
+
 build-%: configure-%
 	$(MAKE) -C $* build
 
 configure-static_website:
-	@echo "\n###static_website: configure"
+	@echo "\n### static_website: configure"
 	$(MAKE) -C static_website configure
 
 configure-dns:

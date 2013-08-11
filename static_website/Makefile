@@ -9,3 +9,9 @@ clean:
 
 configure:
 	cd src && mirari configure $(BACKEND)
+
+build:
+	cd src && mirari build $(BACKEND)
+
+run:
+	cd src && mirari run $(BACKEND)
