@@ -9,18 +9,19 @@ let suspend () =
 
 let control_watch () = 
   lwt () = Console.log_s (Printf.sprintf "xs_watch ()") in
+  lwt client = Xs.make () in
   let rec inner () = 
-    lwt dir = Xs.(immediate (fun h -> directory h "control")) in
+    lwt dir = Xs.(immediate client (fun h -> directory h "control")) in
     lwt result =
       if List.mem "shutdown" dir then begin
-      lwt msg = try_lwt Xs.(immediate (fun h -> read h "control/shutdown")) with _ -> return "" in
+      lwt msg = try_lwt Xs.(immediate client (fun h -> read h "control/shutdown")) with _ -> return "" in
       lwt () = Console.log_s (Printf.sprintf "Got control message: %s" msg) in
       match msg with
       | "suspend" -> 
-          lwt () = Xs.(immediate (fun h -> rm h "control/shutdown")) in
+          lwt () = Xs.(immediate client (fun h -> rm h "control/shutdown")) in
           lwt _ = suspend () in
           lwt () = Console.log_s "About to read domid" in
-          lwt domid = Xs.(immediate (fun h -> read h "domid")) in
+          lwt domid = Xs.(immediate client (fun h -> read h "domid")) in
           lwt () = Console.log_s (Printf.sprintf "We're back: domid=%s" domid) in
           return true
       | "poweroff" -> 
