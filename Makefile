@@ -1,13 +1,13 @@
 include Makefile.config
 
-SUBDIRS=basic basic_net block_perf io_page ping tcp suspend #dns static_website
+SUBDIRS=basic basic_net block_perf io_page ping tcp suspend static_website #dns
 
 build: $(patsubst %,build-%,$(SUBDIRS))
 clean: $(patsubst %,clean-%,$(SUBDIRS))
 configure: $(patsubst %,configure-%,$(SUBDIRS))
 
-build-static_website:
-	$@echo "\n### static_website: build"
+build-static_website: configure-static_website
+	@echo "\n### static_website: build"
 	$(MAKE) -C static_website build
 
 build-%: configure-%
