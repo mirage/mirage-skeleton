@@ -7,7 +7,9 @@ main.ml
 myocamlbuild.ml
 
 */Makefile
-!static_website/Makefile
+static_website/src/Makefile
+static_website/src/filesystem_static.ml
+static_website/src/_build
 
 # Generated outputs
 *.native
