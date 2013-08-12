@@ -111,8 +111,8 @@ let main mgr interface id =
       let () = printf "Setting up iperf client on interface %s\n%!" (OS.Netif.string_of_id id) in
       let src_ip = Net.Manager.get_intf_ipv4addr mgr first in
       let dest_ip = Net.Manager.get_intf_ipv4addr mgr second in
-      let src_ip_str = Net.Nettypes.ipv4_addr_to_string src_ip in
-      let dest_ip_str = Net.Nettypes.ipv4_addr_to_string dest_ip in
+      let src_ip_str = Ipaddr.V4.to_string src_ip in
+      let dest_ip_str = Ipaddr.V4.to_string dest_ip in
       OS.Console.log (Printf.sprintf "I have IP %s, trying to connect to %s" src_ip_str dest_ip_str);
       iperfclient mgr src_ip dest_ip port >>
       return ()
