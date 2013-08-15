@@ -1,7 +1,7 @@
 open Lwt
 open OS
 
-let one () =
+let heads1 () =
   bind (join [
     bind (Time.sleep 1.0) (fun () ->
       print_endline "Heads"; return ()
@@ -13,7 +13,7 @@ let one () =
     print_endline ("Finished"); return ()
   )
 
-let two () =
+let heads2 () =
   join [
     (Time.sleep 1.0 >>= fun () -> (Console.log "Heads"; return ()));
     (Time.sleep 2.0 >>= fun () -> (Console.log "Tails"; return ()));
