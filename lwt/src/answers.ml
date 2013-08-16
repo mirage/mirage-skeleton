@@ -4,28 +4,28 @@ open OS
 let heads1 () =
   bind (join [
     bind (Time.sleep 1.0) (fun () ->
-      print_endline "Heads"; return ()
+      Console.log "Heads"; return ()
     );
     bind (Time.sleep 2.0) (fun () ->
-      print_endline "Tails"; return ()
+      Console.log "Tails"; return ()
     );
   ]) (fun () ->
-    print_endline ("Finished"); return ()
+    Console.log ("Finished"); return ()
   )
 
 let heads2 () =
   join [
-    (Time.sleep 1.0 >>= fun () -> (print_endline "Heads"; return ()));
-    (Time.sleep 2.0 >>= fun () -> (print_endline "Tails"; return ()));
+    (Time.sleep 1.0 >>= fun () -> (Console.log "Heads"; return ()));
+    (Time.sleep 2.0 >>= fun () -> (Console.log "Tails"; return ()));
   ] >>= (fun () ->
-    print_endline "Finished";
+    Console.log "Finished";
     return ()
   )
 
 let heads3 () = 
   let heads =
     Time.sleep 1.0 >>
-    return (print_endline "Heads");
+    return (Console.log "Heads");
   in
   let tails =
     Time.sleep 2.0 >>
