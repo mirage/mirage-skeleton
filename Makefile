@@ -1,6 +1,6 @@
 include Makefile.config
 
-COMMON_SUBDIRS=basic basic_net io_page ping tcp static_website #dns
+COMMON_SUBDIRS=basic basic_net io_page ping tcp static_website # dns
 
 XEN_ONLY_SUBDIRS=block_perf suspend
 
@@ -14,32 +14,42 @@ build: $(patsubst %,build-%,$(SUBDIRS))
 clean: $(patsubst %,clean-%,$(SUBDIRS))
 configure: $(patsubst %,configure-%,$(SUBDIRS))
 
-build-static_website: configure-static_website
-	@echo "\n### static_website: build"
-	$(MAKE) -C static_website build
+configure-lwt:
+	$(MAKE) -C lwt configure
 
-build-%: configure-%
-	cd $* && mirari build $(BACKEND)
+build-lwt:
+	$(MAKE) -C lwt build
+
+clean-lwt:
+	$(MAKE) -C lwt clean
+
+configure-dns:
+	$(MAKE) -C dns configure
+
+build-dns:
+	$(MAKE) -C dns build
+
+clean-dns:
+	$(MAKE) -C dns clean
 
 configure-static_website:
 	@echo "\n### static_website: configure"
 	$(MAKE) -C static_website configure
 
-configure-dns:
-	@echo "\n### dns: configure"
-	@echo "*** dns: no mirari conf file"
-
-configure-%:
-	@echo "\n### $*: configure"
-	cd $* && mirari configure $(BACKEND)
+build-static_website: configure-static_website
+	@echo "\n### static_website: build"
+	$(MAKE) -C static_website build
 
 clean-static_website:
 	@echo "\n### static_website: clean"
 	$(MAKE) -C static_website clean
 
-clean-dns:
-	@echo "\n### dns: clean"
-	cd dns && ./clean.sh
+build-%: configure-%
+	cd $* && mirari build $(BACKEND)
+
+configure-%:
+	@echo "\n### $*: configure"
+	cd $* && mirari configure $(BACKEND)
 
 clean-%: 
 	@echo "\n### $*: clean"
@@ -47,8 +57,7 @@ clean-%:
 		$(MAKE) configure-$* ;\
 	fi ; \
 	cd $* && mirari clean ;\
-	$(RM) $*/myocamlbuild.ml $*/Makefile $*/*.xl
+	$(RM) $*/myocamlbuild.ml $*/Makefile $*/*.xl main.native main.ml
 
 run-%:
 	cd $* && mirari run $(BACKEND)
-

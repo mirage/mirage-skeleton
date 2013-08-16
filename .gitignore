@@ -11,6 +11,9 @@ static_website/src/Makefile
 static_website/src/filesystem_static.ml
 static_website/src/_build
 
+!static_website/Makefile
+!lwt/Makefile
+
 # Generated outputs
 *.native
 *.cfg
