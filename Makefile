@@ -1,6 +1,6 @@
 include Makefile.config
 
-COMMON_SUBDIRS=basic basic_net lwt io_page ping tcp static_website dns
+COMMON_SUBDIRS=basic basic_net lwt io_page ping tcp static_website # dns
 
 XEN_ONLY_SUBDIRS=block_perf suspend
 
@@ -57,8 +57,7 @@ clean-%:
 		$(MAKE) configure-$* ;\
 	fi ; \
 	cd $* && mirari clean ;\
-	$(RM) $*/myocamlbuild.ml $*/Makefile $*/*.xl
+	$(RM) $*/myocamlbuild.ml $*/Makefile $*/*.xl main.native main.ml
 
 run-%:
 	cd $* && mirari run $(BACKEND)
-
