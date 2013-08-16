@@ -1,7 +1,7 @@
 let main () =
   for_lwt i = 0 to 4 do
-    print_endline "hello" ;
+    OS.Console.log "hello" ;
     lwt () = OS.Time.sleep 2.0 in
-    print_endline "world" ;
+    OS.Console.log "world" ;
     Lwt.return ()
   done
