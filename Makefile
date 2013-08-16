@@ -1,6 +1,6 @@
 include Makefile.config
 
-COMMON_SUBDIRS=basic basic_net lwt io_page ping tcp static_website # dns
+COMMON_SUBDIRS=basic basic_net io_page ping tcp static_website # dns
 
 XEN_ONLY_SUBDIRS=block_perf suspend
 
