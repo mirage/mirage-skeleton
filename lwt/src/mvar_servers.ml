@@ -6,9 +6,9 @@ let map f m_in =
   let rec aux () = 
     Lwt_mvar.(
       take m_in   >>=
-        f           >>= fun v ->
+      f           >>= fun v ->
       put m_out v >>
-        aux ()
+      aux ()
     )
   in
   let t = aux () in
