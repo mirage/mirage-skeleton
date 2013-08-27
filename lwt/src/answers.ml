@@ -37,12 +37,14 @@ let heads3 () =
 
 let timeout1 () = 
   Random.self_init ();
+  
   let timeout f t = 
     Time.sleep f >>
     match state t with
       | Return v -> return (Some v)
       | _        -> cancel t; return None
   in
+  
   let t = Time.sleep (Random.float 3.0) >> return "Heads" in
   timeout 2.0 t >>= fun v ->
     Console.log (match v with None -> "cancelled" | Some v -> v);
