@@ -12,7 +12,7 @@ let suspend () =
 let control_watch () =
   let evtchn_h = Eventchn.init () in
   let buf = String.create 4096 in
-  V.server ~blocking:true ~evtchn_h ~domid:0 ~xs_path:"data/vchan"
+  V.server ~evtchn_h ~domid:0 ~xs_path:"data/vchan"
     ~read_size:4096 ~write_size:4096 ~persist:true >>= fun vch ->
   Xs.make () >>= fun xsh ->
   let rec inner () =
