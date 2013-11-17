@@ -9,8 +9,7 @@ let ( >>= ) x f = x >>= function
   | `Error _ -> fail (Failure "error")
   | `Ok x -> f x
 
-let fill_with_pattern x =
-  let phrase = "All work and no play makes Dave a dull boy.\n" in
+let fill_with_pattern x phrase =
   for i = 0 to Cstruct.len x - 1 do
     Cstruct.set_char x i phrase.[i mod (String.length phrase)]
   done
@@ -52,9 +51,11 @@ let check_sector_write kind id offset length =
     | 0 -> []
     | n ->
       let page = Io_page.(to_cstruct (get 1)) in
-      Cstruct.sub page 0 info.B.sector_size :: (alloc (n-1)) in
+      let phrase = Printf.sprintf "%d: All work and no play makes Dave a dull boy.\n" n in
+      let sector = Cstruct.sub page 0 info.B.sector_size in
+      fill_with_pattern sector phrase;
+      sector :: (alloc (n-1)) in
   let sectors = alloc length in
-  List.iter fill_with_pattern sectors;
   B.write b offset sectors >>= fun () ->
   let sectors' = alloc length in
   List.iter fill_with_zeroes sectors';
