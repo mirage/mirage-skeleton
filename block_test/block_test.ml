@@ -41,7 +41,7 @@ let check_equal a b =
     Printf.printf "%s\n%!" (String.escaped (Cstruct.to_string b))
   end
 
-let check_single_sector_write_beginning kind id =
+let check_single_sector_write kind id offset =
   incr tests_started;
   lwt module_b = OS.Block.find kind in
   let module B = (val module_b: OS.Block.S) in
@@ -50,11 +50,11 @@ let check_single_sector_write_beginning kind id =
   lwt info = B.get_info b in
   let sector = Cstruct.sub page 0 info.B.sector_size in
   fill_with_pattern sector;
-  B.write b 0L [ sector ] >>= fun () ->
+  B.write b offset [ sector ] >>= fun () ->
   let page' = Io_page.(to_cstruct (get 1)) in
   let sector' = Cstruct.sub page' 0 info.B.sector_size in
   fill_with_zeroes sector';
-  B.read b 0L [ sector' ] >>= fun () ->
+  B.read b offset [ sector' ] >>= fun () ->
   check_equal sector sector';
   incr tests_finished;
   return ()
@@ -77,7 +77,8 @@ let main _ =
   printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
     info.B.size_sectors info.B.read_write info.B.sector_size;
   
-  lwt () = check_single_sector_write_beginning "local" "51712" in
+  lwt () = check_single_sector_write "local" "51712" 0L in
+  lwt () = check_single_sector_write "local" "51712" info.B.size_sectors in
   printf "Test sequence finished\n";
   printf "Total tests started:  %d\n" !tests_started;
   printf "Total tests finished: %d\n%!" !tests_finished;
