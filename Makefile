@@ -2,7 +2,7 @@ include Makefile.config
 
 COMMON_SUBDIRS=basic basic_net io_page ping tcp static_website # dns
 
-XEN_ONLY_SUBDIRS=block_perf suspend
+XEN_ONLY_SUBDIRS=block_perf block_test suspend
 
 ifeq ($(strip $(PLATFORM)),mirage-xen)
         SUBDIRS := $(COMMON_SUBDIRS) $(XEN_ONLY_SUBDIRS)
