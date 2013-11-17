@@ -41,32 +41,27 @@ let check_equal a b =
     Printf.printf "%s\n%!" (String.escaped (Cstruct.to_string b))
   end
 
-let check_single_sector_write kind id offset =
+let check_sector_write kind id offset length =
+  printf "writing %d sectors at %Ld\n" length offset;
   incr tests_started;
   lwt module_b = OS.Block.find kind in
   let module B = (val module_b: OS.Block.S) in
   B.connect id >>= fun b ->
-  let page = Io_page.(to_cstruct (get 1)) in
   lwt info = B.get_info b in
-  let sector = Cstruct.sub page 0 info.B.sector_size in
-  fill_with_pattern sector;
-  B.write b offset [ sector ] >>= fun () ->
-  let page' = Io_page.(to_cstruct (get 1)) in
-  let sector' = Cstruct.sub page' 0 info.B.sector_size in
-  fill_with_zeroes sector';
-  B.read b offset [ sector' ] >>= fun () ->
-  check_equal sector sector';
+  let rec alloc = function
+    | 0 -> []
+    | n ->
+      let page = Io_page.(to_cstruct (get 1)) in
+      Cstruct.sub page 0 info.B.sector_size :: (alloc (n-1)) in
+  let sectors = alloc length in
+  List.iter fill_with_pattern sectors;
+  B.write b offset sectors >>= fun () ->
+  let sectors' = alloc length in
+  List.iter fill_with_zeroes sectors';
+  B.read b offset sectors' >>= fun () ->
+  List.iter (fun (a, b) -> check_equal a b) (List.combine sectors sectors');
   incr tests_finished;
   return ()
-
-let check_single_sector_write_end module_b b =
-  false
-
-let check_single_sector_contiguous_writes module_b b =
-  false
-
-let check_multi_sector_writes module_b b =
-  false
 
 let main _ =
   lwt () = Blkfront_init.register () in
@@ -76,9 +71,13 @@ let main _ =
   lwt info = B.get_info b in
   printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
     info.B.size_sectors info.B.read_write info.B.sector_size;
-  
-  lwt () = check_single_sector_write "local" "51712" 0L in
-  lwt () = check_single_sector_write "local" "51712" info.B.size_sectors in
+ 
+  lwt () = check_sector_write "local" "51712" 0L 1 in
+  lwt () = check_sector_write "local" "51712" (Int64.sub info.B.size_sectors 1L) 1 in
+  lwt () = check_sector_write "local" "51712" 0L 2 in
+  lwt () = check_sector_write "local" "51712" (Int64.sub info.B.size_sectors 2L) 2 in
+  lwt () = check_sector_write "local" "51712" 0L 12 in
+  lwt () = check_sector_write "local" "51712" (Int64.sub info.B.size_sectors 12L) 12 in
   printf "Test sequence finished\n";
   printf "Total tests started:  %d\n" !tests_started;
   printf "Total tests finished: %d\n%!" !tests_finished;
