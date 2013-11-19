@@ -3,7 +3,8 @@ open Printf
 open OS
 
 let tests_started = ref 0
-let tests_finished = ref 0
+let tests_passed = ref 0
+let tests_failed = ref 0
 
 let ( >>= ) x f = x >>= function
   | `Error _ -> fail (Failure "error")
@@ -40,6 +41,17 @@ let check_equal a b =
     Printf.printf "%s\n%!" (String.escaped (Cstruct.to_string b))
   end
 
+let alloc sector_size n =
+  let rec loop = function
+    | 0 -> []
+    | n ->
+      let page = Io_page.(to_cstruct (get 1)) in
+      let phrase = Printf.sprintf "%d: All work and no play makes Dave a dull boy.\n" n in
+      let sector = Cstruct.sub page 0 sector_size in
+      fill_with_pattern sector phrase;
+      sector :: (loop (n-1)) in
+  loop n
+
 let check_sector_write kind id offset length =
   printf "writing %d sectors at %Ld\n" length offset;
   incr tests_started;
@@ -47,22 +59,48 @@ let check_sector_write kind id offset length =
   let module B = (val module_b: OS.Block.S) in
   B.connect id >>= fun b ->
   lwt info = B.get_info b in
-  let rec alloc = function
-    | 0 -> []
-    | n ->
-      let page = Io_page.(to_cstruct (get 1)) in
-      let phrase = Printf.sprintf "%d: All work and no play makes Dave a dull boy.\n" n in
-      let sector = Cstruct.sub page 0 info.B.sector_size in
-      fill_with_pattern sector phrase;
-      sector :: (alloc (n-1)) in
-  let sectors = alloc length in
+  let sectors = alloc info.B.sector_size length in
   B.write b offset sectors >>= fun () ->
-  let sectors' = alloc length in
+  let sectors' = alloc info.B.sector_size length in
   List.iter fill_with_zeroes sectors';
   B.read b offset sectors' >>= fun () ->
   List.iter (fun (a, b) -> check_equal a b) (List.combine sectors sectors');
-  incr tests_finished;
+  incr tests_passed;
   return ()
+
+let check_sector_write_failure kind id offset length =
+  printf "writing %d sectors at %Ld\n" length offset;
+  incr tests_started;
+  lwt module_b = OS.Block.find kind in
+  let module B = (val module_b: OS.Block.S) in
+  B.connect id >>= fun b ->
+  lwt info = B.get_info b in
+  let sectors = alloc info.B.sector_size length in
+  match_lwt B.write b offset sectors with
+  | `Ok () ->
+    printf "-- expected failure; got success\n%!";
+    incr tests_failed;
+    return ()
+  | `Error _ ->
+    incr tests_passed;
+    return ()
+
+let check_sector_read_failure kind id offset length =
+  printf "reading %d sectors at %Ld\n" length offset;
+  incr tests_started;
+  lwt module_b = OS.Block.find kind in
+  let module B = (val module_b: OS.Block.S) in
+  B.connect id >>= fun b ->
+  lwt info = B.get_info b in
+  let sectors = alloc info.B.sector_size length in
+  match_lwt B.read b offset sectors with
+  | `Ok () ->
+    printf "-- expected failure; got success\n%!";
+    incr tests_failed;
+    return ()
+  | `Error _ ->
+    incr tests_passed;
+    return ()
 
 let main _ =
   lwt () = Blkfront_init.register () in
@@ -72,14 +110,21 @@ let main _ =
   lwt info = B.get_info b in
   printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
     info.B.size_sectors info.B.read_write info.B.sector_size;
- 
+
   lwt () = check_sector_write "local" "51712" 0L 1 in
   lwt () = check_sector_write "local" "51712" (Int64.sub info.B.size_sectors 1L) 1 in
   lwt () = check_sector_write "local" "51712" 0L 2 in
   lwt () = check_sector_write "local" "51712" (Int64.sub info.B.size_sectors 2L) 2 in
   lwt () = check_sector_write "local" "51712" 0L 12 in
   lwt () = check_sector_write "local" "51712" (Int64.sub info.B.size_sectors 12L) 12 in
+
+  lwt () = check_sector_write_failure "local" "51712" info.B.size_sectors 1 in
+  lwt () = check_sector_write_failure "local" "51712" (Int64.sub info.B.size_sectors 11L) 12 in
+  lwt () = check_sector_read_failure "local" "51712" info.B.size_sectors 1 in
+  lwt () = check_sector_read_failure "local" "51712" (Int64.sub info.B.size_sectors 11L) 12 in
+
   printf "Test sequence finished\n";
-  printf "Total tests started:  %d\n" !tests_started;
-  printf "Total tests finished: %d\n%!" !tests_finished;
+  printf "Total tests started: %d\n" !tests_started;
+  printf "Total tests passed:  %d\n" !tests_passed;
+  printf "Total tests failed:  %d\n%!" !tests_failed;
   OS.Time.sleep 5.
