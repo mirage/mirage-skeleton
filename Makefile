@@ -5,9 +5,9 @@ COMMON_SUBDIRS=basic basic_net io_page ping tcp static_website # dns
 XEN_ONLY_SUBDIRS=block_perf block_test suspend
 
 ifeq ($(strip $(PLATFORM)),mirage-xen)
-        SUBDIRS := $(COMMON_SUBDIRS) $(XEN_ONLY_SUBDIRS)
+		SUBDIRS := $(COMMON_SUBDIRS) $(XEN_ONLY_SUBDIRS)
 else
-        SUBDIRS := $(COMMON_SUBDIRS)
+		SUBDIRS := $(COMMON_SUBDIRS)
 endif
 
 build: $(patsubst %,build-%,$(SUBDIRS))
@@ -51,7 +51,7 @@ configure-%:
 	@echo "\n### $*: configure"
 	cd $* && mirari configure $(BACKEND)
 
-clean-%: 
+clean-%:
 	@echo "\n### $*: clean"
 	if [ ! -r $*/Makefile ]; then \
 		$(MAKE) configure-$* ;\
