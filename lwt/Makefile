@@ -14,7 +14,7 @@ configure-%:
 build-%: configure-%
 	cd src && mirari build $(BACKEND) $*.conf
 
-clean-%: 
+clean-%:
 	if [ ! -r src/Makefile ]; then $(MAKE) configure-$* ; fi
 	cd src && mirari clean $*.conf ;\
 	$(RM) src/myocamlbuild.ml src/Makefile src/*.xl

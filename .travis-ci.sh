@@ -1,3 +1,7 @@
+## declare required packages
+
+OPAM_PACKAGES="mirage mirage-net cow mirage-fs mirari cohttp"
+
 ## different PPAs required to cover the test matrix
 
 case "$OCAML_VERSION,$OPAM_VERSION" in
@@ -40,7 +44,7 @@ eval `opam config env`
 
 ## install Mirage
 
-opam install $mirage_pkg ## ${OPAM_PACKAGES}
+opam install $mirage_pkg ${OPAM_PACKAGES}
 
 ## execute the build
 
