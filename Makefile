@@ -7,9 +7,9 @@ COMMON_TESTS = basic basic_net io_page ping tcp static_website # dns
 XEN_TESTS    = block_perf block_test suspend
 
 ifeq ($(MODE),xen)
-        TESTS := $(COMMON_TESTS) $(XEN_TESTS)
+		TESTS := $(COMMON_TESTS) $(XEN_TESTS)
 else
-        TESTS := $(COMMON_TESTS)
+		TESTS := $(COMMON_TESTS)
 endif
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
@@ -31,7 +31,7 @@ clean: $(CLEANS)
 	$(MIRAGE) build $*/config.ml
 
 %-run: %-build
-	$(MIRAGE) run $*/config.ml --$(MODE)
+	$(MIRAGE) run $*/config.ml 
 
 %-clean:
 	$(MIRAGE) clean $*/config.ml $(BFLAGS)
