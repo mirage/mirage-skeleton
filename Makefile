@@ -3,8 +3,8 @@ MIRAGE = mirage
 MODE   ?= unix
 BFLAGS ?= #--no-opam
 
-COMMON_TESTS = basic basic_net io_page ping tcp static_website # dns
-XEN_TESTS    = block_perf block_test suspend
+COMMON_TESTS = basic block_test ## basic_net io_page ping tcp static_website # dns
+XEN_TESTS    = block_perf suspend
 
 ifeq ($(MODE),xen)
 		TESTS := $(COMMON_TESTS) $(XEN_TESTS)
