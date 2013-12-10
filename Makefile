@@ -31,7 +31,7 @@ clean: $(CLEANS)
 	$(MIRAGE) build $*/config.ml
 
 %-run: %-build
-	$(MIRAGE) run $*/config.ml 
+	$(MIRAGE) run $*/config.ml
 
 %-clean:
 	$(MIRAGE) clean $*/config.ml $(BFLAGS)
