@@ -7,17 +7,6 @@ case "$OCAML_VERSION" in
     *) echo Unknown $OCAML_VERSION,$OPAM_VERSION; exit 1 ;;
 esac
 
-## determine Mirage backend
-
-case "$MIRAGE_BACKEND" in
-    unix-direct) mirage_pkg="mirage-unix" ;;
-    xen) mirage_pkg="mirage-xen" ;;
-    *)
-        echo Unknown backend $MIRAGE_BACKEND
-        exit 1
-        ;;
-esac
-
 ## install OCaml and OPAM
 
 echo "yes" | sudo add-apt-repository ppa:$ppa
@@ -36,10 +25,10 @@ eval `opam config env`
 
 ## install Mirage
 
-opam install mirage $mirage_pkga
+opam install mirage mirage-$MIRAGE_BACKEND
 
 ## execute the build
 
 cd $TRAVIS_BUILD_DIR
-make configure
-make build
+MODE=$MIRAGE_BACKEND make configure
+MODE=$MIRAGE_BACKEND make build
