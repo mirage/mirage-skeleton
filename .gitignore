@@ -25,4 +25,4 @@ dns/setup.data
 *.xen
 *.map
 mir-*
-/block_test/disk.raw
+/basic_block/disk.raw
