@@ -1,5 +1,5 @@
 open Mirage
 
 let () = Job.register [
-  "Io_page.Main", [Driver.console]
+  "Iop.Main", [Driver.console]
 ]
