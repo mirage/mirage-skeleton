@@ -7,12 +7,16 @@ main.ml
 myocamlbuild.ml
 
 */Makefile
+!static_website/Makefile
+!lwt/Makefile
+!dns/Makefile
+
 static_website/src/Makefile
 static_website/src/filesystem_static.ml
 static_website/src/_build
 
-!static_website/Makefile
-!lwt/Makefile
+dns/datax.ml
+dns/setup.data
 
 # Generated outputs
 *.native
@@ -21,3 +25,4 @@ static_website/src/_build
 *.xen
 *.map
 mir-*
+/basic_block/disk.raw

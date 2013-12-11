@@ -3,13 +3,14 @@ MIRAGE = mirage
 MODE   ?= unix
 BFLAGS ?= #--no-opam
 
-COMMON_TESTS = basic basic_net io_page ping tcp static_website # dns
-XEN_TESTS    = block_perf block_test suspend
+## basic_net must run under "sudo" to access tap0 network device
+COMMON_TESTS = basic basic_block basic_net ## io_page ping tcp static_website # dns
+XEN_TESTS    = block_perf suspend
 
 ifeq ($(MODE),xen)
-        TESTS := $(COMMON_TESTS) $(XEN_TESTS)
+		TESTS := $(COMMON_TESTS) $(XEN_TESTS)
 else
-        TESTS := $(COMMON_TESTS)
+		TESTS := $(COMMON_TESTS)
 endif
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
@@ -35,3 +36,17 @@ clean: $(CLEANS)
 
 %-clean:
 	$(MIRAGE) clean $*/config.ml $(BFLAGS)
+
+## create raw device for block_test
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	PLATFORM = unix
+endif
+ifeq ($(UNAME_S),Darwin)
+	PLATFORM = osx
+endif
+
+block_test/disk.raw:
+	[ "$(PLATFORM)" = "osx" ] &&							\
+		hdiutil create -sectors 12 -layout NONE disk.raw && \
+		mv disk.raw.dmg block_test/disk.raw
