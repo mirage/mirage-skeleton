@@ -4,7 +4,7 @@ MODE   ?= unix
 BFLAGS ?= #--no-opam
 
 ## basic_net must run under "sudo" to access tap0 network device
-COMMON_TESTS = basic basic_block basic_net ## io_page ping tcp static_website # dns
+COMMON_TESTS = basic basic_block basic_net io_page ## ping tcp static_website # dns
 XEN_TESTS    = ## block_perf suspend
 
 ifeq ($(MODE),xen)
