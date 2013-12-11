@@ -1,24 +1,16 @@
-## declare required packages
-
-OPAM_PACKAGES="mirage mirage-net cow mirage-fs mirari cohttp"
-
 ## different PPAs required to cover the test matrix
 
-case "$OCAML_VERSION,$OPAM_VERSION" in
-    3.12.1,1.0.0) ppa=avsm/ocaml312+opam10 ;;
-    3.12.1,1.1.0) ppa=avsm/ocaml312+opam11 ;;
-    4.00.1,1.0.0) ppa=avsm/ocaml40+opam10 ;;
-    4.00.1,1.1.0) ppa=avsm/ocaml40+opam11 ;;
-    4.01.0,1.0.0) ppa=avsm/ocaml41+opam10 ;;
-    4.01.0,1.1.0) ppa=avsm/ocaml41+opam11 ;;
+case "$OCAML_VERSION" in
+    3.12.1) ppa=avsm/ocaml312+opam11 ;;
+    4.00.1) ppa=avsm/ocaml40+opam11 ;;
+    4.01.0) ppa=avsm/ocaml41+opam11 ;;
     *) echo Unknown $OCAML_VERSION,$OPAM_VERSION; exit 1 ;;
 esac
 
 ## determine Mirage backend
 
 case "$MIRAGE_BACKEND" in
-    unix-socket) mirage_pkg="mirage-unix mirage-net-socket" ;;
-    unix-direct) mirage_pkg="mirage-unix mirage-net-direct" ;;
+    unix-direct) mirage_pkg="mirage-unix" ;;
     xen) mirage_pkg="mirage-xen" ;;
     *)
         echo Unknown backend $MIRAGE_BACKEND
@@ -44,7 +36,7 @@ eval `opam config env`
 
 ## install Mirage
 
-opam install $mirage_pkg ${OPAM_PACKAGES}
+opam install mirage $mirage_pkga
 
 ## execute the build
 
