@@ -44,6 +44,8 @@ eval `opam config env`
 
 ## install Mirage
 
+opam pin mirage git://github.com/avsm/mirage
+
 opam install $mirage_pkg ${OPAM_PACKAGES}
 
 ## execute the build
