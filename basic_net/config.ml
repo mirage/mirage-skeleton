@@ -1,6 +1,8 @@
 open Mirage
 
 let () =
-  Job.register [
-    "Hello_net.Main", [Driver.console; Driver.tap0]
-  ]
+  let main =
+    foreign "Hello_net.Main"
+      (console @-> network @-> job) 
+  in
+  register "basic_net" [ main $ default_console $ tap0 ]
