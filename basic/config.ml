@@ -1,6 +1,6 @@
 open Mirage
 
 let () =
-  Job.register [
-    "Hello.Main", [Driver.console]
+  register "console" [
+    foreign "Hello.Main" (console @-> job) $ default_console
   ]

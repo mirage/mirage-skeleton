@@ -1,11 +1,11 @@
 open Mirage
 
-let block = {
-  Block.name = "myfile";
-  filename   = "./disk.raw";
-  read_only  = false;
-}
-
-let () = Job.register [
-    "Block_test.Main", [Driver.console; Driver.Block block]
+let () =
+  let main =
+    foreign "Block_test.Main"
+      (console @-> block @-> job)
+  in
+  let block = block_of_file "disk.raw" in
+  register "basic_block" [
+    main $ default_console $ block
   ]

@@ -1,7 +1,6 @@
 open Lwt
 open Printf
-open OS
-open Mirage_types.V1
+open V1_LWT
 
 module Main (C: CONSOLE)(B: BLOCK) = struct
 

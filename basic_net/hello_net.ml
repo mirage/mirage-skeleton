@@ -1,4 +1,4 @@
-open Mirage_types.V1
+open V1_LWT
 
 module Main (C: CONSOLE) (N: NETWORK) = struct
 

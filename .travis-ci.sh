@@ -1,6 +1,6 @@
 ## declare required packages
 
-OPAM_PACKAGES="mirage mirage-net cow mirage-fs mirari cohttp"
+OPAM_PACKAGES="mirage"
 
 ## different PPAs required to cover the test matrix
 
@@ -12,18 +12,6 @@ case "$OCAML_VERSION,$OPAM_VERSION" in
     4.01.0,1.0.0) ppa=avsm/ocaml41+opam10 ;;
     4.01.0,1.1.0) ppa=avsm/ocaml41+opam11 ;;
     *) echo Unknown $OCAML_VERSION,$OPAM_VERSION; exit 1 ;;
-esac
-
-## determine Mirage backend
-
-case "$MIRAGE_BACKEND" in
-    unix-socket) mirage_pkg="mirage-unix mirage-net-socket" ;;
-    unix-direct) mirage_pkg="mirage-unix mirage-net-direct" ;;
-    xen) mirage_pkg="mirage-xen" ;;
-    *)
-        echo Unknown backend $MIRAGE_BACKEND
-        exit 1
-        ;;
 esac
 
 ## install OCaml and OPAM
@@ -44,10 +32,13 @@ eval `opam config env`
 
 ## install Mirage
 
+opam pin mirage git://github.com/avsm/mirage
+
 opam install $mirage_pkg ${OPAM_PACKAGES}
 
 ## execute the build
 
-cd $TRAVIS_BUILD_DIR
-make configure
-make build
+for mode in unix xen; do
+  make configure MODE=$mode
+  make build     MODE=$mode
+done
