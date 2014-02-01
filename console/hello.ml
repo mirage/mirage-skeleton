@@ -1,6 +1,6 @@
-open Mirage_types.V1
+open Lwt
 
-module Main (C: CONSOLE) = struct
+module Main (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     for_lwt i = 0 to 4 do
