@@ -26,3 +26,5 @@ dns/setup.data
 *.map
 mir-*
 /basic_block/disk.raw
+/console/log
+/log
