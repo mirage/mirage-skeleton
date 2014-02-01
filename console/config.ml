@@ -1,6 +1,6 @@
 open Mirage
 
-let main = foreign "Hello.Main" (console @-> job)
+let main = foreign "Unikernel.Main" (console @-> job)
 
 let () =
   register "console" [
