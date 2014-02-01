@@ -22,6 +22,6 @@ let stack console =
   | `Socket, _       -> socket_stackv4 console [Ipaddr.V4.any]
 
 let () =
-  register "ethif" [
+  register "network" [
     basic $ default_console $ stack default_console
   ]
