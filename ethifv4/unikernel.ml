@@ -54,6 +54,7 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
                           (Ipaddr.V4.to_string dst) dst_port
                         )
                       >>= fun () ->
+
                       T.read flow
                       >>= function
                       | `Ok b ->
@@ -63,6 +64,7 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
                           )
                         >>= fun () ->
                         T.close flow
+
                       | `Eof -> C.log_s c (red "read: eof")
                       | `Error e -> C.log_s c (red "read: error"))
                   | _ -> None
