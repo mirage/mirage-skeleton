@@ -1,6 +1,6 @@
-MIRAGE = mirage
+MIRAGE  = mirage
 MODE   ?= unix
-BFLAGS ?=
+FLAGS  ?=
 
 ## basic_net must run under "sudo" to access tap0 network device
 COMMON_TESTS = console basic_block basic_net io_page ## ping tcp static_website # dns
@@ -25,7 +25,7 @@ run: $(RUNS)
 clean: $(CLEANS)
 
 %-configure:
-	$(MIRAGE) configure $*/config.ml $(BFLAGS) --$(MODE)
+	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
 
 %-build: %-configure
 	$(MIRAGE) build $*/config.ml

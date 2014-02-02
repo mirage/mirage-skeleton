@@ -1,6 +1,6 @@
 open Mirage
 
-let basic = foreign "Unikernel.Main" (console @-> stackv4 @-> job)
+let main = foreign "Unikernel.Main" (console @-> stackv4 @-> job)
 
 let net =
   try match Sys.getenv "NET" with
@@ -11,8 +11,8 @@ let net =
 
 let dhcp =
   try match Sys.getenv "ADDR" with
-    | "dhcp" -> `Dhcp
-    | _  -> `Static
+    | "dhcp"   -> `Dhcp
+    | "static" -> `Static
   with Not_found -> `Dhcp
 
 let stack console =
@@ -23,5 +23,5 @@ let stack console =
 
 let () =
   register "network" [
-    basic $ default_console $ stack default_console
+    main $ default_console $ stack default_console
   ]

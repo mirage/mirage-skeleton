@@ -20,18 +20,11 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
             (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b))
           >>= fun () ->
           S.TCPV4.close flow
+
         | `Eof -> C.log_s c (red "read: eof")
+
         | `Error e -> C.log_s c (red "read: error")
       );
-
-(*
-for port = 1 to 200 do
-        S.listen_udpv4 s ~port (fun ~src ~dst ~src_port buf ->
-            C.log c (blue "udp packet on port %d" port);
-            return_unit
-          )
-      done;
-*)
 
     S.listen s
 
