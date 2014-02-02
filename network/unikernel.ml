@@ -17,7 +17,9 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
         >>= function
         | `Ok b ->
           C.log_s c
-            (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b))
+            (yellow "read: %d\n%s"
+               (Cstruct.len b) (Cstruct.to_string b)
+            )
           >>= fun () ->
           S.TCPV4.close flow
 

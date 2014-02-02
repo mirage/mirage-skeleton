@@ -15,7 +15,8 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
 
     let http_callback conn_id ?body req =
       let path = Uri.path (H.Server.Request.uri req) in
-      C.log_s console (Printf.sprintf "Got request for %s\n" path) >>= fun () ->
+      C.log_s console (Printf.sprintf "Got request for %s\n" path) 
+      >>= fun () ->
       H.Server.respond_string ~status:`OK ~body:"helllp" ()
     in
 
@@ -33,13 +34,17 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
       fun flow ->
         let dst, dst_port = T.get_dest flow in
         C.log_s console
-          (green "new tcp from %s %d" (Ipaddr.V4.to_string dst) dst_port)
+          (green "new tcp from %s %d" 
+            (Ipaddr.V4.to_string dst) dst_port
+          )
         >>= fun () ->
         T.read flow
         >>= function
         | `Ok b ->
           C.log_s console
-            (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b))
+            (yellow "read: %d\n%s" 
+              (Cstruct.len b) (Cstruct.to_string b)
+            )
           >>= fun () ->
           T.close flow
         | `Eof -> C.log_s console (red "read: eof")
