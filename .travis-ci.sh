@@ -1,3 +1,5 @@
+PACKAGES="lwt ssl"
+
 ## different PPAs required to cover the test matrix
 
 case "$OCAML_VERSION" in
@@ -30,7 +32,7 @@ opam remote add -k git \
 
 ## install Mirage
 
-opam install mirage mirage-$MIRAGE_BACKEND
+opam install $PACKAGES mirage mirage-$MIRAGE_BACKEND
 
 ## execute the build
 
