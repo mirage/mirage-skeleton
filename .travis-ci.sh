@@ -20,8 +20,13 @@ echo OPAM versions
 opam --version
 opam --git-version
 
+uname -a
+
 opam init
 eval `opam config env`
+
+opam remote add -k git \
+    mirage-split https://github.com/mirage/opam-repository#mirage-1.1.0
 
 ## install Mirage
 
