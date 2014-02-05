@@ -28,9 +28,9 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
     >>= fun i ->
 
     I.set_ipv4 i (Ipaddr.V4.of_string_exn "10.0.0.2")
-    >>= fun () -> 
+    >>= fun () ->
     I.set_ipv4_netmask i (Ipaddr.V4.of_string_exn "255.255.255.0")
-    >>= fun () -> 
+    >>= fun () ->
     I.set_ipv4_gateways i [Ipaddr.V4.of_string_exn "10.0.0.1"]
     >>= fun () ->
     or_error c "UDPv4" U.connect i
@@ -49,8 +49,8 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
                 (function
                   | 80 -> Some (fun flow ->
                       let dst, dst_port = T.get_dest flow in
-                      C.log_s c 
-                        (green "new tcp from %s %d" 
+                      C.log_s c
+                        (green "new tcp from %s %d"
                           (Ipaddr.V4.to_string dst) dst_port
                         )
                       >>= fun () ->
@@ -58,8 +58,8 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
                       T.read flow
                       >>= function
                       | `Ok b ->
-                        C.log_s c 
-                          (yellow "read: %d\n%s" 
+                        C.log_s c
+                          (yellow "read: %d\n%s"
                             (Cstruct.len b) (Cstruct.to_string b)
                           )
                         >>= fun () ->

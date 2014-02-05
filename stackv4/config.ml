@@ -10,6 +10,7 @@ let socket console =
 
 let () =
   add_to_ocamlfind_libraries ["mirage-http"];
+  add_to_opam_packages ["mirage-http"];
   register "stackv4" [
     direct default_console;
     socket default_console;

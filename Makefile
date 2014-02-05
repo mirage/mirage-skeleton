@@ -2,15 +2,7 @@ MIRAGE  = mirage
 MODE   ?= unix
 FLAGS  ?=
 
-## basic_net must run under "sudo" to access tap0 network device
-COMMON_TESTS = console basic_block basic_net io_page ## ping tcp static_website # dns
-XEN_TESTS    = ## block_perf suspend
-
-ifeq ($(MODE),xen)
-		TESTS := $(COMMON_TESTS) $(XEN_TESTS)
-else
-		TESTS := $(COMMON_TESTS)
-endif
+TESTS = console network stackv4 ethifv4
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
@@ -30,7 +22,7 @@ clean: $(CLEANS)
 %-build: %-configure
 	$(MIRAGE) build $*/config.ml
 
-%-run: %-build
+%-run:
 	$(MIRAGE) run $*/config.ml
 
 %-clean:
