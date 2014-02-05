@@ -25,3 +25,7 @@ dns/setup.data
 mir-*
 /basic_block/disk.raw
 **/log
+/stackv4/stackv4.xl
+/network/network.xl
+/ethifv4/ethifv4.xl
+/console/console.xl
