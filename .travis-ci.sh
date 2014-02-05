@@ -31,6 +31,4 @@ opam install mirage mirage-$MIRAGE_BACKEND
 
 cd $TRAVIS_BUILD_DIR
 MODE=$MIRAGE_BACKEND make configure
-echo "MAKEFILE:"
-cat block_test/Makefile || true
-MODE=$MIRAGE_BACKEND make build
+make build
