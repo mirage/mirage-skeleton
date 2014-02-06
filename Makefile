@@ -11,15 +11,16 @@ CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 all: build
 
 configure: $(CONFIGS)
-build: $(BUILDS)
+build: $(BUILDS) lwt-build
 run: $(RUNS)
-clean: $(CLEANS)
+clean: $(CLEANS) lwt-clean
 
 ## lwt special cased
-build-lwt:
+lwt: lwt-clean lwt-build
+lwt-build:
 	$(MAKE) -C lwt build
 
-clean-lwt:
+lwt-clean:
 	$(MAKE) -C lwt clean
 
 ## default tests

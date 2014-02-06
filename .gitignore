@@ -35,3 +35,4 @@ mir-*
 /lwt/src/heads3.xl
 /lwt/src/timeout1.xl
 /lwt/src/timeout2.xl
+/lwt/src/echo_server1.xl

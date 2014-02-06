@@ -9,6 +9,8 @@ let (name, main) =
       | "timeout1" -> ("timeout1", "Unikernels.Timeout1")
       | "timeout2" -> ("timeout2", "Unikernels.Timeout2")
 
+      | "echo_server1" -> ("echo_server1", "Unikernels.Echo_server1")
+
   with Not_found -> failwith "Must specify target"
 
 let () =
