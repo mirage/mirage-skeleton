@@ -1,6 +1,7 @@
 include ../Makefile.config
 
-TARGETS=heads1 heads2 heads3 timeout1 timeout2 echo_server1
+TARGETS=heads1 heads2 heads3 timeout1 timeout2 \
+	echo_server1 echo_server2 int_server
 
 configure: $(patsubst %,%-configure,$(TARGETS))
 build: $(patsubst %,%-build,$(TARGETS))
