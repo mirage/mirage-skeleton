@@ -1,8 +1,7 @@
-MIRAGE  = mirage
-MODE   ?= unix
-FLAGS  ?=
+-include Makefile.config
 
 TESTS = console network stackv4 ethifv4 io_page
+
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
@@ -16,6 +15,14 @@ build: $(BUILDS)
 run: $(RUNS)
 clean: $(CLEANS)
 
+## lwt special cased
+build-lwt:
+	$(MAKE) -C lwt build
+
+clean-lwt:
+	$(MAKE) -C lwt clean
+
+## default tests
 %-configure:
 	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
 

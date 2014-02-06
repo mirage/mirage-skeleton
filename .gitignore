@@ -30,3 +30,6 @@ mir-*
 /ethifv4/ethifv4.xl
 /console/console.xl
 /io_page/io_page.xl
+/lwt/src/heads1.xl
+/lwt/src/heads2.xl
+/lwt/src/heads3.xl

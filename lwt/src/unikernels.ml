@@ -1,57 +1,66 @@
-open Lwt
 open OS
+open Lwt
 
-let heads1 () =
-  bind (join [
-    bind (Time.sleep 1.0) (fun () ->
-      Console.log "Heads"; return ()
-    );
-    bind (Time.sleep 2.0) (fun () ->
-      Console.log "Tails"; return ()
-    );
-  ]) (fun () ->
-    Console.log ("Finished"); return ()
-  )
+module Heads1 (C: V1_LWT.CONSOLE) = struct
 
-let heads2 () =
-  join [
-    (Time.sleep 1.0 >>= fun () -> (Console.log "Heads"; return ()));
-    (Time.sleep 2.0 >>= fun () -> (Console.log "Tails"; return ()));
-  ] >>= (fun () ->
-    Console.log "Finished";
-    return ()
-  )
+  let start c =
+    bind (join [
+              bind (Time.sleep 1.0) (fun () ->
+                                     C.log c "Heads"; return ()
+                                    );
+              bind (Time.sleep 2.0) (fun () ->
+                                     C.log c "Tails"; return ()
+                                    );
+         ]) (fun () ->
+             C.log c ("Finished"); return ()
+            )
 
-let heads3 () = 
-  let heads =
-    Time.sleep 1.0 >>
-    return (Console.log "Heads");
-  in
-  let tails =
-    Time.sleep 2.0 >>
-    return (Console.log "Tails");
-  in
-  lwt () = heads <&> tails in
-  Console.log "Finished";
-  return ()
+end
 
-let timeout1 () = 
+module Heads2 (C: V1_LWT.CONSOLE) = struct
+  let start c =
+    join [
+        (Time.sleep 1.0 >>= fun () -> (C.log c "Heads"; return ()));
+        (Time.sleep 2.0 >>= fun () -> (C.log c "Tails"; return ()));
+      ] >>= (fun () ->
+             C.log c "Finished";
+             return ()
+            )
+end
+
+module  Heads3 (C: V1_LWT.CONSOLE) = struct
+  let start c =
+    let heads =
+      Time.sleep 1.0 >>
+        return (C.log c "Heads");
+    in
+    let tails =
+      Time.sleep 2.0 >>
+        return (C.log c "Tails");
+    in
+    lwt () = heads <&> tails in
+      C.log c "Finished";
+      return ()
+end
+
+(*
+let timeout1 () =
   Random.self_init ();
-  
-  let timeout f t = 
+
+  let timeout f t =
     Time.sleep f >>
     match state t with
       | Return v -> return (Some v)
       | _        -> cancel t; return None
   in
-  
+
   let t = Time.sleep (Random.float 3.0) >> return "Heads" in
   timeout 2.0 t >>= fun v ->
     Console.log (match v with None -> "cancelled" | Some v -> v);
   Console.log "Finished";
   return ()
 
-let timeout2 () = 
+let timeout2 () =
   Random.self_init ();
   let timeout f t =
     let tmout = Time.sleep f in
@@ -78,3 +87,4 @@ let echo_server1 () =
            echo_server (n-1)
   in
   echo_server 10
+ *)
