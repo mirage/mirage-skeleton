@@ -35,6 +35,7 @@ lwt-clean:
 
 %-clean:
 	$(MIRAGE) clean $*/config.ml
+	$(RM) log
 
 ## create raw device for block_test
 UNAME_S := $(shell uname -s)

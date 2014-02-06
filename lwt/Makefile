@@ -15,3 +15,4 @@ clean: $(patsubst %,%-clean,$(TARGETS))
 
 %-clean:
 	TARGET=$* $(MIRAGE) clean src/config.ml
+	$(RM) log
