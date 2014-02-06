@@ -67,7 +67,7 @@ module Timeout1 (C: V1_LWT.CONSOLE) = struct
 
 end
 
-module  Timeout2 (C: V1_LWT.CONSOLE) = struct
+module Timeout2 (C: V1_LWT.CONSOLE) = struct
 
   let start c  =
     Random.self_init ();
