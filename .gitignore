@@ -38,3 +38,4 @@ mir-*
 /lwt/src/echo_server1.xl
 /lwt/src/echo_server2.xl
 /lwt/src/int_server.xl
+/lwt/src/stream_server.xl
