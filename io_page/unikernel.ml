@@ -1,9 +1,8 @@
-open Mirage_types.V1
 module P = Io_page
 
 let sp = Printf.sprintf
 
-module Main (C: CONSOLE) = struct
+module Main (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     let one_page = P.get 1 in

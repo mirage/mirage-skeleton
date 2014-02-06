@@ -2,7 +2,7 @@ MIRAGE  = mirage
 MODE   ?= unix
 FLAGS  ?=
 
-TESTS = console network stackv4 ethifv4
+TESTS = console network stackv4 ethifv4 io_page
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))

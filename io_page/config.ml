@@ -1,5 +1,7 @@
 open Mirage
 
-let () = Job.register [
-  "Iop.Main", [Driver.console]
+let main = foreign "Unikernel.Main" (console @-> job)
+
+let () = register "io_page" [
+  main $ default_console
 ]
