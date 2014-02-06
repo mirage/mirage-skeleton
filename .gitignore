@@ -33,3 +33,5 @@ mir-*
 /lwt/src/heads1.xl
 /lwt/src/heads2.xl
 /lwt/src/heads3.xl
+/lwt/src/timeout1.xl
+/lwt/src/timeout2.xl

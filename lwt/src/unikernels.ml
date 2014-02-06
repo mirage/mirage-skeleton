@@ -18,6 +18,7 @@ module Heads1 (C: V1_LWT.CONSOLE) = struct
 end
 
 module Heads2 (C: V1_LWT.CONSOLE) = struct
+
   let start c =
     join [
         (Time.sleep 1.0 >>= fun () -> (C.log c "Heads"; return ()));
@@ -26,9 +27,11 @@ module Heads2 (C: V1_LWT.CONSOLE) = struct
              C.log c "Finished";
              return ()
             )
+
 end
 
-module  Heads3 (C: V1_LWT.CONSOLE) = struct
+module Heads3 (C: V1_LWT.CONSOLE) = struct
+
   let start c =
     let heads =
       Time.sleep 1.0 >>
@@ -41,50 +44,62 @@ module  Heads3 (C: V1_LWT.CONSOLE) = struct
     lwt () = heads <&> tails in
       C.log c "Finished";
       return ()
+
 end
 
-(*
-let timeout1 () =
-  Random.self_init ();
+module Timeout1 (C: V1_LWT.CONSOLE) = struct
 
-  let timeout f t =
-    Time.sleep f >>
-    match state t with
-      | Return v -> return (Some v)
-      | _        -> cancel t; return None
-  in
+  let start c =
+    Random.self_init ();
 
-  let t = Time.sleep (Random.float 3.0) >> return "Heads" in
-  timeout 2.0 t >>= fun v ->
-    Console.log (match v with None -> "cancelled" | Some v -> v);
-  Console.log "Finished";
-  return ()
+    let timeout f t =
+      Time.sleep f >>
+        match state t with
+        | Return v -> return (Some v)
+        | _        -> cancel t; return None
+    in
 
-let timeout2 () =
-  Random.self_init ();
-  let timeout f t =
-    let tmout = Time.sleep f in
-    pick [
-      (tmout >>= fun () -> return None);
-      (t >>= fun v -> return (Some v));
-    ]
-  in
-  let t = Time.sleep (Random.float 3.0) >> return "Heads" in
-  timeout 2.0 t >>= fun v ->
-    Console.log (match v with None -> "Cancelled" | Some v -> v);
-  Console.log "Finished";
-  return ()
+    let t = Time.sleep (Random.float 3.0) >> return "Heads" in
+    timeout 2.0 t >>= fun v ->
+    C.log c (match v with None -> "cancelled" | Some v -> v);
+    C.log c "Finished";
+    return ()
 
-let echo_server1 () =
-  let read_line () =
-    OS.Time.sleep (Random.float 2.5) >>
-    Lwt.return (String.make (Random.int 20) 'a')
-  in
-  let rec echo_server = function
-    | 0 -> return ()
-    | n -> lwt s = read_line () in
-           Console.log s;
-           echo_server (n-1)
-  in
-  echo_server 10
- *)
+end
+
+module  Timeout2 (C: V1_LWT.CONSOLE) = struct
+
+  let start c  =
+    Random.self_init ();
+    let timeout f t =
+      let tmout = Time.sleep f in
+      pick [
+          (tmout >>= fun () -> return None);
+          (t >>= fun v -> return (Some v));
+        ]
+    in
+    let t = Time.sleep (Random.float 3.0) >> return "Heads" in
+    timeout 2.0 t >>= fun v ->
+    C.log c (match v with None -> "Cancelled" | Some v -> v);
+    C.log c "Finished";
+    return ()
+
+end
+
+module Echo_server1 (C: V1_LWT.CONSOLE) = struct
+
+  let start c =
+    let read_line () =
+      Time.sleep (Random.float 2.5)
+      >> return (String.make (Random.int 20) 'a')
+    in
+    let rec echo_server = function
+      | 0 -> return ()
+      | n ->
+         lwt s = read_line () in
+         C.log c s;
+         echo_server (n-1)
+    in
+    echo_server 10
+
+end
