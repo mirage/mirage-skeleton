@@ -1,46 +1,46 @@
-open Lwt (* provides >>= and join *)
-open OS  (* provides Time, Console and Main *)
-open Printf
+open Mirage_types.V1
 
-let suspend () =
-  lwt cancelled = Sched.suspend () in
-  Console.log (Printf.sprintf "cancelled=%d" cancelled);
-  Lwt.return cancelled
+module Main (C: CONSOLE) = struct
+  open Lwt
 
-let control_watch () = 
-  lwt () = Console.log_s (Printf.sprintf "xs_watch ()") in
-  lwt client = Xs.make () in
-  let rec inner () = 
-    lwt dir = Xs.(immediate client (fun h -> directory h "control")) in
-    lwt result =
-      if List.mem "shutdown" dir then begin
-      lwt msg = try_lwt Xs.(immediate client (fun h -> read h "control/shutdown")) with _ -> return "" in
-      lwt () = Console.log_s (Printf.sprintf "Got control message: %s" msg) in
-      match msg with
-      | "suspend" -> 
-          lwt () = Xs.(immediate client (fun h -> rm h "control/shutdown")) in
-          lwt _ = suspend () in
-          lwt () = Console.log_s "About to read domid" in
-          lwt domid = Xs.(immediate client (fun h -> read h "domid")) in
-          lwt () = Console.log_s (Printf.sprintf "We're back: domid=%s" domid) in
+  let suspend c =
+    OS.Sched.suspend () >>= fun cancelled -> 
+    C.log c (Printf.sprintf "cancelled=%d" cancelled);
+    return cancelled
+
+  let start c = 
+    C.log_s c (Printf.sprintf "xs_watch ()") >>= fun () -> 
+    OS.Xs.make () >>= fun client -> 
+    let rec inner () = 
+      OS.Xs.(immediate client (fun h -> directory h "control")) >>= fun dir -> 
+      begin if List.mem "shutdown" dir then begin
+        OS.Xs.(immediate client (fun h -> read h "control/shutdown")) >>= fun msg ->
+	C.log_s c (Printf.sprintf "Got control message: %s" msg) >>= fun () ->
+	match msg with
+	| "suspend" -> 
+          OS.Xs.(immediate client (fun h -> rm h "control/shutdown")) >>= fun _ -> 
+          suspend c >>= fun _ -> 
+          C.log_s c "About to read domid" >>= fun _ ->
+          OS.Xs.(immediate client (fun h -> read h "domid")) >>= fun domid -> 
+          C.log_s c (Printf.sprintf "We're back: domid=%s" domid) >>= fun _ -> 
           return true
       | "poweroff" -> 
-          Sched.shutdown Sched.Poweroff;
+          OS.Sched.shutdown OS.Sched.Poweroff;
           return false (* Doesn't get here! *)
       | "reboot" ->
-          Sched.shutdown Sched.Reboot;
+          OS.Sched.shutdown OS.Sched.Reboot;
           return false (* Doesn't get here! *)
       | "halt" ->
-          Sched.shutdown Sched.Poweroff;
+          OS.Sched.shutdown OS.Sched.Poweroff;
           return false
       | "crash" ->
-          Sched.shutdown Sched.Crash;
+          OS.Sched.shutdown OS.Sched.Crash;
           return false
       | _ -> 
           return false
-      end else return false
-    in
-    lwt () = Time.sleep 1.0 in
-    inner ()
-  in inner ()
+      end else return false end >>= fun _ ->
+      OS.Time.sleep 1.0 >>= fun _ ->
+      inner ()
+    in inner ()
 
+end
