@@ -1,6 +1,6 @@
 -include Makefile.config
 
-TESTS = console network stackv4 ethifv4 io_page lwt
+TESTS = console network stackv4 ethifv4 io_page lwt ping
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
