@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mirage/mirage-skeleton.png?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
+
 Prerequisites
 =============
 
