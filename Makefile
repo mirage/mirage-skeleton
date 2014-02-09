@@ -1,17 +1,6 @@
-MIRAGE = mirage
-# MODE ?= xen
-MODE   ?= unix
-BFLAGS ?= #--no-opam
+-include Makefile.config
 
-## basic_net must run under "sudo" to access tap0 network device
-COMMON_TESTS = basic basic_block basic_net ## io_page ping tcp static_website # dns
-XEN_TESTS    = block_perf suspend
-
-ifeq ($(MODE),xen)
-		TESTS := $(COMMON_TESTS) $(XEN_TESTS)
-else
-		TESTS := $(COMMON_TESTS)
-endif
+TESTS = console network stackv4 ethifv4 io_page lwt ping
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
@@ -21,32 +10,38 @@ CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 all: build
 
 configure: $(CONFIGS)
-build: $(BUILDS)
+build: $(BUILDS) lwt-build
 run: $(RUNS)
-clean: $(CLEANS)
+clean: $(CLEANS) lwt-clean
 
+## lwt special cased
+lwt: lwt-clean lwt-build
+lwt-configure:
+	@ :
+
+lwt-build:
+	$(MAKE) -C lwt build
+
+lwt-clean:
+	$(MAKE) -C lwt clean
+
+## default tests
 %-configure:
-	$(MIRAGE) configure $*/config.ml $(BFLAGS) --$(MODE)
+	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
 
 %-build: %-configure
 	$(MIRAGE) build $*/config.ml
 
-%-run: %-build
+%-run:
 	$(MIRAGE) run $*/config.ml
 
 %-clean:
-	$(MIRAGE) clean $*/config.ml $(BFLAGS)
+	$(MIRAGE) clean $*/config.ml
+	$(RM) log
 
 ## create raw device for block_test
 UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-	PLATFORM = unix
-endif
-ifeq ($(UNAME_S),Darwin)
-	PLATFORM = osx
-endif
-
 block_test/disk.raw:
-	[ "$(PLATFORM)" = "osx" ] &&							\
+	[ "$(PLATFORM)" = "Darwin" ] &&						\
 		hdiutil create -sectors 12 -layout NONE disk.raw && \
 		mv disk.raw.dmg block_test/disk.raw

@@ -1,29 +1,12 @@
-## declare required packages
-
-OPAM_PACKAGES="mirage mirage-net cow mirage-fs mirari cohttp"
+PACKAGES="lwt ssl"
 
 ## different PPAs required to cover the test matrix
 
-case "$OCAML_VERSION,$OPAM_VERSION" in
-    3.12.1,1.0.0) ppa=avsm/ocaml312+opam10 ;;
-    3.12.1,1.1.0) ppa=avsm/ocaml312+opam11 ;;
-    4.00.1,1.0.0) ppa=avsm/ocaml40+opam10 ;;
-    4.00.1,1.1.0) ppa=avsm/ocaml40+opam11 ;;
-    4.01.0,1.0.0) ppa=avsm/ocaml41+opam10 ;;
-    4.01.0,1.1.0) ppa=avsm/ocaml41+opam11 ;;
+case "$OCAML_VERSION" in
+    3.12.1) ppa=avsm/ocaml312+opam11 ;;
+    4.00.1) ppa=avsm/ocaml40+opam11 ;;
+    4.01.0) ppa=avsm/ocaml41+opam11 ;;
     *) echo Unknown $OCAML_VERSION,$OPAM_VERSION; exit 1 ;;
-esac
-
-## determine Mirage backend
-
-case "$MIRAGE_BACKEND" in
-    unix-socket) mirage_pkg="mirage-unix mirage-net-socket" ;;
-    unix-direct) mirage_pkg="mirage-unix mirage-net-direct" ;;
-    xen) mirage_pkg="mirage-xen" ;;
-    *)
-        echo Unknown backend $MIRAGE_BACKEND
-        exit 1
-        ;;
 esac
 
 ## install OCaml and OPAM
@@ -39,15 +22,20 @@ echo OPAM versions
 opam --version
 opam --git-version
 
+uname -a
+
 opam init
 eval `opam config env`
 
+opam remote add -k git \
+    mirage-split https://github.com/mirage/opam-repository#mirage-1.1.0
+
 ## install Mirage
 
-opam install $mirage_pkg ${OPAM_PACKAGES}
+opam install $PACKAGES mirage mirage-$MIRAGE_BACKEND
 
 ## execute the build
 
 cd $TRAVIS_BUILD_DIR
-make configure
+MODE=$MIRAGE_BACKEND make configure
 make build
