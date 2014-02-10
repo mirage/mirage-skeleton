@@ -1,0 +1,6 @@
+This test assumes that a file `disk.img` exists to connect the block test to.
+
+Generate it on Unix using the `generate_disk_img.sh` script.
+
+On Xen, just attach a block device to the VM (but ensure that it's a scratch
+disk, as it will be overwritten by this test).
