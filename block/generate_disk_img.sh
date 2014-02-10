@@ -1,1 +1,1 @@
-dd if=/dev/zero of=disk.img bs=1m count=1
+dd if=/dev/zero of=disk.img count=100000
