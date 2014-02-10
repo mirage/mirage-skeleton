@@ -22,6 +22,7 @@ static*.ml
 static*.mli
 mir-*
 **/log
+make-fat*-image.sh
 /stackv4/stackv4.xl
 /network/network.xl
 /ethifv4/ethifv4.xl
