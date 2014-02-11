@@ -1,5 +1,6 @@
 **/dist/
 **/_build/
+.*.swp
 
 backend.ml
 main.ml
@@ -10,21 +11,18 @@ myocamlbuild.ml
 !lwt/Makefile
 !dns/Makefile
 
-static_website/src/Makefile
-static_website/src/filesystem_static.ml
-static_website/src/_build
-
-dns/datax.ml
-dns/setup.data
-
 # Generated outputs
 *.native
 *.cfg
 *.xen
 *.map
+*.img
+*.xl
+static*.ml
+static*.mli
 mir-*
-/basic_block/disk.raw
 **/log
+make-fat*-image.sh
 /stackv4/stackv4.xl
 /network/network.xl
 /ethifv4/ethifv4.xl
