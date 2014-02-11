@@ -22,13 +22,8 @@ echo OPAM versions
 opam --version
 opam --git-version
 
-uname -a
-
 opam init
 eval `opam config env`
-
-opam remote add -k git \
-    mirage-split https://github.com/mirage/opam-repository#mirage-1.1-release
 
 ## install Mirage
 
@@ -37,5 +32,5 @@ opam install $PACKAGES mirage mirage-$MIRAGE_BACKEND
 ## execute the build
 
 cd $TRAVIS_BUILD_DIR
-MODE=$MIRAGE_BACKEND make configure
+make configure MODE=$MIRAGE_BACKEND
 make build
