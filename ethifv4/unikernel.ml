@@ -64,12 +64,10 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
                           )
                         >>= fun () ->
                         T.close flow
-
                       | `Eof -> C.log_s c (red "read: eof")
                       | `Error e -> C.log_s c (red "read: error"))
                   | _ -> None
                 ))
-
             ~udp:(
               U.input ~listeners:
                 (fun ~dst_port ->
@@ -77,12 +75,9 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
                    D.listen dhcp ~dst_port)
                 udp
             )
-
             ~default:(fun ~proto ~src ~dst _ -> return ())
-
             i
         )
-
         ~ipv6:(fun b -> C.log_s c (yellow "ipv6")) e
     )
 end
