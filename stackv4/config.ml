@@ -2,16 +2,18 @@ open Mirage
 
 let handler = foreign "Unikernel.Main" (console @-> stackv4 @-> job)
 
-let direct console =
-  handler $ console $ direct_stackv4_with_default_ipv4 console tap0
+let direct =
+  let stack = direct_stackv4_with_default_ipv4 default_console tap0 in
+  handler $ default_console $ stack
 
 (* Only add the Unix socket backend if the configuration mode is Unix *)
-let socket console =
+let socket =
+  let c = default_console in
   match get_mode () with
   | `Xen -> []
-  | `Unix -> [ handler $ console $ socket_stackv4 console [Ipaddr.V4.any] ]
+  | `Unix -> [ handler $ c $ socket_stackv4 c [Ipaddr.V4.any] ]
 
 let () =
   add_to_ocamlfind_libraries ["mirage-http"];
   add_to_opam_packages ["mirage-http"];
-  register "stackv4" (direct default_console :: (socket default_console))
+  register "stackv4" (direct :: socket)
