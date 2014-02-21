@@ -1,11 +1,13 @@
 open Lwt
+open V1_LWT
+open Printf
 
-let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
+let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")
+let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
+let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
+let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
+module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module T  = S.TCPV4
   module CH = Channel.Make(T)
@@ -15,9 +17,9 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
 
     let http_callback conn_id ?body req =
       let path = Uri.path (H.Server.Request.uri req) in
-      C.log_s console (Printf.sprintf "Got request for %s\n" path) 
+      C.log_s console (sprintf "Got request for %s\n" path) 
       >>= fun () ->
-      H.Server.respond_string ~status:`OK ~body:"helllp" ()
+      H.Server.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
     in
 
     let spec = {
@@ -30,7 +32,7 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
         C.log_s console "got udp on 53"
     );
 
-    S.listen_tcpv4 s 80 (
+    S.listen_tcpv4 s 8080 (
       fun flow ->
         let dst, dst_port = T.get_dest flow in
         C.log_s console
@@ -51,7 +53,7 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
         | `Error e -> C.log_s console (red "read: error")
     );
 
-    S.listen_tcpv4 s 8080 (H.Server.listen spec);
+    S.listen_tcpv4 s 80 (H.Server.listen spec);
     S.listen s
 
 end
