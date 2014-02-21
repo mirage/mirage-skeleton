@@ -24,7 +24,7 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
         | `Error _ -> fail (Failure "test.zone error reading")
         | `Ok pages -> return (String.concat "" (List.map Cstruct.to_string pages))
     in
-    let open Dns_server_core in
+    let open Dns_server in
     let process = process_of_zonebuf zonebuf in
     let processor = (processor_of_process process :> (module PROCESSOR)) in
     let udp = S.udpv4 s in
@@ -34,7 +34,7 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
       let listening_port = 5359 in
       OS.Time.sleep 3.0 >>= fun () ->
       C.log_s c "resolving recoil.org" >>= fun () ->
-      let connect_to_resolver server port : Dns_resolver_core.commfn =
+      let connect_to_resolver server port : Dns_resolver.commfn =
         let dest_ip = Ipaddr.V4.of_string_exn server in
         let txfn buf =
           let buf = Cstruct.of_bigarray buf in
@@ -62,7 +62,7 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
       in
       let commfn = connect_to_resolver server port in
       let hostname = "dark.recoil.org" in
-      Dns_resolver_core.gethostbyname commfn hostname
+      Dns_resolver.gethostbyname commfn hostname
       >>= fun ips ->
       Lwt_list.iter_s (fun ip -> C.log_s c (sprintf "%s -> %s" hostname (Ipaddr.V4.to_string ip))) ips
     in
