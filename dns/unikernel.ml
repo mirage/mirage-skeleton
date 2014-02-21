@@ -33,7 +33,7 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
         C.log_s c "got udp"
         >>= fun () ->
         let ba = Cstruct.to_bigarray buf in
-        let src' = (Ipaddr.V4 dst), 53 in
+        let src' = (Ipaddr.V4 dst), listening_port in
         let dst' = (Ipaddr.V4 src), src_port in
         let obuf = Io_page.get 1 in 
         process_query ba (Dns.Buf.length ba) obuf src' dst' processor
