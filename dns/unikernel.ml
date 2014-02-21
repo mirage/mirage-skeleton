@@ -28,6 +28,44 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
     let process = process_of_zonebuf zonebuf in
     let processor = (processor_of_process process :> (module PROCESSOR)) in
     let udp = S.udpv4 s in
+    let _ =
+      let server = "192.168.1.1" in
+      let port = 53 in
+      let listening_port = 5359 in
+      OS.Time.sleep 3.0 >>= fun () ->
+      C.log_s c "resolving recoil.org" >>= fun () ->
+      let connect_to_resolver server port : Dns_resolver_core.commfn =
+        let dest_ip = Ipaddr.V4.of_string_exn server in
+        let txfn buf =
+          let buf = Cstruct.of_bigarray buf in
+          U.write ~source_port:listening_port ~dest_ip ~dest_port:port udp buf in
+        let st, push_st = Lwt_stream.create () in
+        S.listen_udpv4 s listening_port (
+          fun ~src ~dst ~src_port buf ->
+            C.log_s c (sprintf "resolver response, length %d" (Cstruct.len buf))
+            >>= fun () ->
+            let ba = Cstruct.to_bigarray buf in
+            push_st (Some ba);
+            return ()
+        );
+        let rec rxfn f =
+          Lwt_stream.get st
+          >>= function
+          | None -> fail (Failure "resolver flow closed")
+          | Some buf -> begin
+              match f buf with
+              | None -> rxfn f
+              | Some r -> return r
+            end
+        in
+        txfn, rxfn
+      in
+      let commfn = connect_to_resolver server port in
+      let hostname = "dark.recoil.org" in
+      Dns_resolver_core.gethostbyname commfn hostname
+      >>= fun ips ->
+      Lwt_list.iter_s (fun ip -> C.log_s c (sprintf "%s -> %s" hostname (Ipaddr.V4.to_string ip))) ips
+    in
     S.listen_udpv4 s listening_port (
       fun ~src ~dst ~src_port buf ->
         C.log_s c "got udp"
@@ -39,10 +77,10 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
         process_query ba (Dns.Buf.length ba) obuf src' dst' processor
         >>= function
         | None ->
-           C.log_s c "No response"
+          C.log_s c "No response"
         | Some rba ->
-           let rbuf = Cstruct.of_bigarray rba in
-           U.write ~source_port:listening_port ~dest_ip:src ~dest_port:src_port udp rbuf
+          let rbuf = Cstruct.of_bigarray rba in
+          U.write ~source_port:listening_port ~dest_ip:src ~dest_port:src_port udp rbuf
     );
     S.listen s
 end
