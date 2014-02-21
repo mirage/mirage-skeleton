@@ -27,12 +27,8 @@ uname -a
 opam init
 eval `opam config env`
 
-opam remote add -k git \
-    mirage-split https://github.com/mirage/opam-repository#mirage-1.1-release
-
 ## install Mirage
-
-opam install $PACKAGES mirage mirage-$MIRAGE_BACKEND
+opam install $PACKAGES mirage 
 
 ## execute the build
 
