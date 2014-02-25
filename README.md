@@ -3,15 +3,18 @@
 Prerequisites
 =============
 
-- Install latest OPAM (at least 1.1.0), following instructions at <http://opam.ocaml.org/>
+- Install latest OPAM (at least 1.1.0), following instructions at
+<http://opam.ocaml.org/>
 
-- Install the `mirage` package with OPAM, updating your package first if necessary:
+- Install the `mirage` package with OPAM, updating your package first if
+necessary:
 
     $ opam update -u
     $ opam install mirage
     $ eval `opam config env`
 
-- Please ensure that your Mirage command-line version is at least 1.1.0 before proceeding:
+- Please ensure that your Mirage command-line version is at least 1.1.0 before
+proceeding:
 
     $ mirage --version
     1.1.0
@@ -38,15 +41,23 @@ Some global targets are also provided in the `Makefile`:
 Details
 -------
 
-The `Makefile` simply invokes sample-specific `sample/Makefile`. Each of those invokes the `mirage` command-line tool to configure, build and run the sample, passing flags and environment as directed. The `mirage` command-line tool assumes that the [OPAM](http://opam.ocaml.org/) package manager is present and is used to manage installation of an OCaml dependencies.
+The `Makefile` simply invokes sample-specific `sample/Makefile`. Each of those
+invokes the `mirage` command-line tool to configure, build and run the sample,
+passing flags and environment as directed. The `mirage` command-line tool
+assumes that the [OPAM](http://opam.ocaml.org/) package manager is present and
+is used to manage installation of an OCaml dependencies.
 
-The `mirage` command-line tool supports four commands, each of which either uses `config.ml` in the current directory or supports passing a `config.ml` directly.
+The `mirage` command-line tool supports four commands, each of which either
+uses `config.ml` in the current directory or supports passing a `config.ml`
+directly.
 
 ### To configure a unikernel before building:
 
     $ mirage configure [config.ml] [--unix|--xen]
 
-The boot target is selected via `--unix` or `--xen`. The default is selected based on the presence of target-specific packages, e.g., `mirage-unix` or `mirage-xen`.
+The boot target is selected via `--unix` or `--xen`. The default is selected
+based on the presence of target-specific packages, e.g., `mirage-unix` or
+`mirage-xen`.
 
 ### To build a unikernel:
 
@@ -58,7 +69,10 @@ The output will be created next to the `config.ml` file used.
 
     $ mirage run [config.ml]
 
-This will either execute the native binary created (if on `--unix`) or create a default `.xl` configuration file (if on `--xen`). In the latter case you will need to edit the generated configuration file appropriately if you wish to use block or network devices.
+This will either execute the native binary created (if on `--unix`) or create
+a default `.xl` configuration file (if on `--xen`). In the latter case you
+will need to edit the generated configuration file appropriately if you wish
+to use block or network devices.
 
 ### To clean up after building a unikernel:
 
