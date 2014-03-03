@@ -13,6 +13,8 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
 
   module U = S.UDPV4
 
+  (** Note that a lot of this logic will eventually move into
+      a mirage-dns library, and is just here temporarily *)
   let start c k s =
     lwt zonebuf = 
       K.size k "test.zone"
