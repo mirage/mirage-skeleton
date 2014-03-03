@@ -15,7 +15,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
   let start console s =
 
-    let http_callback conn_id ?body req =
+    let http_callback conn_id req body =
       let path = Uri.path (H.Server.Request.uri req) in
       C.log_s console (sprintf "Got request for %s\n" path) 
       >>= fun () ->
