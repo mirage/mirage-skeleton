@@ -1,4 +1,4 @@
-PACKAGES="lwt ssl"
+PACKAGES="lwt ssl mirage"
 
 ## different PPAs required to cover the test matrix
 
@@ -26,12 +26,8 @@ uname -a
 opam init
 eval `opam config env`
 
-opam remote add -k git \
-    mirage-split https://github.com/mirage/opam-repository#mirage-1.1-release
-
 ## install Mirage
-export OPAMVERBOSE=1
-opam install $PACKAGES mirage mirage-$MIRAGE_BACKEND
+opam install $PACKAGES
 
 ## execute the build
 
