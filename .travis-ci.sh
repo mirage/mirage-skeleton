@@ -1,4 +1,4 @@
-PACKAGES="lwt ssl"
+PACKAGES="lwt ssl mirage"
 
 ## different PPAs required to cover the test matrix
 
@@ -25,8 +25,7 @@ opam init
 eval `opam config env`
 
 ## install Mirage
-export OPAMVERBOSE=1
-opam install $PACKAGES mirage mirage-$MIRAGE_BACKEND
+opam install $PACKAGES
 
 ## execute the build
 
