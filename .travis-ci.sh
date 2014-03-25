@@ -21,8 +21,6 @@ echo OPAM versions
 opam --version
 opam --git-version
 
-uname -a
-
 opam init
 eval `opam config env`
 
@@ -32,5 +30,5 @@ opam install $PACKAGES
 ## execute the build
 
 cd $TRAVIS_BUILD_DIR
-MODE=$MIRAGE_BACKEND make configure
+make configure MODE=$MIRAGE_BACKEND
 make build
