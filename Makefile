@@ -33,7 +33,8 @@ lwt-clean:
 	$(MIRAGE) build $*/config.ml
 
 %-run:
-	$(MIRAGE) run $*/config.ml
+	@echo execute the output as a POSIX process by
+	@echo $$ sudo $(MIRAGE) run $*/config.ml
 
 %-clean:
 	$(MIRAGE) clean $*/config.ml
