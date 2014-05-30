@@ -44,6 +44,9 @@ let main =
   foreign "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
 
 let () =
+  add_to_ocamlfind_libraries ["re.str"];
+  add_to_opam_packages ["re"];
+
   register "www" [
     main $ default_console $ fs $ server
   ]
