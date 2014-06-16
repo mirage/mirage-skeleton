@@ -60,7 +60,8 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
               | Some r -> return r
             end
         in
-        txfn, rxfn
+        let timeoutfn () = OS.Time.sleep 5.0 in
+        txfn, rxfn, timeoutfn
       in
       let commfn = connect_to_resolver server port in
       let hostname = "dark.recoil.org" in
