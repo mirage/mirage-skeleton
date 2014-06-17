@@ -1,4 +1,4 @@
-PACKAGES="lwt ssl mirage"
+PACKAGES="lwt ssl mirage cstruct ipaddr io-page"
 
 ## different PPAs required to cover the test matrix
 
@@ -21,7 +21,7 @@ echo OPAM versions
 opam --version
 opam --git-version
 
-opam init
+opam init git://github.com/ocaml/opam-repository
 eval `opam config env`
 
 ## install Mirage
