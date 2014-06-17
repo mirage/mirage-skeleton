@@ -31,15 +31,16 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
     let processor = (processor_of_process process :> (module PROCESSOR)) in
     let udp = S.udpv4 s in
     let _ =
-      let server = "192.168.1.1" in
+      let server = "10.0.1.1" in
       let port = 53 in
       let listening_port = 5359 in
       OS.Time.sleep 3.0 >>= fun () ->
-      C.log_s c "resolving recoil.org" >>= fun () ->
+      C.log_s c "Starting client resolver" >>= fun () ->
       let connect_to_resolver server port : Dns_resolver.commfn =
         let dest_ip = Ipaddr.V4.of_string_exn server in
         let txfn buf =
           let buf = Cstruct.of_bigarray buf in
+          Cstruct.hexdump buf;
           U.write ~source_port:listening_port ~dest_ip ~dest_port:port udp buf in
         let st, push_st = Lwt_stream.create () in
         S.listen_udpv4 s listening_port (
@@ -60,7 +61,8 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
               | Some r -> return r
             end
         in
-        txfn, rxfn
+        let timeoutfn () = OS.Time.sleep 5.0 in
+        txfn, rxfn, timeoutfn
       in
       let commfn = connect_to_resolver server port in
       let hostname = "dark.recoil.org" in
