@@ -19,4 +19,4 @@ let socket =
 let () =
   add_to_ocamlfind_libraries ["dns.lwt-core"];
   add_to_opam_packages ["dns"];
-  register "stackv4" (direct :: socket)
+  register "dns" (direct :: socket)
