@@ -31,4 +31,5 @@ opam install $PACKAGES
 
 cd $TRAVIS_BUILD_DIR
 make configure MODE=$MIRAGE_BACKEND
+make depend
 make build
