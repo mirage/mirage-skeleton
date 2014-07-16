@@ -1,4 +1,4 @@
-PACKAGES="lwt ssl mirage cstruct ipaddr io-page"
+PACKAGES="lwt ssl mirage cstruct ipaddr io-page crunch"
 
 ## different PPAs required to cover the test matrix
 
