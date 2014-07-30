@@ -30,7 +30,7 @@ lwt-clean:
 	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
 	cd $* && $(MAKE) depend
 
-%-build: %-configure
+%-build:
 	$(MIRAGE) build $*/config.ml
 
 %-run:
