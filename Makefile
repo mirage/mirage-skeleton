@@ -3,6 +3,7 @@
 TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
+DEPENDS = $(patsubst %, %-depend,    $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
 RUNS    = $(patsubst %, %-run,       $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
@@ -10,6 +11,7 @@ CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 all: build
 
 configure: $(CONFIGS)
+depend: $(DEPENDS)
 build: $(BUILDS) lwt-build
 run: $(RUNS)
 clean: $(CLEANS) lwt-clean
@@ -17,6 +19,9 @@ clean: $(CLEANS) lwt-clean
 ## lwt special cased
 lwt: lwt-clean lwt-build
 lwt-configure:
+	@ :
+
+lwt-depend:
 	@ :
 
 lwt-build:
@@ -28,6 +33,9 @@ lwt-clean:
 ## default tests
 %-configure:
 	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
+	cd $* && $(MAKE) depend
+
+%-depend:
 	cd $* && $(MAKE) depend
 
 %-build:

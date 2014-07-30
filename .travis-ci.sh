@@ -1,4 +1,4 @@
-PACKAGES="lwt ssl mirage cstruct ipaddr io-page"
+PACKAGES="lwt ssl mirage cstruct ipaddr io-page crunch"
 
 ## different PPAs required to cover the test matrix
 
@@ -31,4 +31,5 @@ opam install $PACKAGES
 
 cd $TRAVIS_BUILD_DIR
 make configure MODE=$MIRAGE_BACKEND
+make depend
 make build
