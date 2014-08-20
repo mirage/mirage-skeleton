@@ -69,7 +69,8 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
       let hostname = "dark.recoil.org" in
       Dns_resolver.gethostbyname commfn hostname
       >>= fun ips ->
-      Lwt_list.iter_s (fun ip -> C.log_s c (sprintf "%s -> %s" hostname (Ipaddr.V4.to_string ip))) ips
+      Lwt_list.iter_s (fun ip ->
+       C.log_s c (sprintf "%s -> %s" hostname (Ipaddr.to_string ip))) ips
     in
     S.listen_udpv4 s listening_port (
       fun ~src ~dst ~src_port buf ->
