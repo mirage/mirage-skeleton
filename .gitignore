@@ -1,7 +1,8 @@
 **/dist/
 **/_build/
 .*.swp
-
+.merlin
+*.xe
 backend.ml
 main.ml
 myocamlbuild.ml
