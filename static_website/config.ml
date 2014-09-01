@@ -38,7 +38,7 @@ let stack console =
   | `Socket, _     -> socket_stackv4 console [Ipaddr.V4.any]
 
 let server =
-  http_server 80 (stack default_console)
+  http_server (`TCP (`Port 80)) (conduit_direct (stack default_console))
 
 let main =
   foreign "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
