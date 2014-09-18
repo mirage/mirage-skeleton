@@ -38,7 +38,11 @@ let stack console =
   | `Socket, _     -> socket_stackv4 console [Ipaddr.V4.any]
 
 let server =
-  http_server 80 (stack default_console)
+  conduit_direct (stack default_console)
+
+let http_srv =
+  let mode = `TCP (`Port 80) in
+  http_server mode server
 
 let main =
   foreign "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
@@ -48,5 +52,5 @@ let () =
   add_to_opam_packages ["re"];
 
   register "www" [
-    main $ default_console $ fs $ server
+    main $ default_console $ fs $ http_srv
   ]

@@ -46,7 +46,7 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
       let uri = S.Request.uri request in
       dispatcher (split_path uri)
     in
-    let conn_closed conn_id () =
+    let conn_closed (_,conn_id) () =
       let cid = Cohttp.Connection.to_string conn_id in
       C.log c (Printf.sprintf "conn %s closed" cid)
     in
