@@ -1,12 +1,11 @@
-**/dist/
-**/_build/
+_build
 .*.swp
 .merlin
 *.xe
+*.xml
 backend.ml
 main.ml
 myocamlbuild.ml
-
 **/Makefile
 !static_website/Makefile
 !lwt/Makefile
