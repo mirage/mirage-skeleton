@@ -27,6 +27,7 @@ git config --global user.email travis@example.com
 
 opam init git://github.com/ocaml/opam-repository > /dev/null 2>&1
 opam remote add mirage-dev git://github.com/mirage/mirage-dev
+opam update 
 
 eval `opam config env`
 
