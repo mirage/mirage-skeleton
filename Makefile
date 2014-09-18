@@ -9,7 +9,11 @@ BUILDS  = $(patsubst %, %-build,     $(TESTS))
 RUNS    = $(patsubst %, %-run,       $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
-all: build
+all:
+	@echo Run:
+	@echo make configure
+	@echo make depend
+	@echo make build
 
 configure: $(CONFIGS)
 depend: $(DEPENDS)
@@ -40,7 +44,7 @@ lwt-clean:
 	cd $* && $(MAKE) depend
 
 %-build:
-	$(MIRAGE) build $*/config.ml
+	cd $* && $(MAKE)
 
 %-run:
 	@grep "PKGS.*=.*mirage-xen" $*/Makefile ;\
