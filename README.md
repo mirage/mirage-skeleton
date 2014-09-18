@@ -6,6 +6,10 @@ Prerequisites
 - Install latest OPAM (at least 1.1.0), following instructions at
 <http://opam.ocaml.org/>
 
+- Add the Mirage 2.0 development repos from
+
+    $ opam remote add mirage-dev git://github.com/mirage/mirage-dev
+
 - Install the `mirage` package with OPAM, updating your package first if
 necessary:
 
@@ -82,11 +86,3 @@ to use block or network devices.
 
     $ make clean
 
-Experimental Modules
---------------------
-
-The unikernels in this repository can also be used as a test suite for Mirage.  The `master` branch should work with packages released in the main opam repository, and the `mirage-dev` branch will work with packages held in a staging repository for experimental Mirage packages.  To use the staging repository:
-
-    $ opam remote add mirage-dev git://github.com/mirage/mirage-dev
-
-Then upgrade packages and build the `mirage-dev` branch of mirage-skeleton.
