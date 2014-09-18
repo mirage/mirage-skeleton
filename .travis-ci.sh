@@ -22,6 +22,9 @@ echo OPAM versions
 opam --version
 opam --git-version
 
+git config --global user.name "Travis"
+git config --global user.email travis@example.com
+
 opam init git://github.com/ocaml/opam-repository > /dev/null 2>&1
 opam remote add mirage-dev git://github.com/mirage/mirage-dev
 
