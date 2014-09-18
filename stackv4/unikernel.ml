@@ -11,22 +11,13 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module T  = S.TCPV4
   module CH = Channel.Make(T)
-  module H  = HTTP.Make(CH)
 
   let start console s =
 
-    C.log_s console (sprintf "IP address: %s\n" (Ipaddr.V4.to_string (S.IPV4.get_ipv4 (S.ipv4 s)))) >>= fun () ->
-    let http_callback conn_id req body =
-      let path = Uri.path (H.Server.Request.uri req) in
-      C.log_s console (sprintf "Got request for %s\n" path) 
-      >>= fun () ->
-      H.Server.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
-    in
-
-    let spec = {
-      H.Server.callback = http_callback;
-      conn_closed = fun _ () -> ();
-    } in
+    C.log_s console 
+      (sprintf "IP address: %s\n" 
+        (Ipaddr.V4.to_string (S.IPV4.get_ipv4 (S.ipv4 s))))
+    >>= fun () ->
 
     S.listen_udpv4 s 53 (
       fun ~src ~dst ~src_port buf ->
@@ -54,7 +45,6 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
         | `Error e -> C.log_s console (red "read: error")
     );
 
-    S.listen_tcpv4 s 80 (H.Server.listen spec);
     S.listen s
 
 end
