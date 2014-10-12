@@ -11,7 +11,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module DNS = Dns_resolver_mirage.Make(OS.Time)(S)
   module RES = Conduit_resolver_mirage.Make(DNS)
-  module CON = Conduit_mirage.Make(S)
+  module CON = Conduit_mirage.Make(S)(Vchan.In_memory)
   module H   = HTTP.Make(CON)
 
   let start console s =
