@@ -10,8 +10,8 @@ let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
 module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module DNS = Dns_resolver_mirage.Make(OS.Time)(S)
-  module RES = Conduit_resolver_mirage.Make(DNS)
-  module CON = Conduit_mirage.Make(S)(Vchan.In_memory)
+  module RES = Resolver_mirage.Make(DNS)
+  module CON = Conduit_mirage.Make(S)(Conduit_xenstore)
   module H   = HTTP.Make(CON)
 
   let start console s =
@@ -20,7 +20,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
       (Ipaddr.V4.to_string (S.IPV4.get_ipv4 (S.ipv4 s))))
     >>= fun () ->
 
-    lwt ctx = CON.init s in
+    lwt ctx = CON.init () in
 
     let http_callback conn_id req body =
       let path = Uri.path (H.Server.Request.uri req) in
