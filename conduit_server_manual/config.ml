@@ -14,6 +14,6 @@ let socket =
   | `Unix -> [ handler $ c $ socket_stackv4 c [Ipaddr.V4.any] ]
 
 let () =
-  add_to_ocamlfind_libraries ["mirage-http"; "vchan"; "conduit.mirage-xen"];
+  add_to_ocamlfind_libraries ["mirage-http"; "vchan"];
   add_to_opam_packages ["mirage-http"; "vchan"];
   register "conduit_server" (direct :: socket)
