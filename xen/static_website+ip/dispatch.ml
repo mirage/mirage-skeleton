@@ -11,8 +11,8 @@ module Main (C:CONSOLE) (FS:KV_RO) (N:NETWORK) = struct
 
   module E = Ethif.Make(N)
   module I = Ipv4.Make(E)
-  module U = Udpv4.Make(I)
-  module T = Tcpv4.Flow.Make(I)(OS.Time)(Clock)(Random)
+  module U = Udp.Make(I)
+  module T = Tcp.Flow.Make(I)(OS.Time)(Clock)(Random)
   module CH = Channel.Make(T)
   module H  = HTTP.Make(CH)
 
@@ -20,7 +20,7 @@ module Main (C:CONSOLE) (FS:KV_RO) (N:NETWORK) = struct
     fn t
     >>= function
     | `Error e -> fail (Failure ("Error starting " ^ name))
-    | `Ok t -> return t 
+    | `Ok t -> return t
 
   let start c fs net =
 
@@ -32,21 +32,21 @@ module Main (C:CONSOLE) (FS:KV_RO) (N:NETWORK) = struct
     let fields = Re_str.(split (regexp_string " ") cmd_line) in
     let bits =
       List.map (fun x ->
-          match Re_str.(split (regexp_string "=") x) with 
-          | [a;b] -> (a,b) 
+          match Re_str.(split (regexp_string "=") x) with
+          | [a;b] -> (a,b)
           | _ -> raise (Failure "malformed cmdline")) fields
     in
     let get x = List.assoc x bits in
     let ip = Ipaddr.V4.of_string_exn (get "ip") in
     let netmask = Ipaddr.V4.of_string_exn (get "netmask") in
     let gateway = Ipaddr.V4.of_string_exn (get "gateway") in
-    C.log_s c (sprintf "ip=%s netmask=%s gateway=%s" 
+    C.log_s c (sprintf "ip=%s netmask=%s gateway=%s"
                  (Ipaddr.V4.to_string ip)
                  (Ipaddr.V4.to_string netmask)
-                 (Ipaddr.V4.to_string gateway)) >>= fun () -> 
-    I.set_ipv4 i ip >>= fun () ->
-    I.set_ipv4_netmask i netmask >>= fun () ->
-    I.set_ipv4_gateways i [gateway] >>= fun () ->
+                 (Ipaddr.V4.to_string gateway)) >>= fun () ->
+    I.set_ip i ip >>= fun () ->
+    I.set_ip_netmask i netmask >>= fun () ->
+    I.set_ip_gateways i [gateway] >>= fun () ->
     or_error c "UDPv4" U.connect i >>= fun udp ->
     or_error c "TCPv4" T.connect i >>= fun tcp ->
 
@@ -74,7 +74,7 @@ module Main (C:CONSOLE) (FS:KV_RO) (N:NETWORK) = struct
 
     (* dispatch non-file URLs *)
     let rec dispatcher = function
-      | [] | [""] -> dispatcher ["index.html"] 
+      | [] | [""] -> dispatcher ["index.html"]
       | segments ->
         let path = String.concat "/" segments in
         try_lwt
@@ -110,6 +110,7 @@ module Main (C:CONSOLE) (FS:KV_RO) (N:NETWORK) = struct
 
     N.listen net (
       E.input
+        ~arpv4:(I.input_arpv4 i)
         ~ipv4:(
           I.input
             ~tcp:(

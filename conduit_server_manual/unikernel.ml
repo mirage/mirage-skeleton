@@ -17,14 +17,14 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
   let start console s =
 
     C.log_s console (sprintf "IP address: %s\n"
-      (Ipaddr.V4.to_string (S.IPV4.get_ipv4 (S.ipv4 s))))
+      (String.concat ", " (List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)))))
     >>= fun () ->
 
-    lwt ctx = CON.init () in
+    lwt ctx = CON.init ~stack:s () in
 
     let http_callback conn_id req body =
       let path = Uri.path (H.Server.Request.uri req) in
-      C.log_s console (sprintf "Got request for %s\n" path) 
+      C.log_s console (sprintf "Got request for %s\n" path)
       >>= fun () ->
       H.Server.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
     in

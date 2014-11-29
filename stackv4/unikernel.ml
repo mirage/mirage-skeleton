@@ -14,9 +14,9 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
   let start console s =
 
-    C.log_s console 
-      (sprintf "IP address: %s\n" 
-        (Ipaddr.V4.to_string (S.IPV4.get_ipv4 (S.ipv4 s))))
+    C.log_s console
+      (sprintf "IP address: %s\n"
+        (String.concat ", " (List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)))))
     >>= fun () ->
 
     S.listen_udpv4 s 53 (
@@ -28,7 +28,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
       fun flow ->
         let dst, dst_port = T.get_dest flow in
         C.log_s console
-          (green "new tcp from %s %d" 
+          (green "new tcp from %s %d"
             (Ipaddr.V4.to_string dst) dst_port
           )
         >>= fun () ->
@@ -36,7 +36,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
         >>= function
         | `Ok b ->
           C.log_s console
-            (yellow "read: %d\n%s" 
+            (yellow "read: %d\n%s"
               (Cstruct.len b) (Cstruct.to_string b)
             )
           >>= fun () ->

@@ -10,8 +10,8 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
 
   module E = Ethif.Make(N)
   module I = Ipv4.Make(E)
-  module U = Udpv4.Make(I)
-  module T = Tcpv4.Flow.Make(I)(OS.Time)(Clock)(Random)
+  module U = Udp.Make(I)
+  module T = Tcp.Flow.Make(I)(OS.Time)(Clock)(Random)
   module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(E)(I)(U)
 
   let or_error c name fn t =
@@ -27,11 +27,11 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
     or_error c "Ipv4" I.connect e
     >>= fun i ->
 
-    I.set_ipv4 i (Ipaddr.V4.of_string_exn "10.0.0.2")
+    I.set_ip i (Ipaddr.V4.of_string_exn "10.0.0.2")
     >>= fun () ->
-    I.set_ipv4_netmask i (Ipaddr.V4.of_string_exn "255.255.255.0")
+    I.set_ip_netmask i (Ipaddr.V4.of_string_exn "255.255.255.0")
     >>= fun () ->
-    I.set_ipv4_gateways i [Ipaddr.V4.of_string_exn "10.0.0.1"]
+    I.set_ip_gateways i [Ipaddr.V4.of_string_exn "10.0.0.1"]
     >>= fun () ->
     or_error c "UDPv4" U.connect i
     >>= fun udp ->
@@ -42,6 +42,7 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
 
     N.listen net (
       E.input
+        ~arpv4:(I.input_arpv4 i)
         ~ipv4:(
           I.input
             ~tcp:(

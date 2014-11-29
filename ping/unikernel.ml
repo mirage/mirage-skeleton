@@ -26,9 +26,9 @@ module Main (C:CONSOLE) (N:NETWORK) = struct
     or_error c "Ethif" E.connect n >>= fun e ->
     or_error c "Ipv4"  I.connect e >>= fun i ->
 
-    I.set_ipv4 i (Ipaddr.V4.of_string_exn ipaddr) >>= fun () ->
-    I.set_ipv4_netmask i (Ipaddr.V4.of_string_exn netmask) >>= fun () ->
-    I.set_ipv4_gateways i (List.map Ipaddr.V4.of_string_exn gateways)
+    I.set_ip i (Ipaddr.V4.of_string_exn ipaddr) >>= fun () ->
+    I.set_ip_netmask i (Ipaddr.V4.of_string_exn netmask) >>= fun () ->
+    I.set_ip_gateways i (List.map Ipaddr.V4.of_string_exn gateways)
     >>= fun () ->
 
     let handler s = fun ~src ~dst data ->
@@ -37,6 +37,7 @@ module Main (C:CONSOLE) (N:NETWORK) = struct
     in
     N.listen n
       (E.input
+         ~arpv4:(I.input_arpv4 i)
          ~ipv4:(I.input
                   ~tcp:(handler "TCP")
                   ~udp:(handler "UDP")
