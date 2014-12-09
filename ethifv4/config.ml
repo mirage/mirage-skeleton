@@ -6,8 +6,8 @@ let main = foreign "Unikernel.Main" (console @-> network @-> job)
    for Unix (this is pulled in as an implicit dependency in Xen) *)
 let unix_libs =
   match get_mode () with 
-  | `Unix -> ["mirage-clock-unix"] 
-  | _ -> []
+  | `Xen -> []
+  | _ -> ["mirage-clock-unix"] 
 
 let () =
   add_to_ocamlfind_libraries
