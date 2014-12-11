@@ -14,7 +14,7 @@ let socket =
   let c = default_console in
   match get_mode () with
   | `Xen -> []
-  | `Unix -> [ handler $ c $ data $ socket_stackv4 c [Ipaddr.V4.any] ]
+  | `Unix | `MacOSX -> [ handler $ c $ data $ socket_stackv4 c [Ipaddr.V4.any] ]
 
 let () =
   add_to_ocamlfind_libraries ["dns.lwt-core"];
