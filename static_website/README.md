@@ -1,5 +1,14 @@
 Put static files into the htdocs/ directory.
 
+On Unix, do:
+
+```
+$ env NET=socket FS=crunch mirage configure --unix
+$ make depend
+$ make
+$ make run
+```
+
 For a Xen DHCP kernel, do:
 
 ```
