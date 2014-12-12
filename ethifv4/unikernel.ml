@@ -12,7 +12,7 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
   module I = Ipv4.Make(E)
   module U = Udpv4.Make(I)
   module T = Tcpv4.Flow.Make(I)(OS.Time)(Clock)(Random)
-  module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(E)(I)(U)
+  module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(U)
 
   let or_error c name fn t =
     fn t
@@ -36,7 +36,7 @@ module Main (C: CONSOLE) (N: NETWORK) = struct
     or_error c "UDPv4" U.connect i
     >>= fun udp ->
 
-    let dhcp, offers = D.create c i udp in
+    let dhcp, offers = D.create c (N.mac net) udp in
     or_error c "TCPv4" T.connect i
     >>= fun tcp ->
 
