@@ -32,8 +32,8 @@ module Main (C:CONSOLE) (N:NETWORK) = struct
     >>= fun () ->
 
     let handler s = fun ~src ~dst data ->
-      C.log_s c (yellow "%s > %s TCP"
-                   (Ipaddr.V4.to_string src) (Ipaddr.V4.to_string dst))
+      C.log_s c (yellow "%s > %s %s"
+                   (Ipaddr.V4.to_string src) (Ipaddr.V4.to_string dst) s)
     in
     N.listen n
       (E.input
