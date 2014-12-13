@@ -36,7 +36,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
     or_error c "UDPv4" U.connect i
     >>= fun udp ->
 
-    let dhcp, offers = D.create c (E.mac e) udp in
+    let dhcp, offers = D.create c (N.mac net) udp in
     or_error c "TCPv4" T.connect i
     >>= fun tcp ->
 
