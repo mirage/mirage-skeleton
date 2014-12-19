@@ -20,10 +20,6 @@ module Main (C:CONSOLE) (CON:Conduit_mirage.S) = struct
       H.Server.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
     in
 
-    let spec = {
-      H.Server.callback = http_callback;
-      conn_closed = fun _ () -> ();
-    } in
-
+    let spec = H.Server.make ~callback:http_callback () in
     CON.serve ~ctx ~mode:(`TCP (`Port 80)) (H.Server.listen spec)
 end
