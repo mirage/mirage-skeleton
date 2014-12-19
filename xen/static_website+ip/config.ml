@@ -22,7 +22,7 @@ let main =
   foreign "Dispatch.Main" (console @-> kv_ro @-> network @-> job)
 
 let () =
-  add_to_ocamlfind_libraries ["mirage-http";"tcpip.ethif"; "tcpip.tcpv4"; "tcpip.udpv4"; "tcpip.dhcpv4" ];
+  add_to_ocamlfind_libraries ["mirage-http";"tcpip.ethif"; "tcpip.tcp"; "tcpip.udp"; "tcpip.dhcpv4" ];
   add_to_opam_packages ["mirage-http"];
   register "www" [
     main $ default_console $ fs $ tap0
