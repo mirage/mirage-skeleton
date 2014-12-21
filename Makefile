@@ -1,6 +1,6 @@
 -include Makefile.config
 
-TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns \
+TESTS = console entropy network stackv4 ethifv4 io_page lwt ping static_website dns \
         conduit_server conduit_server_manual
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
