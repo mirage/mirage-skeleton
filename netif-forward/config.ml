@@ -31,6 +31,6 @@ let () =
   add_to_ocamlfind_libraries
     ([ "tcpip.ethif"; ] @ unix_libs);
 
-  register "ofswitch" [
+  register "network" [
     main $ default_console $ (netif "tap1") $ (netif "tap2")
   ]
