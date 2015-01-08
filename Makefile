@@ -1,6 +1,7 @@
 -include Makefile.config
 
-TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns
+TESTS = console entropy network stackv4 ethifv4 io_page lwt ping static_website dns \
+        conduit_server conduit_server_manual
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 DEPENDS = $(patsubst %, %-depend,    $(TESTS))
@@ -8,7 +9,11 @@ BUILDS  = $(patsubst %, %-build,     $(TESTS))
 RUNS    = $(patsubst %, %-run,       $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
-all: build
+all:
+	@echo Run:
+	@echo make configure
+	@echo make depend
+	@echo make build
 
 configure: $(CONFIGS)
 depend: $(DEPENDS)
@@ -39,7 +44,7 @@ lwt-clean:
 	cd $* && $(MAKE) depend
 
 %-build:
-	$(MIRAGE) build $*/config.ml
+	cd $* && $(MAKE)
 
 %-run:
 	@grep "PKGS.*=.*mirage-xen" $*/Makefile ;\

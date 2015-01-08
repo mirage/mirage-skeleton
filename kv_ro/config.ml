@@ -14,7 +14,7 @@ let disk =
   match mode, get_mode () with
   | `Fat   , _     -> fat_ro "t"
   | `Crunch, `Xen  -> crunch "t"
-  | `Crunch, `Unix -> direct_kv_ro "t"
+  | `Crunch, (`Unix | `MacOSX) -> direct_kv_ro "t"
 
 let main =
   foreign "Unikernel.Main" (console @-> kv_ro @-> kv_ro @-> job)

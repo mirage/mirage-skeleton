@@ -6,6 +6,10 @@ Prerequisites
 - Install latest OPAM (at least 1.1.0), following instructions at
 <http://opam.ocaml.org/>
 
+- Add the Mirage 2.0 development repos from
+
+    $ opam remote add mirage-dev git://github.com/mirage/mirage-dev
+
 - Install the `mirage` package with OPAM, updating your package first if
 necessary:
 
@@ -61,13 +65,13 @@ based on the presence of target-specific packages, e.g., `mirage-unix` or
 
 ### To build a unikernel:
 
-    $ mirage build [config.ml]
+    $ make
 
 The output will be created next to the `config.ml` file used.
 
 ### To run a unikernel:
 
-    $ mirage run [config.ml]
+    $ make run
 
 This will either execute the native binary created (if on `--unix`) or create
 a default `.xl` configuration file (if on `--xen`). In the latter case you
@@ -76,4 +80,4 @@ to use block or network devices.
 
 ### To clean up after building a unikernel:
 
-    $ mirage clean [config.ml]
+    $ make clean
