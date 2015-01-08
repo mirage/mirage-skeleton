@@ -16,8 +16,10 @@ echo "yes" | sudo add-apt-repository ppa:$ppa
 sudo apt-get update -qq
 sudo apt-get install -qq ocaml ocaml-native-compilers camlp4-extra opam
 export OPAMYES=1
+
 echo OCaml version
 ocaml -version
+
 echo OPAM versions
 opam --version
 opam --git-version
@@ -26,8 +28,7 @@ git config --global user.name "Travis"
 git config --global user.email travis@example.com
 
 opam init git://github.com/ocaml/opam-repository > /dev/null 2>&1
-opam remote add mirage-dev git://github.com/mirage/mirage-dev
-opam update 
+opam update
 
 eval `opam config env`
 
