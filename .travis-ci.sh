@@ -27,7 +27,7 @@ opam --git-version
 git config --global user.name "Travis"
 git config --global user.email travis@example.com
 
-opam init git://github.com/ocaml/opam-repository > /dev/null 2>&1
+opam init >/dev/null 2>&1
 opam update
 
 eval `opam config env`
