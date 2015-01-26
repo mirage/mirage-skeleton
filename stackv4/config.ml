@@ -22,8 +22,6 @@ let stack =
   | `Socket, _ -> socket_stackv4 default_console [Ipaddr.V4.any]
 
 let () =
-  add_to_opam_packages ["mirage-http"];
-  add_to_ocamlfind_libraries ["mirage-http"];
   register "stackv4" [
     handler $ default_console $ stack;
   ]

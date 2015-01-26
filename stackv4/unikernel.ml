@@ -10,7 +10,6 @@ let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
 module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module T  = S.TCPV4
-  module CH = Channel.Make(T)
 
   let start console s =
 
