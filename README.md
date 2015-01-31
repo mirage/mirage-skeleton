@@ -8,20 +8,26 @@ Prerequisites
 
 - Add the Mirage 2.0 development repos from
 
+```
     $ opam remote add mirage-dev git://github.com/mirage/mirage-dev
+```
 
 - Install the `mirage` package with OPAM, updating your package first if
 necessary:
 
+```
     $ opam update -u
     $ opam install mirage
     $ eval `opam config env`
+```
 
 - Please ensure that your Mirage command-line version is at least 1.1.0 before
 proceeding:
 
+```
     $ mirage --version
     1.1.0
+```
 
 Configure, Build, Run
 =====================
