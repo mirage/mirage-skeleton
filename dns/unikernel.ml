@@ -67,7 +67,7 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
       in
       let commfn = connect_to_resolver server port in
       let hostname = "dark.recoil.org" in
-      let alloc () = Io_page.get 1 in
+      let alloc () = (Io_page.get 1 :> Dns.Buf.t) in
       Dns_resolver.gethostbyname ~alloc commfn hostname
       >>= fun ips ->
       Lwt_list.iter_s (fun ip ->
@@ -80,7 +80,7 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
         let ba = Cstruct.to_bigarray buf in
         let src' = (Ipaddr.V4 dst), listening_port in
         let dst' = (Ipaddr.V4 src), src_port in
-        let obuf = Io_page.get 1 in 
+        let obuf = (Io_page.get 1 :> Dns.Buf.t) in
         process_query ba (Dns.Buf.length ba) obuf src' dst' processor
         >>= function
         | None ->
