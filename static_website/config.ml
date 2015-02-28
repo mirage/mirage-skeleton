@@ -41,7 +41,7 @@ let server =
   conduit_direct (stack default_console)
 
 let http_srv =
-  let mode = `TCP (`Port 80) in
+  let mode = `TCP (`Port 8080) in
   http_server mode server
 
 let main =
