@@ -1,8 +1,8 @@
 open Mirage
 
-(* If the Unix `MODE` is set, the choice of configuration changes:
-   MODE=crunch (or nothing): use static filesystem via crunch
-   MODE=fat: use FAT and block device (run ./make-fat-images.sh)
+(* Use `FS` to set the underlying filesystem:
+   FS=crunch (or nothing): use static filesystem via crunch
+   FS=fat: use FAT and block device (run ./make-fat-images.sh)
  *)
 let mode =
   try match String.lowercase (Unix.getenv "FS") with
@@ -41,7 +41,7 @@ let server =
   conduit_direct (stack default_console)
 
 let http_srv =
-  let mode = `TCP (`Port 80) in
+  let mode = `TCP (`Port 8080) in
   http_server mode server
 
 let main =

@@ -1,13 +1,15 @@
-Put static files into the htdocs/ directory.
-
 On Unix, do:
 
 ```
-$ env NET=socket FS=crunch mirage configure --unix
+$ env NET=socket mirage configure --unix
 $ make depend
 $ make
 $ make run
 ```
+
+This will run the website on localhost on port 8080, so you should be
+able to visit [http://localhost:8080](http://localhost:8080) and see the
+content from htdocs directory.
 
 For a Xen DHCP kernel, do:
 
