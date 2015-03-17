@@ -2,22 +2,10 @@ open V1_LWT
 open Lwt
 open Printf
 
-let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
-
 let packets_in = ref 0l
 let packets_waiting = ref 0l
 
 module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
-
-  let or_error c name fn t =
-  fn t
-    >>= function
-    | `Error e -> fail (Failure ("error starting " ^ name))
-    | `Ok t -> C.log_s c (green "%s connected." name) >>
-               return t
 
   let (in_queue, in_push) = Lwt_stream.create ()
   let (out_queue, out_push) = Lwt_stream.create ()
