@@ -7,9 +7,4 @@ bug-reports:  "https://github.com/mirage/mirage-skeleton/issues/"
 dev-repo:     "https://github.com/mirage/mirage-skeleton.git"
 tags:         ["org:mirage" "org:xapi-project"]
 
-build: [
-  [make "configure"]
-  [make "build"]
-]
-
 depends: [ "mirage" {>= "2.2.3"} ]
