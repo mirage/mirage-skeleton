@@ -12,8 +12,6 @@ let packets_waiting = ref 0l
 
 module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
 
-  module E = Ethif.Make(N1)
-
   let or_error c name fn t =
   fn t
     >>= function
@@ -25,9 +23,9 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
   let (out_queue, out_push) = Lwt_stream.create ()
 
   let listen nf =
-    let hw_addr =  Macaddr.to_string (E.mac nf) in
+    let hw_addr =  Macaddr.to_string (N1.mac nf) in
     let _ = printf "listening on the interface with mac address '%s' \n%!" hw_addr in
-    N1.listen (E.id nf) (fun frame -> return (in_push (Some frame)))
+    N1.listen nf (fun frame -> return (in_push (Some frame)))
 
   let update_packet_count () =
     let _ = packets_in := Int32.succ !packets_in in
@@ -47,13 +45,11 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
       while_lwt true do
         lwt frame = Lwt_stream.next out_queue in
           let _ = packets_waiting := Int32.pred !packets_waiting in
-          E.write nf frame
+          N2.write nf frame
       done
       )
   in
-  lwt nf1 = or_error console "interface" E.connect n1 in
-  lwt nf2 = or_error console "interface" E.connect n2 in
-  (listen nf1) <?> (forward_thread nf2)
+  (listen n1) <?> (forward_thread n2)
   >> return (print_endline "terminated.")
 
 end

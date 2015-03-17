@@ -32,5 +32,5 @@ let () =
     ([ "tcpip.ethif"; ] @ unix_libs);
 
   register "network" [
-    main $ default_console $ (netif "tap1") $ (netif "tap2")
+    main $ default_console $ (netif "1") $ (netif "2")
   ]
