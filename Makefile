@@ -46,15 +46,6 @@ lwt-clean:
 %-build:
 	cd $* && $(MAKE)
 
-%-run:
-	@grep "PKGS.*=.*mirage-xen" $*/Makefile ;\
-	if [ $$? -eq 0 ]; then \
-		echo "use your preferred toolchain to boot your unikernel" ;\
-	else \
-		echo execute the output as a POSIX process by ;\
-		echo $$ sudo $(MIRAGE) run $*/config.ml ;\
-	fi
-
 %-clean:
 	$(MIRAGE) clean $*/config.ml
 	$(RM) log
