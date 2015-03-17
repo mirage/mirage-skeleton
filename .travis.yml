@@ -1,7 +1,8 @@
 language: c
-script: bash -ex .travis-ci.sh
+install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-opam.sh
+script: bash -ex .travis-opam.sh
 env:
-  - OCAML_VERSION=4.01.0 MIRAGE_BACKEND=unix OPAM_VERSION=1.1.0
-  - OCAML_VERSION=4.01.0 MIRAGE_BACKEND=xen  OPAM_VERSION=1.1.0
-  - OCAML_VERSION=4.01.0 MIRAGE_BACKEND=unix OPAM_VERSION=1.2.0
-  - OCAML_VERSION=4.01.0 MIRAGE_BACKEND=xen  OPAM_VERSION=1.2.0
+  - OCAML_VERSION=4.01 MIRAGE_BACKEND=unix
+  - OCAML_VERSION=4.01 MIRAGE_BACKEND=xen
+  - OCAML_VERSION=4.01 MIRAGE_BACKEND=unix
+  - OCAML_VERSION=4.01 MIRAGE_BACKEND=xen
