@@ -4,19 +4,13 @@ TESTS = console entropy network stackv4 ethifv4 io_page lwt ping static_website 
         conduit_server conduit_server_manual
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
-DEPENDS = $(patsubst %, %-depend,    $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
 RUNS    = $(patsubst %, %-run,       $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
-all:
-	@echo Run:
-	@echo make configure
-	@echo make depend
-	@echo make build
+all: build
 
 configure: $(CONFIGS)
-depend: $(DEPENDS)
 build: $(BUILDS) lwt-build
 run: $(RUNS)
 clean: $(CLEANS) lwt-clean
@@ -24,9 +18,6 @@ clean: $(CLEANS) lwt-clean
 ## lwt special cased
 lwt: lwt-clean lwt-build
 lwt-configure:
-	@ :
-
-lwt-depend:
 	@ :
 
 lwt-build:
@@ -38,12 +29,8 @@ lwt-clean:
 ## default tests
 %-configure:
 	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
-	cd $* && $(MAKE) depend
 
-%-depend:
-	cd $* && $(MAKE) depend
-
-%-build:
+%-build: %-configure
 	cd $* && $(MAKE)
 
 %-clean:
