@@ -1,0 +1,15 @@
+opam-version: "1.2"
+maintainer:   "The MirageOS team"
+authors:      "The MirageOS team"
+
+homepage:     "http://http://www.openmirage.org/"
+bug-reports:  "https://github.com/mirage/mirage-skeleton/issues/"
+dev-repo:     "https://github.com/mirage/mirage-skeleton.git"
+tags:         ["org:mirage" "org:xapi-project"]
+
+build: [
+  [make "configure"]
+  [make "build"]
+]
+
+depends: [ "mirage" {>= "2.2.3"} ]
