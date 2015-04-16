@@ -9,7 +9,7 @@ let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
 
   module E = Ethif.Make(N)
-  module I = Ipv4.Make(E)
+  module I = Ipv4.Make(E)(Clock)(OS.Time)
   module U = Udp.Make(I)
   module T = Tcp.Flow.Make(I)(OS.Time)(Clock)(Random)
   module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(U)
