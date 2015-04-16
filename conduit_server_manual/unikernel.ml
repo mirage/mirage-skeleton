@@ -11,8 +11,8 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module DNS = Dns_resolver_mirage.Make(OS.Time)(S)
   module RES = Resolver_mirage.Make(DNS)
-  module CON = Conduit_mirage.Make(S)(Conduit_localhost)
-  module H   = HTTP.Make(CON)
+  module CON = Conduit_mirage.Make(S)(Conduit_localhost)(Conduit_mirage.No_TLS)
+  module H   = Cohttp_mirage.Server(CON.Flow)
 
   let start console s =
 
@@ -23,12 +23,12 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
     lwt ctx = CON.init ~stack:s () in
 
     let http_callback conn_id req body =
-      let path = Uri.path (H.Server.Request.uri req) in
+      let path = Uri.path (H.Request.uri req) in
       C.log_s console (sprintf "Got request for %s\n" path)
       >>= fun () ->
-      H.Server.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
+      H.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
     in
 
-    let spec = H.Server.make ~callback:http_callback () in
-    CON.serve ~ctx ~mode:(`TCP (`Port 80)) (H.Server.listen spec)
+    let spec = H.make ~callback:http_callback () in
+    CON.serve ~ctx ~mode:(`TCP (`Port 80)) (H.listen spec)
 end
