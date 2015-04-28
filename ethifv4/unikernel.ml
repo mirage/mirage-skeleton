@@ -9,7 +9,8 @@ let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
 
   module E = Ethif.Make(N)
-  module I = Ipv4.Make(E)(Clock)(OS.Time)
+  module A = Arpv4.Make(E)(Clock)(OS.Time)
+  module I = Ipv4.Make(E)(A)
   module U = Udp.Make(I)
   module T = Tcp.Flow.Make(I)(OS.Time)(Clock)(Random)
   module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(U)
@@ -23,8 +24,9 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
   let start c net _ =
     or_error c "Ethif" E.connect net
     >>= fun e ->
-
-    or_error c "Ipv4" I.connect e
+    or_error c "Arpv4" A.connect e 
+    >>= fun a ->
+    or_error c "Ipv4" (I.connect e) a
     >>= fun i ->
 
     I.set_ip i (Ipaddr.V4.of_string_exn "10.0.0.2")
@@ -42,7 +44,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
 
     N.listen net (
       E.input
-        ~arpv4:(I.input_arpv4 i)
+        ~arpv4:(A.input a)
         ~ipv4:(
           I.input
             ~tcp:(
