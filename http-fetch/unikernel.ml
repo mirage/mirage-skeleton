@@ -24,7 +24,7 @@ module Client (C:CONSOLE) (RES:Resolver_lwt.S) (CON:Conduit_mirage.S) = struct
     C.log_s c (sprintf "Received body length: %d" (String.length body)) >>= fun () ->
     C.log_s c "Cohttp fetch done\n------------\n"
 
-  let manual_http_fetch c resolver ctx = 
+  let manual_http_fetch c resolver ctx =
     Resolver_lwt.resolve_uri ~uri resolver >>= fun endp ->
     CON.endp_to_client ~ctx endp >>= fun client ->
     C.log_s c (Sexplib.Sexp.to_string_hum (Conduit.sexp_of_endp endp)) >>= fun () ->

@@ -30,7 +30,7 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
 
     (* dispatch non-file URLs *)
     let rec dispatcher = function
-      | [] | [""] -> dispatcher ["index.html"] 
+      | [] | [""] -> dispatcher ["index.html"]
       | segments ->
         let path = String.concat "/" segments in
         try_lwt
