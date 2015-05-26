@@ -37,12 +37,7 @@ let stack console =
   | `Direct, false -> direct_stackv4_with_default_ipv4 console tap0
   | `Socket, _     -> socket_stackv4 console [Ipaddr.V4.any]
 
-let server =
-  conduit_direct (stack default_console)
-
-let http_srv =
-  let mode = `TCP (`Port 8080) in
-  http_server mode server
+let http_srv = http_server (conduit_direct (stack default_console))
 
 let main =
   foreign "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
