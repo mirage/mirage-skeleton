@@ -43,8 +43,8 @@ let main =
   foreign "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
 
 let () =
-  add_to_ocamlfind_libraries ["re.str"];
-  add_to_opam_packages ["re"];
+  add_to_ocamlfind_libraries ["re.str"; "magic-mime"];
+  add_to_opam_packages ["re"; "magic-mime"];
 
   register "www" [
     main $ default_console $ fs $ http_srv
