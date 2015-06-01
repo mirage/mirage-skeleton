@@ -49,6 +49,8 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
       let cid = Cohttp.Connection.to_string conn_id in
       C.log c (Printf.sprintf "conn %s closed" cid)
     in
-    http (`TCP 8080) (S.make ~conn_closed ~callback ())
+    let tcp = `TCP 443 in
+    let tls = `TLS (Tls.Config.server (), tcp) in
+    http tls (S.make ~conn_closed ~callback ())
 
 end
