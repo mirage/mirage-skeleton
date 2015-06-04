@@ -15,11 +15,11 @@ module Main (C: CONSOLE) (X: KV_RO) (Y: KV_RO) = struct
       >>= fun vy ->
       begin match vx, vy with
         | `Ok sx, `Ok sy ->
-          string_of_stream sx
+          string_of_stream sx 
           >>= fun sx ->
           string_of_stream sy
           >>= fun sy ->
-          if sx = sy then
+          if sx = sy then 
             C.log_s c "YES!"
           else
             C.log_s c "NO!"

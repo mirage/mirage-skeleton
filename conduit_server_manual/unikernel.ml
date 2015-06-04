@@ -11,10 +11,8 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
   module DNS = Dns_resolver_mirage.Make(OS.Time)(S)
   module RES = Resolver_mirage.Make(DNS)
-  module H   = Cohttp_mirage.Server(Conduit_mirage.Flow)
-
-  let conduit = Conduit_mirage.empty
-  let stackv4 = Conduit_mirage.stackv4 (module S)
+  module CON = Conduit_mirage.Make(S)(Conduit_localhost)(Conduit_mirage.No_TLS)
+  module H   = Cohttp_mirage.Server(CON.Flow)
 
   let start console s =
 
@@ -22,7 +20,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
       (String.concat ", " (List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)))))
     >>= fun () ->
 
-    Conduit_mirage.with_tcp conduit stackv4 s >>= fun conduit ->
+    lwt ctx = CON.init ~stack:s () in
 
     let http_callback conn_id req body =
       let path = Uri.path (H.Request.uri req) in
@@ -32,5 +30,5 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
     in
 
     let spec = H.make ~callback:http_callback () in
-    Conduit_mirage.listen conduit(`TCP 80) (H.listen spec)
+    CON.serve ~ctx ~mode:(`TCP (`Port 80)) (H.listen spec)
 end

@@ -25,3 +25,4 @@ let () =
   register "stackv4" [
     handler $ default_console $ stack;
   ]
+
