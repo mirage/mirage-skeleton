@@ -16,13 +16,13 @@ module Main (C:CONSOLE) (K:KV_RO) (S:STACKV4) = struct
   (** Note that a lot of this logic will eventually move into
       a mirage-dns library, and is just here temporarily *)
   let start c k s =
-    lwt zonebuf =
+    lwt zonebuf = 
       K.size k "test.zone"
       >>= function
       | `Error _ -> fail (Failure "test.zone not found")
       | `Ok sz ->
-        K.read k "test.zone" 0 (Int64.to_int sz)
-        >>= function
+        K.read k "test.zone" 0 (Int64.to_int sz) 
+        >>= function 
         | `Error _ -> fail (Failure "test.zone error reading")
         | `Ok pages -> return (String.concat "" (List.map Cstruct.to_string pages))
     in

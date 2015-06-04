@@ -7,10 +7,12 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
   let start c fs http =
 
     let read_fs name =
-      FS.size fs name >>= function
+      FS.size fs name
+      >>= function
       | `Error (FS.Unknown_key _) -> fail (Failure ("read " ^ name))
       | `Ok size ->
-        FS.read fs name 0 (Int64.to_int size) >>= function
+        FS.read fs name 0 (Int64.to_int size)
+        >>= function
         | `Error (FS.Unknown_key _) -> fail (Failure ("read " ^ name))
         | `Ok bufs -> return (Cstruct.copyv bufs)
     in
@@ -28,16 +30,15 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
 
     (* dispatch non-file URLs *)
     let rec dispatcher = function
-      | [] | [""] -> dispatcher ["index.html"]
+      | [] | [""] -> dispatcher ["index.html"] 
       | segments ->
         let path = String.concat "/" segments in
-        Lwt.catch (fun () ->
+        try_lwt
           read_fs path
           >>= fun body ->
           S.respond_string ~status:`OK ~body ()
-          ) (fun exn ->
-            S.respond_not_found ()
-          )
+        with exn ->
+          S.respond_not_found ()
     in
 
     (* HTTP callback *)
@@ -49,6 +50,6 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
       let cid = Cohttp.Connection.to_string conn_id in
       C.log c (Printf.sprintf "conn %s closed" cid)
     in
-    http (`TCP 8080) (S.make ~conn_closed ~callback ())
+    http (S.make ~conn_closed ~callback ())
 
 end

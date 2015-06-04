@@ -3,8 +3,8 @@ open Mirage
 let main = foreign "Unikernel.Main" (console @-> network @-> network @-> job)
 
 let unix_libs =
-  match get_mode () with
-  | `Unix -> ["mirage-clock-unix"]
+  match get_mode () with 
+  | `Unix -> ["mirage-clock-unix"] 
   | _ -> []
 
 let net =
@@ -22,7 +22,7 @@ let dhcp =
 
 let stack console =
   match net, dhcp with
-  | `Direct, `Dhcp -> direct_stackv4_with_dhcp console tap0
+  | `Direct, `Dhcp -> direct_stackv4_with_dhcp console tap0 
   | `Direct, `Static -> direct_stackv4_with_default_ipv4 console tap0
   | `Direct, _ -> direct_stackv4_with_default_ipv4 console tap0
   | `Socket, _ -> socket_stackv4 console [Ipaddr.V4.any]

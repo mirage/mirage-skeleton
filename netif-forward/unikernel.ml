@@ -19,7 +19,7 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
     let _ = packets_in := Int32.succ !packets_in in
     let _ = packets_waiting := Int32.succ !packets_waiting in
     if (Int32.logand !packets_in 0xfl) = 0l then
-        let _ = printf "packets (in = %ld) (not forwarded = %ld)" !packets_in !packets_waiting in
+        let _ = printf "packets (in = %ld) (not forwarded = %ld)" !packets_in !packets_waiting in 
         print_endline ""
 
   let start console n1 n2 =
@@ -28,7 +28,7 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
       while_lwt true do
         lwt _ = Lwt_stream.next in_queue >>= fun frame -> return (out_push (Some frame)) in
         return (update_packet_count ())
-      done
+      done  
       <?> (
       while_lwt true do
         lwt frame = Lwt_stream.next out_queue in
