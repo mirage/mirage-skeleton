@@ -13,18 +13,18 @@ let ns = "8.8.8.8"
 
 module Client (C:CONSOLE) (RES:Resolver_lwt.S) (CON:Conduit_mirage.S) = struct
 
-  module HTTP = HTTP.Make(CON)
+  module HTTP = Cohttp_mirage.Client(CON)
 
   let http_fetch c resolver ctx =
     C.log_s c (sprintf "Fetching %s with Cohttp:" (Uri.to_string uri)) >>= fun () ->
-    let ctx = { HTTP.Net_IO.resolver; ctx } in
-    HTTP.Client.get ~ctx uri >>= fun (response, body) ->
+    let ctx = HTTP.ctx resolver ctx in
+    HTTP.get ~ctx uri >>= fun (response, body) ->
     Cohttp_lwt_body.to_string body >>= fun body ->
     C.log_s c (Sexplib.Sexp.to_string_hum (Cohttp.Response.sexp_of_t response)) >>= fun () ->
     C.log_s c (sprintf "Received body length: %d" (String.length body)) >>= fun () ->
     C.log_s c "Cohttp fetch done\n------------\n"
 
-  let manual_http_fetch c resolver ctx = 
+  let manual_http_fetch c resolver ctx =
     Resolver_lwt.resolve_uri ~uri resolver >>= fun endp ->
     CON.endp_to_client ~ctx endp >>= fun client ->
     C.log_s c (Sexplib.Sexp.to_string_hum (Conduit.sexp_of_endp endp)) >>= fun () ->
