@@ -42,7 +42,7 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
 
     (* HTTP callback *)
     let callback conn_id request body =
-      let uri = S.Request.uri request in
+      let uri = Cohttp.Request.uri request in
       dispatcher (split_path uri)
     in
     let conn_closed (_,conn_id) =
