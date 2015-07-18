@@ -2,7 +2,7 @@ open Lwt
 open Printf
 open V1_LWT
 
-module Block_test (C: CONSOLE)(B: BLOCK) = struct
+module Main (C: CONSOLE)(B: BLOCK) = struct
 
   let tests_started = ref 0
   let tests_passed = ref 0
