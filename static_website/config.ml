@@ -6,8 +6,9 @@ open Mirage
  *)
 let mode =
   try match String.lowercase (Unix.getenv "FS") with
-    | "fat" -> `Fat
-    | _     -> `Crunch
+    | "fat"     -> `Fat
+    | "archive" -> `Archive
+    | _         -> `Crunch
   with Not_found ->
     `Crunch
 
@@ -17,6 +18,7 @@ let fat_ro dir =
 let fs = match mode with
   | `Fat    -> fat_ro "./htdocs"
   | `Crunch -> crunch "./htdocs"
+  | `Archive -> archive_of_files ~dir:"./htdocs" ()
 
 let net =
   try match Sys.getenv "NET" with
