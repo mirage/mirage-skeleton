@@ -17,22 +17,23 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
     C.log_s console (sprintf "IP address: %s\n" (String.concat ", " ips))
 
     >>= fun () ->
-    let loc_port = 53 in
-    S.listen_udpv4 s loc_port (
+    let local_port = 53 in
+    S.listen_udpv4 s local_port (
       fun ~src ~dst ~src_port buf ->
         C.log_s console
-          (red "UDP %s.%d > %s.%d: \"%s\""
+          (red "UDP %s:%d > %s:%d: \"%s\""
              (Ipaddr.V4.to_string src) src_port
-             (Ipaddr.V4.to_string dst) loc_port
+             (Ipaddr.V4.to_string dst) local_port
              (Cstruct.to_string buf))
     );
 
-    let loc_port = 8080 in
-    S.listen_tcpv4 s loc_port (
+    let local_port = 8080 in
+    S.listen_tcpv4 s local_port (
       fun flow ->
-        let rem, rem_port = T.get_dest flow in
+        let remote, remote_port = T.get_dest flow in
         C.log_s console
-          (green "TCP %s.%d > _.%d" (Ipaddr.V4.to_string rem) rem_port loc_port)
+          (green "TCP %s:%d > _:%d"
+             (Ipaddr.V4.to_string remote) remote_port local_port)
 
         >>= fun () ->
         T.read flow
