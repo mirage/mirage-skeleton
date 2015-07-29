@@ -7,4 +7,4 @@ let disk1 = crunch "t"
 let disk2 = crunch "t"
 
 let () =
-  register "kv_ro" [ main $ default_console $ disk1 $ disk2 ]
+  register "kv_ro" [main $ default_console $ disk1 $ disk2]
