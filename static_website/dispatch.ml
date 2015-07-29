@@ -34,7 +34,10 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
         Lwt.catch (fun () ->
           read_fs path
           >>= fun body ->
-          S.respond_string ~status:`OK ~body ()
+          let mime_type = Magic_mime.lookup path in
+          let headers = Cohttp.Header.init () in
+          let headers = Cohttp.Header.add headers "content-type" mime_type in
+          S.respond_string ~status:`OK ~body ~headers ()
           ) (fun exn ->
             S.respond_not_found ()
           )
