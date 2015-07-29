@@ -11,7 +11,7 @@ let unix_libs =
 
 let () =
   add_to_ocamlfind_libraries
-    ([ "tcpip.ethif"; "tcpip.tcp"; "tcpip.udp"; "tcpip.dhcpv4" ]
+    ([ "tcpip.ethif"; "tcpip.arpv4"; "tcpip.tcp"; "tcpip.udp"; "tcpip.dhcpv4" ]
       @ unix_libs);
   register "ethifv4" [
     main $ default_console $ tap0 $ default_clock
