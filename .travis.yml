@@ -2,8 +2,11 @@ language: c
 install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-opam.sh
 script: bash -ex .travis-opam.sh
 env:
-  - OCAML_VERSION=4.01
-    POST_INSTALL_HOOK="make MODE=unix && make clean"
-  - OCAML_VERSION=4.01
-    UPDATE_GCC_BINUTILS=1
-    POST_INSTALL_HOOK="make MODE=xen  && make clean"
+  global:
+    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
+  matrix:
+    - OCAML_VERSION=4.01
+     POST_INSTALL_HOOK="make MODE=unix && make clean"
+    - OCAML_VERSION=4.01
+     UPDATE_GCC_BINUTILS=1
+      POST_INSTALL_HOOK="make MODE=xen  && make clean"
