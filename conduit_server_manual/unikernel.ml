@@ -16,7 +16,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
   let conduit = Conduit_mirage.empty
   let stackv4 = Conduit_mirage.stackv4 (module S)
 
-  let start console s =
+  let start console s () =
 
     C.log_s console (sprintf "IP address: %s\n"
       (String.concat ", " (List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)))))
