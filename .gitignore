@@ -22,3 +22,4 @@ static*.mli
 mir-*
 **/log
 make-fat*-image.sh
+*_gen.ml
