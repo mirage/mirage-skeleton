@@ -33,13 +33,13 @@ lwt-clean:
 
 ## default tests
 %-configure:
-	$(MIRAGE) configure $*/config.ml --$(MODE) $(FLAGS)
+	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(FLAGS)
 
 %-build: %-configure
 	cd $* && $(MAKE)
 
 %-clean:
-	$(MIRAGE) clean $*/config.ml
+	$(MIRAGE) clean -f $*/config.ml
 	$(RM) log
 
 ## create raw device for block_test

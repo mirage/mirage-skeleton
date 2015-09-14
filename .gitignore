@@ -17,7 +17,7 @@ myocamlbuild.ml
 *.xen
 *.map
 *.img
-*.xl
+*.xl*
 static*.ml
 static*.mli
 mir-*
@@ -37,3 +37,5 @@ make-fat*-image.sh
 /lwt/src/echo_server2.xl
 /lwt/src/int_server.xl
 /lwt/src/stream_server.xl
+
+*_gen.ml

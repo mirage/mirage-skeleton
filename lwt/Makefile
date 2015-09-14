@@ -8,9 +8,9 @@ build: $(patsubst %,%-build,$(TARGETS))
 clean: $(patsubst %,%-clean,$(TARGETS))
 
 %-build:
-	TARGET=$* $(MIRAGE) configure src/config.ml --$(MODE) $(FLAGS)
-	TARGET=$* $(MIRAGE) build src/config.ml
+	TARGET=$* $(MIRAGE) configure -f src/config.ml -t $(MODE) $(FLAGS)
+	TARGET=$* $(MIRAGE) build -f src/config.ml
 
 %-clean:
-	TARGET=$* $(MIRAGE) clean src/config.ml
+	TARGET=$* $(MIRAGE) clean -f src/config.ml
 	$(RM) log
