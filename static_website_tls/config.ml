@@ -18,34 +18,18 @@ let fs = match mode with
   | `Fat    -> fat_ro "./htdocs"
   | `Crunch -> crunch "./htdocs"
 
-let net =
-  try match Sys.getenv "NET" with
-    | "direct" -> `Direct
-    | "socket" -> `Socket
-    | _        -> `Direct
-  with Not_found -> `Direct
+let stack = generic_stackv4 default_console tap0
 
-let dhcp =
-  try match Sys.getenv "DHCP" with
-    | "" -> false
-    | _  -> true
-  with Not_found -> false
-
-let stack console =
-  match net, dhcp with
-  | `Direct, true  -> direct_stackv4_with_dhcp console tap0
-  | `Direct, false -> direct_stackv4_with_default_ipv4 console tap0
-  | `Socket, _     -> socket_stackv4 console [Ipaddr.V4.any]
-
-let http_srv = http_server (conduit_direct ~tls:true (stack default_console))
+let http_srv = http_server (conduit_direct ~tls:true stack)
 
 let main =
-  foreign "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
+  let libraries = ["re.str"] in
+  let packages = ["re"] in
+  foreign
+    ~libraries ~packages
+    "Dispatch.Main" (console @-> kv_ro @-> http @-> job)
 
 let () =
-  add_to_ocamlfind_libraries ["re.str"];
-  add_to_opam_packages ["re"];
-
   register "www" [
     main $ default_console $ fs $ http_srv
   ]
