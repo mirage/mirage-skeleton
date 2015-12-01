@@ -7,9 +7,7 @@ backend.ml
 main.ml
 myocamlbuild.ml
 **/Makefile
-!static_website/Makefile
 !lwt/Makefile
-!dns/Makefile
 
 # Generated outputs
 *.native
