@@ -3,6 +3,11 @@
 TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns \
         conduit_server conduit_server_manual static_website_tls http-fetch dhcp
 
+
+ifdef WITH_TRACING
+TESTS += tracing
+endif
+
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
 RUNS    = $(patsubst %, %-run,       $(TESTS))
