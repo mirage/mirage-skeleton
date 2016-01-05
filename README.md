@@ -81,3 +81,12 @@ to use block or network devices.
 ### To clean up after building a unikernel:
 
     $ make clean
+
+Experimental Modules
+--------------------
+
+The unikernels in this repository can also be used as a test suite for Mirage.  The `master` branch should work with packages released in the main opam repository, and the `mirage-dev` branch will work with packages held in a staging repository for experimental Mirage packages.  To use the staging repository:
+
+    $ opam remote add mirage-dev git://github.com/mirage/mirage-dev
+
+Then upgrade packages and build the `mirage-dev` branch of mirage-skeleton.
