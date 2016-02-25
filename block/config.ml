@@ -3,7 +3,7 @@ open Mirage
 let main = foreign "Unikernel.Main" (console @-> block @-> job)
 
 let img = match get_mode () with
-  | `Xen -> block_of_file "xvda1"
+  | `Xen -> block_of_file "disk.img"
   | `Unix | `MacOSX -> block_of_file "disk.img"
 
 let () =
