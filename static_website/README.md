@@ -1,10 +1,9 @@
 On Unix, do:
 
 ```
-$ env NET=socket mirage configure --unix
-$ make depend
+$ mirage configure --unix
 $ make
-$ make run
+$ ./mir-www
 ```
 
 This will run the website on localhost on port 8080, so you should be
@@ -14,9 +13,9 @@ content from htdocs directory.
 For a Xen DHCP kernel, do:
 
 ```
-$ env DHCP=true mirage configure --xen
+$ mirage configure --xen
 $ make
-$ make run
+$ ./mir-www
 ```
 
 edit `www.xl` to add a VIF, e.g. via:
