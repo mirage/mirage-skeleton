@@ -15,12 +15,12 @@ necessary:
     $ eval `opam config env`
 ```
 
-- Please ensure that your Mirage command-line version is at least 1.1.0 before
+- Please ensure that your Mirage command-line version is at least 2.7.0 before
 proceeding:
 
 ```
     $ mirage --version
-    1.1.0
+    2.7.0
 ```
 
 Configure, Build, Run
