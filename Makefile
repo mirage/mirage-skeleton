@@ -11,6 +11,7 @@ endif
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
 RUNS    = $(patsubst %, %-run,       $(TESTS))
+TESTRUN = $(patsubst %, %-testrun,   $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
 all: build
@@ -18,6 +19,7 @@ all: build
 configure: $(CONFIGS)
 build: $(BUILDS) lwt-build
 run: $(RUNS)
+testrun: $(TESTRUN)
 clean: $(CLEANS) lwt-clean
 
 ## lwt special cased
@@ -41,6 +43,9 @@ lwt-clean:
 %-clean:
 	$(MIRAGE) clean -f $*/config.ml
 	$(RM) log
+
+%-testrun:
+	sh ./testrun.sh $*
 
 ## create raw device for block_test
 UNAME_S := $(shell uname -s)
