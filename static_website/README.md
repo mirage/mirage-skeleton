@@ -25,3 +25,9 @@ vif = ['bridge=xenbr0']
 ```
 
 And then run the VM via `xl create -c www.xl`
+
+TLS
+---
+
+In order to get tls working for you service please take a look at the examples in the [mirage part of ocaml-tls](https://github.com/mirleft/ocaml-tls/tree/master/mirage).
+[mirage-seal](https://github.com/mirage/mirage-seal) is another good starting point.
