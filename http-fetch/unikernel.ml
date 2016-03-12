@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open V1_LWT
 open Printf
 
@@ -14,27 +14,31 @@ let ns = "8.8.8.8"
 module Client (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.S) = struct
 
   let http_fetch c resolver ctx =
-    C.log_s c (sprintf "Fetching %s with Cohttp:" (Uri.to_string uri)) >>= fun () ->
+    C.log_s c (sprintf "Fetching %s with Cohttp:" (Uri.to_string uri))
+    >>= fun () ->
     let ctx = Cohttp_mirage.Client.ctx resolver ctx in
     Cohttp_mirage.Client.get ~ctx uri >>= fun (response, body) ->
     Cohttp_lwt_body.to_string body >>= fun body ->
-    C.log_s c (Sexplib.Sexp.to_string_hum (Cohttp.Response.sexp_of_t response)) >>= fun () ->
-    C.log_s c (sprintf "Received body length: %d" (String.length body)) >>= fun () ->
+    C.log_s c (Sexplib.Sexp.to_string_hum (Cohttp.Response.sexp_of_t response))
+    >>= fun () ->
+    C.log_s c (sprintf "Received body length: %d" (String.length body))
+    >>= fun () ->
     C.log_s c "Cohttp fetch done\n------------\n"
 
   let manual_http_fetch c resolver ctx =
     Resolver_lwt.resolve_uri ~uri resolver >>= fun endp ->
     Conduit_mirage.client endp >>= fun client ->
-    C.log_s c (Sexplib.Sexp.to_string_hum (Conduit.sexp_of_endp endp)) >>= fun () ->
+    C.log_s c (Sexplib.Sexp.to_string_hum (Conduit.sexp_of_endp endp))
+    >>= fun () ->
     CON.connect ctx client >>= fun flow ->
     let page = Io_page.(to_cstruct (get 1)) in
     let http_get = "GET / HTTP/1.1\nHost: anil.recoil.org\n\n" in
     Cstruct.blit_from_string http_get 0 page 0 (String.length http_get);
     let buf = Cstruct.sub page 0 (String.length http_get) in
     Conduit_mirage.Flow.write flow buf >>= function
-    | `Eof -> C.log_s c "EOF on write"
+    | `Eof     -> C.log_s c "EOF on write"
     | `Error _ -> C.log_s c "ERR on write"
-    | `Ok buf -> begin
+    | `Ok _buf -> begin
       Conduit_mirage.Flow.read flow >>= function
       | `Eof -> C.log_s c "EOF"
       | `Error _ -> C.log_s c "ERR"
