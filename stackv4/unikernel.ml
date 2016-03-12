@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open V1_LWT
 open Printf
 
@@ -18,7 +18,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
     >>= fun () ->
     let local_port = 53 in
-    S.listen_udpv4 s local_port (
+    S.listen_udpv4 s ~port:local_port (
       fun ~src ~dst ~src_port buf ->
         C.log_s console
           (red "UDP %s:%d > %s:%d: \"%s\""
@@ -28,7 +28,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
     );
 
     let local_port = 8080 in
-    S.listen_tcpv4 s local_port (
+    S.listen_tcpv4 s ~port:local_port (
       fun flow ->
         let remote, remote_port = T.get_dest flow in
         C.log_s console
@@ -47,7 +47,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
           T.close flow
 
         | `Eof -> C.log_s console (red "read: eof")
-        | `Error e -> C.log_s console (red "read: error")
+        | `Error _e -> C.log_s console (red "read: error")
     );
 
     S.listen s
