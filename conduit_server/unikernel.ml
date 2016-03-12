@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open V1_LWT
 open Printf
 
@@ -13,10 +13,9 @@ module Main (C:CONSOLE) (CON:Conduit_mirage.S) = struct
 
   let start console conduit =
 
-    let http_callback conn_id req body =
+    let http_callback _conn_id req _body =
       let path = Uri.path (Cohttp.Request.uri req) in
-      C.log_s console (sprintf "Got request for %s\n" path)
-      >>= fun () ->
+      C.log_s console (sprintf "Got request for %s\n" path) >>= fun () ->
       H.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
     in
 
