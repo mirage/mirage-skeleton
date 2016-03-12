@@ -33,7 +33,7 @@ lwt-clean:
 
 ## default tests
 %-configure:
-	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(FLAGS)
+	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MFLAGS)
 
 %-build: %-configure
 	cd $* && $(MAKE)

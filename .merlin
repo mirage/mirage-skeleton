@@ -1,4 +1,5 @@
 PKG lwt mirage mirage-types tcpip mirage-http conduit.mirage mirage-console
 PKG cohttp mirage-net-unix mirage-unix mirage-clock-unix functoria
+PKG tcpip.ethif tcpip.arpv4
 PKG magic-mime
 B **/_build/**
