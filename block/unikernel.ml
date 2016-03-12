@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open Printf
 open V1_LWT
 
@@ -8,8 +8,8 @@ module Main (C: CONSOLE)(B: BLOCK) = struct
   let tests_passed = ref 0
   let tests_failed = ref 0
 
-  let ( >>= ) x f = x >>= function
-    | `Error _ -> fail (Failure "error")
+  let ( >>*= ) x f = x >>= function
+    | `Error _ -> Lwt.fail (Failure "error")
     | `Ok x -> f x
 
   let fill_with_pattern x phrase =
@@ -54,67 +54,75 @@ module Main (C: CONSOLE)(B: BLOCK) = struct
         sector :: (loop (n-1)) in
     loop n
 
-  let check_sector_write b kind id offset length =
+  let check_sector_write b _kind _id offset length =
     printf "writing %d sectors at %Ld\n" length offset;
     incr tests_started;
-    lwt info = B.get_info b in
+    B.get_info b >>= fun info ->
     let sectors = alloc info.B.sector_size length in
-    B.write b offset sectors >>= fun () ->
+    B.write b offset sectors >>*= fun () ->
     let sectors' = alloc info.B.sector_size length in
     List.iter fill_with_zeroes sectors';
-    B.read b offset sectors' >>= fun () ->
+    B.read b offset sectors' >>*= fun () ->
     List.iter (fun (a, b) -> check_equal a b) (List.combine sectors sectors');
     incr tests_passed;
-    return ()
+    Lwt.return_unit
 
-  let check_sector_write_failure b kind id offset length =
+  let check_sector_write_failure b _kind _id offset length =
     printf "writing %d sectors at %Ld\n" length offset;
     incr tests_started;
-    lwt info = B.get_info b in
+    B.get_info b >>= fun info ->
     let sectors = alloc info.B.sector_size length in
-    match_lwt B.write b offset sectors with
+    B.write b offset sectors >|= function
     | `Ok () ->
       printf "-- expected failure; got success\n%!";
-      incr tests_failed;
-      return ()
+      incr tests_failed
     | `Error _ ->
-      incr tests_passed;
-      return ()
+      incr tests_passed
 
-  let check_sector_read_failure b kind id offset length =
+  let check_sector_read_failure b _kind _id offset length =
     printf "reading %d sectors at %Ld\n" length offset;
     incr tests_started;
-    lwt info = B.get_info b in
+    B.get_info b >>= fun info ->
     let sectors = alloc info.B.sector_size length in
-    match_lwt B.read b offset sectors with
+    B.read b offset sectors >|= function
     | `Ok () ->
       printf "-- expected failure; got success\n%!";
-      incr tests_failed;
-      return ()
+      incr tests_failed
     | `Error _ ->
-      incr tests_passed;
-      return ()
+      incr tests_passed
 
-  let start console b =
-    lwt info = B.get_info b in
+  let start _console b =
+    B.get_info b >>= fun info ->
     printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
       info.B.size_sectors info.B.read_write info.B.sector_size;
 
-    lwt () = check_sector_write b "local" "51712" 0L 1 in
-    lwt () = check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 1L) 1 in
-    lwt () = check_sector_write b "local" "51712" 0L 2 in
-    lwt () = check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 2L) 2 in
-    lwt () = check_sector_write b "local" "51712" 0L 12 in
-    lwt () = check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 12L) 12 in
+    check_sector_write b "local" "51712" 0L 1
+    >>= fun () ->
+    check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 1L) 1
+    >>= fun () ->
+    check_sector_write b "local" "51712" 0L 2
+    >>= fun () ->
+    check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 2L) 2
+    >>= fun () ->
+    check_sector_write b "local" "51712" 0L 12
+    >>= fun () ->
+    check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 12L) 12
+    >>= fun () ->
 
-    lwt () = check_sector_write_failure b "local" "51712" info.B.size_sectors 1 in
-    lwt () = check_sector_write_failure b "local" "51712" (Int64.sub info.B.size_sectors 11L) 12 in
-    lwt () = check_sector_read_failure b "local" "51712" info.B.size_sectors 1 in
-    lwt () = check_sector_read_failure b "local" "51712" (Int64.sub info.B.size_sectors 11L) 12 in
+    check_sector_write_failure b "local" "51712" info.B.size_sectors 1
+    >>= fun () ->
+    check_sector_write_failure b "local" "51712" (Int64.sub info.B.size_sectors 11L) 12
+    >>= fun () ->
+    check_sector_read_failure b "local" "51712" info.B.size_sectors 1
+    >>= fun () ->
+
+    check_sector_read_failure b "local" "51712" (Int64.sub info.B.size_sectors 11L) 12
+    >>= fun () ->
 
     printf "Test sequence finished\n";
     printf "Total tests started: %d\n" !tests_started;
     printf "Total tests passed:  %d\n" !tests_passed;
     printf "Total tests failed:  %d\n%!" !tests_failed;
     OS.Time.sleep 5.
+
 end

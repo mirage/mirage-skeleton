@@ -1,5 +1,4 @@
-open Lwt
-open Printf
+open Lwt.Infix
 open V1_LWT
 
 module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
@@ -8,11 +7,11 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
 
     let read_fs name =
       FS.size fs name >>= function
-      | `Error (FS.Unknown_key _) -> fail (Failure ("read " ^ name))
+      | `Error (FS.Unknown_key _) -> Lwt.fail (Failure ("read " ^ name))
       | `Ok size ->
         FS.read fs name 0 (Int64.to_int size) >>= function
-        | `Error (FS.Unknown_key _) -> fail (Failure ("read " ^ name))
-        | `Ok bufs -> return (Cstruct.copyv bufs)
+        | `Error (FS.Unknown_key _) -> Lwt.fail (Failure ("read " ^ name))
+        | `Ok bufs -> Lwt.return (Cstruct.copyv bufs)
     in
 
     (* Split a URI into a list of path segments *)
@@ -32,19 +31,16 @@ module Main (C:CONSOLE) (FS:KV_RO) (S:Cohttp_lwt.Server) = struct
       | segments ->
         let path = String.concat "/" segments in
         Lwt.catch (fun () ->
-          read_fs path
-          >>= fun body ->
-          let mime_type = Magic_mime.lookup path in
-          let headers = Cohttp.Header.init () in
-          let headers = Cohttp.Header.add headers "content-type" mime_type in
-          S.respond_string ~status:`OK ~body ~headers ()
-          ) (fun exn ->
-            S.respond_not_found ()
-          )
+            read_fs path >>= fun body ->
+            let mime_type = Magic_mime.lookup path in
+            let headers = Cohttp.Header.init () in
+            let headers = Cohttp.Header.add headers "content-type" mime_type in
+            S.respond_string ~status:`OK ~body ~headers ()
+          ) (fun _exn -> S.respond_not_found ())
     in
 
     (* HTTP callback *)
-    let callback conn_id request body =
+    let callback _conn_id request _body =
       let uri = Cohttp.Request.uri request in
       dispatcher (split_path uri)
     in

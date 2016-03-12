@@ -1,5 +1,5 @@
 open V1_LWT
-open Lwt
+open Lwt.Infix
 
 let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
 let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
@@ -15,16 +15,16 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
   module T = Tcp.Flow.Make(I)(OS.Time)(Clock)(Random)
   module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(U)
 
-  let or_error c name fn t =
+  let or_error _c name fn t =
     fn t
     >>= function
-    | `Error e -> fail (Failure ("Error starting " ^ name))
-    | `Ok t -> return t
+    | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
+    | `Ok t -> Lwt.return t
 
   let start c net _ =
     or_error c "Ethif" E.connect net
     >>= fun e ->
-    or_error c "Arpv4" A.connect e 
+    or_error c "Arpv4" A.connect e
     >>= fun a ->
     or_error c "Ipv4" (I.connect e) a
     >>= fun i ->
@@ -38,7 +38,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
     or_error c "UDPv4" U.connect i
     >>= fun udp ->
 
-    let dhcp, offers = D.create c (N.mac net) udp in
+    let dhcp, _offers = D.create c (N.mac net) udp in
     or_error c "TCPv4" T.connect i
     >>= fun tcp ->
 
@@ -68,7 +68,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
                         >>= fun () ->
                         T.close flow
                       | `Eof -> C.log_s c (red "read: eof")
-                      | `Error e -> C.log_s c (red "read: error"))
+                      | `Error _e -> C.log_s c (red "read: error"))
                   | _ -> None
                 ))
             ~udp:(
@@ -78,9 +78,9 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
                    D.listen dhcp ~dst_port)
                 udp
             )
-            ~default:(fun ~proto ~src ~dst _ -> return ())
+            ~default:(fun ~proto:_ ~src:_ ~dst:_ _ -> Lwt.return_unit)
             i
         )
-        ~ipv6:(fun b -> C.log_s c (yellow "ipv6")) e
+        ~ipv6:(fun _b -> C.log_s c (yellow "ipv6")) e
     )
 end

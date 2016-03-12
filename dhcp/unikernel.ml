@@ -1,5 +1,5 @@
 open V1_LWT
-open Lwt
+open Lwt.Infix
 
 (* IP Configuration, all you need besides dhcpd.conf. *)
 let ipaddr = Ipaddr.V4.of_string_exn "192.168.1.5"
@@ -42,11 +42,10 @@ module Main (C: CONSOLE) (KV: KV_RO) (N: NETWORK) (Clock : V1.CLOCK) = struct
         Lwt.return_unit
 
   let start c kv net _ =
-    let or_error c name fn t =
-      fn t
-      >>= function
-      | `Error e -> fail (Failure ("Error starting " ^ name))
-      | `Ok t -> return t
+    let or_error _c name fn t =
+      fn t >>= function
+      | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
+      | `Ok t     -> Lwt.return t
     in
     (* Read the config file *)
     or_error c "Kv.size" (KV.size kv) "dhcpd.conf"

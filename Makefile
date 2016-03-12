@@ -2,8 +2,7 @@
 
 TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns \
         conduit_server conduit_server_manual static_website_tls http-fetch \
-        dhcp hello
-
+        dhcp hello block
 
 ifdef WITH_TRACING
 TESTS += tracing
@@ -34,7 +33,7 @@ lwt-clean:
 
 ## default tests
 %-configure:
-	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(FLAGS)
+	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
 
 %-build: %-configure
 	cd $* && $(MAKE)

@@ -32,7 +32,7 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
         (fun () ->
            read_fs fs path >>= fun body ->
            S.respond_string ~status:`OK ~body ~headers ())
-        (fun exn ->
+        (fun _exn ->
            S.respond_not_found ())
 
   (* Redirect to the same address, but in https. *)
@@ -45,7 +45,7 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
     S.respond ~headers ~status:`Moved_permanently ~body:`Empty ()
 
   let serve c flow f =
-    let callback (_, cid) request body =
+    let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
       let cid = Cohttp.Connection.to_string cid in
       log c "[%s] serving %s." cid (Uri.to_string uri);

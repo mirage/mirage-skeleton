@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 
 let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
 let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
@@ -25,7 +25,7 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
 
         | `Eof -> C.log_s c (red "read: eof")
 
-        | `Error e -> C.log_s c (red "read: error")
+        | `Error _e -> C.log_s c (red "read: error")
       );
 
     S.listen s

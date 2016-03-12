@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open V1_LWT
 
 let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
@@ -16,11 +16,11 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.CLOCK) = struct
   module A = Arpv4.Make(E)(Clock)(OS.Time)
   module I = Ipv4.Make(E)(A)
 
-  let or_error c name fn t =
+  let or_error _c name fn t =
     fn t
     >>= function
-    | `Error e -> fail (Failure ("Error starting " ^ name))
-    | `Ok t -> return t
+    | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
+    | `Ok t     -> Lwt.return t
 
   let start c n _ =
     C.log c (green "starting...");
@@ -33,7 +33,7 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.CLOCK) = struct
     I.set_ip_gateways i (List.map Ipaddr.V4.of_string_exn gateways)
     >>= fun () ->
 
-    let handler s = fun ~src ~dst data ->
+    let handler s = fun ~src ~dst _data ->
       C.log_s c (yellow "%s > %s %s"
                    (Ipaddr.V4.to_string src) (Ipaddr.V4.to_string dst) s)
     in
@@ -43,14 +43,14 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.CLOCK) = struct
          ~ipv4:(I.input
                   ~tcp:(handler "TCP")
                   ~udp:(handler "UDP")
-                  ~default:(fun ~proto ~src ~dst data ->
+                  ~default:(fun ~proto ~src:_ ~dst:_ _data ->
                       C.log_s c (red "%d DEFAULT" proto))
                   i
                )
-         ~ipv6:(fun buf -> return (C.log c (red "IP6")))
+         ~ipv6:(fun _buf -> Lwt.return (C.log c (red "IP6")))
          e)
     >>= fun () ->
     C.log c (green "done!");
-    return ()
+    Lwt.return ()
 
 end

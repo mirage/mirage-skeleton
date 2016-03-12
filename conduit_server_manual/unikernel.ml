@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open V1_LWT
 open Printf
 
@@ -24,7 +24,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
 
     Conduit_mirage.with_tcp conduit stackv4 s >>= fun conduit ->
 
-    let http_callback conn_id req body =
+    let http_callback _conn_id req _body =
       let path = Uri.path (Cohttp.Request.uri req) in
       C.log_s console (sprintf "Got request for %s\n" path)
       >>= fun () ->
