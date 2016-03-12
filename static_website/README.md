@@ -15,13 +15,7 @@ For a Xen DHCP kernel, do:
 ```
 $ mirage configure --xen --dhcp=true
 $ make
-$ ./mir-www
+$ sudo xl create -c www.xl
 ```
 
-edit `www.xl` to add a VIF, e.g. via:
-
-```
-vif = ['bridge=xenbr0']
-```
-
-And then run the VM via `xl create -c www.xl`
+Note you may need to edit `www.xl` to customise the bridge name.
