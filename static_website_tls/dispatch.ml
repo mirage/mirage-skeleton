@@ -9,9 +9,11 @@ module type HTTP = sig
   val listen: t -> IO.conn -> unit Lwt.t
 end
 
-module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
+(* Logging *)
+let server_src = Logs.Src.create "server" ~doc:"HTTPS server"
+module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
-  let log c fmt = Printf.ksprintf (C.log c) fmt
+module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
 
   let read_fs fs name =
     FS.size fs name >>= function
@@ -45,15 +47,16 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
     S.respond ~headers ~status:`Moved_permanently ~body:`Empty ()
 
   let serve c flow f =
+
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
       let cid = Cohttp.Connection.to_string cid in
-      log c "[%s] serving %s." cid (Uri.to_string uri);
+      Server_log.info (fun f -> f "[%s] serving %s." cid (Uri.to_string uri));
       f uri
     in
     let conn_closed (_,cid) =
       let cid = Cohttp.Connection.to_string cid in
-      log c "[%s] closing." cid
+      Server_log.info (fun f -> f "[%s] closing" cid);
     in
     let http = S.make ~conn_closed ~callback () in
     S.listen http flow
@@ -77,11 +80,13 @@ struct
   module Dispatch_http  = Dispatch(C)(DATA)(Http)
   module Dispatch_https = Dispatch(C)(DATA)(Https)
 
-  let log c fmt = Printf.ksprintf (C.log c) fmt
+  module Logs_reporter = Mirage_logs.Make(Clock)
 
   let with_tls c cfg tcp ~f =
     let peer, port = TCP.get_dest tcp in
-    let log str = log c "[%s:%d] %s" (Ipaddr.V4.to_string peer) port str in
+    let log str =
+      Server_log.info (fun f -> f "[%s:%d] %s" (Ipaddr.V4.to_string peer) port str);
+    in
     let with_tls_server k = TLS.server_of_flow cfg tcp >>= k in
     with_tls_server @@ function
     | `Error _ -> log "TLS failed"; TCP.close tcp
@@ -94,6 +99,9 @@ struct
     Lwt.return conf
 
   let start c stack data keys _clock _entropy =
+    Logs.(set_level (Some Info));
+    Logs_reporter.(create () |> run) @@ fun () ->
+
     tls_init keys >>= fun cfg ->
     (* 31536000 seconds is roughly a year *)
     let header = Cohttp.Header.init_with "Strict-Transport-Security" "max-age=31536000" in
