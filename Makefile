@@ -48,7 +48,7 @@ lwt-testrun:
 	$(RM) log
 
 %-testrun: %-build
-	sudo sh ./testrun.sh $*
+	$(SUDO) sh ./testrun.sh $*
 
 ## create raw device for block_test
 UNAME_S := $(shell uname -s)

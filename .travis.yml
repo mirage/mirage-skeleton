@@ -7,7 +7,7 @@ env:
     - WITH_TRACING=1
   matrix:
     - OCAML_VERSION=4.02
-      POST_INSTALL_HOOK="make MODE=unix && make testrun && make clean"
+      POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
     - OCAML_VERSION=4.02
       UPDATE_GCC_BINUTILS=1
       POST_INSTALL_HOOK="make MODE=xen  && make clean"
