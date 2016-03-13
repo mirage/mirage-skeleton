@@ -13,7 +13,7 @@ end
 let server_src = Logs.Src.create "server" ~doc:"HTTPS server"
 module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
-module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
+module Dispatch (FS: KV_RO) (S: HTTP) = struct
 
   let read_fs fs name =
     FS.size fs name >>= function
@@ -46,7 +46,7 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
     in
     S.respond ~headers ~status:`Moved_permanently ~body:`Empty ()
 
-  let serve c flow f =
+  let serve flow f =
 
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
@@ -65,7 +65,7 @@ end
 
 (* HTTPS *)
 module HTTPS
-    (C : CONSOLE) (S : STACKV4)
+    (S : STACKV4)
     (DATA : KV_RO) (KEYS: KV_RO)
     (Clock : CLOCK) =
 struct
@@ -77,12 +77,12 @@ struct
   module Http  = Cohttp_mirage.Server(TCP)
   module Https = Cohttp_mirage.Server(TLS)
 
-  module Dispatch_http  = Dispatch(C)(DATA)(Http)
-  module Dispatch_https = Dispatch(C)(DATA)(Https)
+  module Dispatch_http  = Dispatch(DATA)(Http)
+  module Dispatch_https = Dispatch(DATA)(Https)
 
   module Logs_reporter = Mirage_logs.Make(Clock)
 
-  let with_tls c cfg tcp ~f =
+  let with_tls cfg tcp ~f =
     let peer, port = TCP.get_dest tcp in
     let log str =
       Server_log.info (fun f -> f "[%s:%d] %s" (Ipaddr.V4.to_string peer) port str);
@@ -98,16 +98,16 @@ struct
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start c stack data keys _clock _entropy =
+  let start stack data keys _clock _entropy =
     Logs.(set_level (Some Info));
     Logs_reporter.(create () |> run) @@ fun () ->
 
     tls_init keys >>= fun cfg ->
     (* 31536000 seconds is roughly a year *)
     let header = Cohttp.Header.init_with "Strict-Transport-Security" "max-age=31536000" in
-    let https flow = Dispatch_https.serve c flow (Dispatch_https.dispatcher ~header data) in
-    let http  flow = Dispatch_http.serve  c flow Dispatch_http.redirect in
-    S.listen_tcpv4 stack ~port:4433 (with_tls c cfg ~f:https);
+    let https flow = Dispatch_https.serve flow (Dispatch_https.dispatcher ~header data) in
+    let http  flow = Dispatch_http.serve flow Dispatch_http.redirect in
+    S.listen_tcpv4 stack ~port:4433 (with_tls cfg ~f:https);
     S.listen_tcpv4 stack ~port:8080  http;
     S.listen stack
 
