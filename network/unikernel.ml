@@ -8,7 +8,7 @@ let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
 
   let start c s =
-    S.listen_tcpv4 s ~port:80 (fun flow ->
+    S.listen_tcpv4 s ~port:8080 (fun flow ->
         let dst, dst_port = S.TCPV4.get_dest flow in
         C.log_s c (green "new tcp connection from %s %d"
                      (Ipaddr.V4.to_string dst) dst_port)
