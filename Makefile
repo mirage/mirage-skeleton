@@ -33,6 +33,9 @@ lwt-build:
 lwt-clean:
 	$(MAKE) -C lwt clean
 
+lwt-testrun:
+	@ :
+
 ## default tests
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
@@ -44,8 +47,8 @@ lwt-clean:
 	$(MIRAGE) clean -f $*/config.ml
 	$(RM) log
 
-%-testrun:
-	sh ./testrun.sh $*
+%-testrun: %-build
+	sudo sh ./testrun.sh $*
 
 ## create raw device for block_test
 UNAME_S := $(shell uname -s)
