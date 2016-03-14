@@ -9,9 +9,11 @@ module type HTTP = sig
   val listen: t -> IO.conn -> unit Lwt.t
 end
 
-module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
+(* Logging *)
+let server_src = Logs.Src.create "server" ~doc:"HTTPS server"
+module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
-  let log c fmt = Printf.ksprintf (C.log c) fmt
+module Dispatch (FS: KV_RO) (S: HTTP) = struct
 
   let read_fs fs name =
     FS.size fs name >>= function
@@ -44,16 +46,17 @@ module Dispatch (C: CONSOLE) (FS: KV_RO) (S: HTTP) = struct
     in
     S.respond ~headers ~status:`Moved_permanently ~body:`Empty ()
 
-  let serve c flow f =
+  let serve flow f =
+
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
       let cid = Cohttp.Connection.to_string cid in
-      log c "[%s] serving %s." cid (Uri.to_string uri);
+      Server_log.info (fun f -> f "[%s] serving %s." cid (Uri.to_string uri));
       f uri
     in
     let conn_closed (_,cid) =
       let cid = Cohttp.Connection.to_string cid in
-      log c "[%s] closing." cid
+      Server_log.info (fun f -> f "[%s] closing" cid);
     in
     let http = S.make ~conn_closed ~callback () in
     S.listen http flow
@@ -62,7 +65,7 @@ end
 
 (* HTTPS *)
 module HTTPS
-    (C : CONSOLE) (S : STACKV4)
+    (S : STACKV4)
     (DATA : KV_RO) (KEYS: KV_RO)
     (Clock : CLOCK) =
 struct
@@ -74,14 +77,16 @@ struct
   module Http  = Cohttp_mirage.Server(TCP)
   module Https = Cohttp_mirage.Server(TLS)
 
-  module Dispatch_http  = Dispatch(C)(DATA)(Http)
-  module Dispatch_https = Dispatch(C)(DATA)(Https)
+  module Dispatch_http  = Dispatch(DATA)(Http)
+  module Dispatch_https = Dispatch(DATA)(Https)
 
-  let log c fmt = Printf.ksprintf (C.log c) fmt
+  module Logs_reporter = Mirage_logs.Make(Clock)
 
-  let with_tls c cfg tcp ~f =
+  let with_tls cfg tcp ~f =
     let peer, port = TCP.get_dest tcp in
-    let log str = log c "[%s:%d] %s" (Ipaddr.V4.to_string peer) port str in
+    let log str =
+      Server_log.info (fun f -> f "[%s:%d] %s" (Ipaddr.V4.to_string peer) port str);
+    in
     let with_tls_server k = TLS.server_of_flow cfg tcp >>= k in
     with_tls_server @@ function
     | `Error _ -> log "TLS failed"; TCP.close tcp
@@ -93,13 +98,16 @@ struct
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start c stack data keys _clock _entropy =
+  let start stack data keys _clock _entropy =
+    Logs.(set_level (Some Info));
+    Logs_reporter.(create () |> run) @@ fun () ->
+
     tls_init keys >>= fun cfg ->
     (* 31536000 seconds is roughly a year *)
     let header = Cohttp.Header.init_with "Strict-Transport-Security" "max-age=31536000" in
-    let https flow = Dispatch_https.serve c flow (Dispatch_https.dispatcher ~header data) in
-    let http  flow = Dispatch_http.serve  c flow Dispatch_http.redirect in
-    S.listen_tcpv4 stack ~port:4433 (with_tls c cfg ~f:https);
+    let https flow = Dispatch_https.serve flow (Dispatch_https.dispatcher ~header data) in
+    let http  flow = Dispatch_http.serve flow Dispatch_http.redirect in
+    S.listen_tcpv4 stack ~port:4433 (with_tls cfg ~f:https);
     S.listen_tcpv4 stack ~port:8080  http;
     S.listen stack
 
