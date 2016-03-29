@@ -3,7 +3,7 @@ install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/ma
 script: bash -ex .travis-opam.sh
 env:
   global:
-    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing mirage-profile:https://github.com/mirage/mirage-profile.git#v0.6"
+    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing mirage-profile:https://github.com/mirage/mirage-profile.git#v0.7.0"
     - WITH_TRACING=1
   matrix:
     - OCAML_VERSION=4.02
