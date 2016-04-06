@@ -3,9 +3,6 @@ install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/ma
 script: bash -ex .travis-opam.sh
 sudo: required
 env:
-  global:
-    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
-    - WITH_TRACING=1
   matrix:
     - OCAML_VERSION=4.02
       POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
