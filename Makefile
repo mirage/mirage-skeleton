@@ -36,6 +36,10 @@ lwt-clean:
 lwt-testrun:
 	@ :
 
+## block build (needs to generate disk.img)
+block-build: block-configure
+	cd block && $(MAKE) && ./generate_disk_img.sh
+
 ## default tests
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
@@ -47,7 +51,7 @@ lwt-testrun:
 	$(MIRAGE) clean -f $*/config.ml
 	$(RM) log
 
-%-testrun: %-build
+%-testrun:
 	$(SUDO) sh ./testrun.sh $*
 
 ## create raw device for block_test
