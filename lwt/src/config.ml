@@ -11,11 +11,6 @@ let (name, main) =
 
       | "echo_server1" -> ("echo_server1", "Unikernels.Echo_server1")
 
-      | "echo_server2" -> ("echo_server2", "Mvar_unikernels.Echo_server2")
-      | "int_server" -> ("int_server", "Mvar_unikernels.Int_server")
-
-      | "stream_server" -> ("stream_server", "Stream_server.Unikernel")
-
   with Not_found -> failwith "Must specify target"
 
 let () =
