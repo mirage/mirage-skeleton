@@ -6,9 +6,9 @@ module Main (C: V1_LWT.CONSOLE) = struct
     let rec loop = function
       | 0 -> Lwt.return_unit
       | n ->
-        C.log c "hello";
+        C.log_s c "hello" >>= fun () ->
         OS.Time.sleep 1.0 >>= fun () ->
-        C.log c "world";
+        C.log_s c "world" >>= fun () ->
         loop (n-1)
     in
     loop 4
