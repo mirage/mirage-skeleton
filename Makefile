@@ -10,7 +10,6 @@ endif
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
-RUNS    = $(patsubst %, %-run,       $(TESTS))
 TESTRUN = $(patsubst %, %-testrun,   $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
@@ -18,7 +17,6 @@ all: build
 
 configure: $(CONFIGS)
 build: $(BUILDS) lwt-build
-run: $(RUNS)
 testrun: $(TESTRUN)
 clean: $(CLEANS) lwt-clean
 
