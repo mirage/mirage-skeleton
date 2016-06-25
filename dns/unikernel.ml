@@ -9,7 +9,7 @@ module Server_log = (val Logs.src_log server_src : Logs.LOG)
 (* Settings for client test *)
 let server = "8.8.8.8"
 let port = 53
-let client_source_port = 7000
+let client_src_port = 7000
 let test_hostname = "dark.recoil.org"
 
 (* Server settings *)
@@ -33,13 +33,13 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
 
   let connect_to_resolver stack server port : Dns_resolver.commfn =
     let udp = S.udpv4 stack in
-    let dest_ip = Ipaddr.V4.of_string_exn server in
+    let dst = Ipaddr.V4.of_string_exn server in
     let txfn buf =
       let buf = Cstruct.of_bigarray buf in
       (* Cstruct.hexdump buf; *)
-      U.write ~source_port:client_source_port ~dest_ip ~dest_port:port udp buf in
+      U.write ~src_port:client_src_port ~dst ~dst_port:port udp buf in
     let st, push_st = Lwt_stream.create () in
-    S.listen_udpv4 stack ~port:client_source_port (
+    S.listen_udpv4 stack ~port:client_src_port (
       fun ~src:_ ~dst:_ ~src_port:_ buf ->
         Client_log.info (fun f -> f "Got resolver response, length %d" (Cstruct.len buf));
         let ba = Cstruct.to_bigarray buf in
@@ -89,7 +89,7 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
         | Some rba ->
           let rbuf = Cstruct.of_bigarray rba in
           Server_log.info (fun f -> f "Sending reply");
-          U.write ~source_port:listening_port ~dest_ip:src ~dest_port:src_port udp rbuf
+          U.write ~src_port:listening_port ~dst:src ~dst_port:src_port udp rbuf
     );
     Server_log.info (fun f -> f "DNS server listening on UDP port %d" listening_port);
     S.listen s
