@@ -71,7 +71,7 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
         | Some rba ->
           let rbuf = Cstruct.of_bigarray rba in
           Server_log.info (fun f -> f "Sending reply");
-          U.write ~source_port:listening_port ~dest_ip:src ~dest_port:src_port udp rbuf
+          U.write ~src_port:listening_port ~dst:src ~dst_port:src_port udp rbuf
     );
     Server_log.info (fun f -> f "DNS server listening on UDP port %d" listening_port);
     S.listen s

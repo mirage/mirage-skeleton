@@ -51,7 +51,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
               T.input tcp ~listeners:
                 (function
                   | 80 -> Some (fun flow ->
-                      let dst, dst_port = T.get_dest flow in
+                      let dst, dst_port = T.dst flow in
                       C.log_s c
                         (green "new tcp from %s %d"
                           (Ipaddr.V4.to_string dst) dst_port
