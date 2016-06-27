@@ -28,18 +28,26 @@ Configure, Build, Run
 
 Each example is invoked in the same way:
 
-    $ make sample-configure
-    $ make sample-build
-    $ make sample-run
+    $ make ${example}-configure
+    $ make ${example}-build
+
+So to configure the hello example, run `make hello-configure`, and to build it, run `make hello-build`.
+The binaries built in the process can then be found in the example's directory:
+
+    $ cd hello/
+    $ ./mir-console
+    Hello World!
+    Hello World!
+    ...
 
 If you want to clean up afterwards, the usual does the trick:
 
-    $ make sample-clean
+    $ make ${example}-clean
 
 Some global targets are also provided in the `Makefile`:
 
     $ make all                   ## equivalent to ...
-    $ make configure build run
+    $ make configure build
     $ make clean
 
 Details
