@@ -25,19 +25,21 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
   let start console n1 n2 =
 
     let forward_thread nf =
-      while_lwt true do
-        lwt _ = Lwt_stream.next in_queue >>= fun frame -> return (out_push (Some frame)) in
-        return (update_packet_count ())
-      done
-      <?> (
-      while_lwt true do
-        lwt frame = Lwt_stream.next out_queue in
-          let _ = packets_waiting := Int32.pred !packets_waiting in
-          N2.write nf frame
-      done
-      )
+      let rec inq () =
+        Lwt_stream.next in_queue >>= fun frame ->
+        out_push (Some frame) ;
+        update_packet_count () ;
+        inq ()
+      in
+      let rec outq () =
+        Lwt_stream.next out_queue >>= fun frame ->
+        packets_waiting := Int32.pred !packets_waiting ;
+        N2.write nf frame >>= fun () ->
+        outq ()
+      in
+      (inq ()) <?> (outq ())
   in
-  (listen n1) <?> (forward_thread n2)
-  >> return (print_endline "terminated.")
+  (listen n1) <?> (forward_thread n2) >|= fun () ->
+  print_endline "terminated."
 
 end
