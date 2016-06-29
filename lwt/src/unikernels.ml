@@ -5,10 +5,12 @@ module Heads1 (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     Lwt.join [
-      (Time.sleep 1.0 >>= fun () -> C.log_s c "Heads");
-      (Time.sleep 2.0 >>= fun () -> C.log_s c "Tails")
-    ] >>= fun () ->
-    C.log_s c ("Finished")
+      (Time.sleep_ns 1_000_000_000L >|= fun () ->
+       C.log_s c "Heads");
+      (Time.sleep_ns 2_000_000_000L >|= fun () ->
+       C.log_s c "Tails");
+    ] >|= fun () ->
+    C.log c ("Finished")
 
 end
 
@@ -16,10 +18,10 @@ module Heads2 (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     Lwt.join [
-      (Time.sleep 1.0 >|= fun () -> C.log c "Heads");
-      (Time.sleep 2.0 >|= fun () -> C.log c "Tails");
+      (Time.sleep_ns 1_000_000_000L >|= fun () -> C.log c "Heads");
+      (Time.sleep_ns 2_000_000_000L >|= fun () -> C.log c "Tails");
     ] >|= fun () ->
-    C.log c "Finished";
+    C.log_s c "Finished";
 
 end
 
@@ -27,22 +29,22 @@ module Heads3 (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     let heads =
-      Time.sleep 1.0 >|= fun () ->
-      C.log c "Heads"
+      Time.sleep_ns 1_000_000_000L >|= fun () ->
+      C.log_s c "Heads"
     in
     let tails =
-      Time.sleep 2.0 >|= fun () ->
-      C.log c "Tails"
+      Time.sleep_ns 2_000_000_000L >|= fun () ->
+      C.log_s c "Tails"
     in
     (heads <&> tails) >|= fun () ->
-    C.log c "Finished"
+    C.log_s c "Finished"
 
 end
 
 module Timeout1 (C: V1_LWT.CONSOLE) = struct
 
   let timeout delay t =
-    Time.sleep delay >>= fun () ->
+    Time.sleep_ns delay >>= fun () ->
     match Lwt.state t with
     | Lwt.Sleep    -> Lwt.cancel t; Lwt.return None
     | Lwt.Return v -> Lwt.return (Some v)
@@ -50,17 +52,19 @@ module Timeout1 (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     Random.self_init ();
-    let t = Time.sleep (Random.float 3.0) >|= fun () -> "Heads" in
-    timeout 2.0 t >>= function
-    | None   -> C.log_s c "Cancelled"
-    | Some v -> C.log_s c (Printf.sprintf "Returned %S" v)
+
+    let t = Time.sleep_ns (Int64.of_int (Random.int 3_000_000_000L)) >|= fun () -> "Heads" in
+    timeout 2_000_000_000L t >>= fun v ->
+    C.log_s c (match v with None -> "cancelled" | Some v -> v) >>= fun () ->
+    C.log_s c "Finished" >>= fun () ->
+    Lwt.return_unit
 
 end
 
 module Timeout2 (C: V1_LWT.CONSOLE) = struct
 
   let timeout delay t =
-    let tmout = Time.sleep delay in
+    let tmout = Time.sleep_ns delay in
     Lwt.pick [
       (tmout >|= fun () -> None);
       (t >|= fun v -> Some v);
@@ -68,20 +72,28 @@ module Timeout2 (C: V1_LWT.CONSOLE) = struct
 
   let start c  =
     Random.self_init ();
-    let t = Time.sleep (Random.float 3.0) >|= fun () -> "Heads" in
-    timeout 2.0 t >>= function
-    | None   -> C.log_s c "Cancelled"
-    | Some v -> C.log_s c (Printf.sprintf "Returned %S" v)
+    let timeout f t =
+      let tmout = Time.sleep_ns f in
+      Lwt.pick [
+        (tmout >|= fun () -> None);
+        (t >|= fun v -> Some v);
+      ]
+    in
+    let t = Time.sleep_ns (Int64.of_int (Random.int 3_000_000_000)) >|= fun () -> "Heads" in
+    timeout 2_000_000_000L t >>= fun v ->
+    C.log_s c (match v with None -> "Cancelled" | Some v -> v);
+    C.log_s c "Finished";
+    Lwt.return_unit
 
 end
 
 module Echo_server1 (C: V1_LWT.CONSOLE) = struct
 
-  let read_line () =
-    OS.Time.sleep (Random.float 2.5) >|= fun () ->
-    String.make (Random.int 20) 'a'
-
   let start c =
+    let read_line () =
+      Time.sleep_ns (Int64.of_int (Random.int 2_500_000_000))
+      >|= fun () ->String.make (Random.int 20) 'a'
+    in
     let rec echo_server = function
       | 0 -> Lwt.return ()
       | n ->

@@ -17,7 +17,7 @@ module Main (C: V1_LWT.CONSOLE) = struct
     P.string_blit "Hello world!" 0 one_page 0 12;
     Cstruct.hexdump cstruct_first_100bytes;
     C.log_s c (String.sub (P.to_string one_page) 0 12) >>= fun () ->
-    OS.Time.sleep 2.0
+    OS.Time.sleep_ns 2_000_000_000L
 
 
 end

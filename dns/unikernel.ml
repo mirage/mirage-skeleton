@@ -56,12 +56,12 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
           | Some r -> Lwt.return r
         end
     in
-    let timerfn () = OS.Time.sleep 5.0 in
+    let timerfn () = OS.Time.sleep_ns 5_000_000_000L in
     let cleanfn () = Lwt.return () in
     { Dns_resolver.txfn; rxfn; timerfn; cleanfn }
 
   let make_client_request stack =
-    OS.Time.sleep 3.0 >>= fun () ->
+    OS.Time.sleep_ns 3_000_000_000L >>= fun () ->
     Client_log.info (fun f -> f "Starting client resolver");
     let commfn = connect_to_resolver stack server port in
     let alloc () = (Io_page.get 1 :> Dns.Buf.t) in
