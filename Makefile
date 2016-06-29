@@ -34,10 +34,6 @@ lwt-clean:
 lwt-testrun:
 	@ :
 
-## block build (needs to generate disk.img)
-block-build: block-configure
-	cd block && $(MAKE) && ./generate_disk_img.sh
-
 ## default tests
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
@@ -51,10 +47,3 @@ block-build: block-configure
 
 %-testrun:
 	$(SUDO) sh ./testrun.sh $*
-
-## create raw device for block_test
-UNAME_S := $(shell uname -s)
-block_test/disk.raw:
-	[ "$(PLATFORM)" = "Darwin" ] &&						\
-		hdiutil create -sectors 12 -layout NONE disk.raw && \
-		mv disk.raw.dmg block_test/disk.raw
