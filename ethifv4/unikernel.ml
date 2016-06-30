@@ -13,7 +13,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
   module I = Ipv4.Make(E)(A)
   module U = Udp.Make(I)
   module T = Tcp.Flow.Make(I)(OS.Time)(Clock)(Random)
-  module D = Dhcp_clientv4.Make(C)(OS.Time)(Random)(U)
+  module D = Dhcp_clientv4.Make(OS.Time)(Random)(U)
 
   let or_error _c name fn t =
     fn t
@@ -38,7 +38,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
     or_error c "UDPv4" U.connect i
     >>= fun udp ->
 
-    let dhcp, _offers = D.create c (N.mac net) udp in
+    let dhcp, _offers = D.create (N.mac net) udp in
     or_error c "TCPv4" T.connect i
     >>= fun tcp ->
 
@@ -51,7 +51,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
               T.input tcp ~listeners:
                 (function
                   | 80 -> Some (fun flow ->
-                      let dst, dst_port = T.get_dest flow in
+                      let dst, dst_port = T.dst flow in
                       C.log_s c
                         (green "new tcp from %s %d"
                           (Ipaddr.V4.to_string dst) dst_port
