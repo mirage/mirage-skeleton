@@ -91,7 +91,7 @@ module Main (C: CONSOLE)(B: BLOCK) = struct
     | `Error _ ->
       incr tests_passed
 
-  let start _console b =
+  let start _console b _ =
     B.get_info b >>= fun info ->
     printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
       info.B.size_sectors info.B.read_write info.B.sector_size;
