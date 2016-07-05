@@ -26,7 +26,9 @@ module Dispatch (FS: KV_RO) (S: HTTP) = struct
     match Uri.path uri with
     | "" | "/" -> dispatcher fs request (Uri.with_path uri "index.html")
     | path ->
-      let header = Cohttp.Header.init_with "Strict-Transport-Security" "max-age=31536000" in
+      let header =
+        Cohttp.Header.init_with "Strict-Transport-Security" "max-age=31536000"
+      in
       let mimetype = Magic_mime.lookup path in
       let headers = Cohttp.Header.add header "content-type" mimetype in
       Lwt.catch
@@ -40,9 +42,7 @@ module Dispatch (FS: KV_RO) (S: HTTP) = struct
   let redirect _request uri =
     let new_uri = Uri.with_scheme uri (Some "https") in
     let new_uri = Uri.with_port new_uri (Some 4433) in
-    let headers =
-      Cohttp.Header.init_with "location" (Uri.to_string new_uri)
-    in
+    let headers = Cohttp.Header.init_with "location" (Uri.to_string new_uri) in
     S.respond ~headers ~status:`Moved_permanently ~body:`Empty ()
 
   let serve dispatch =
