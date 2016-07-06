@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-let server_src = Logs.Src.create "server" ~doc:"HTTP server"
+let server_src = Logs.Src.create "server" ~doc:"DHCP server"
 module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
 (* IP Configuration, all you need besides dhcpd.conf. *)
