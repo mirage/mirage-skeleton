@@ -9,7 +9,7 @@ let handler =
     "Unikernel.Main" (time @-> console @-> stackv4 @-> job)
 
 let direct =
-  let stack = direct_stackv4_with_default_ipv4 default_console tap0 in
+  let stack = direct_stackv4_with_default_ipv4 tap0 in
   handler $ default_time $ default_console $ stack
 
 (* Only add the Unix socket backend if the configuration mode is Unix *)
@@ -17,7 +17,7 @@ let socket =
   let c = default_console in
   if_impl Key.is_xen
     noop
-    (handler $ default_time $ c $ socket_stackv4 c [Ipaddr.V4.any])
+    (handler $ default_time $ c $ socket_stackv4 [Ipaddr.V4.any])
 
 let () =
   register "conduit_server" [direct ; socket]
