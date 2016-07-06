@@ -8,7 +8,7 @@ let handler =
     "Unikernel.Main" (console @-> conduit @-> job)
 
 let direct =
-  let stack = direct_stackv4_with_default_ipv4 default_console tap0 in
+  let stack = direct_stackv4_with_default_ipv4 tap0 in
   let server = conduit_direct stack in
   handler $ default_console $ server
 
