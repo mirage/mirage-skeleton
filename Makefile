@@ -16,14 +16,13 @@ CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 all: build
 
 configure: $(CONFIGS)
-build: $(BUILDS) lwt-build
+build: $(BUILDS)
 testrun: $(TESTRUN)
-clean: $(CLEANS) lwt-clean
+clean: $(CLEANS)
 
 ## lwt special cased
-lwt: lwt-clean lwt-build
 lwt-configure:
-	@ :
+	$(MAKE) -C lwt configure
 
 lwt-build:
 	$(MAKE) -C lwt build
@@ -38,12 +37,12 @@ lwt-testrun:
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
 
-%-build: %-configure
+%-build:
 	cd $* && $(MAKE)
 
 %-clean:
 	$(MIRAGE) clean -f $*/config.ml
-	$(RM) log
+	cd $* && $(RM) log static*.mli
 
 %-testrun:
 	$(SUDO) sh ./testrun.sh $*
