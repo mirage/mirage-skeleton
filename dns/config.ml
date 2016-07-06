@@ -13,7 +13,7 @@ let dns_handler =
     ~libraries ~packages
     "Unikernel.Main" (clock @-> kv_ro @-> stackv4 @-> job)
 
-let stack = generic_stackv4 default_console tap0
+let stack = generic_stackv4 tap0
 
 let () =
   register "dns" [dns_handler $ default_clock $ data $ stack]
