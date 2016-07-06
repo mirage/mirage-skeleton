@@ -8,23 +8,17 @@ ifdef WITH_TRACING
 TESTS += tracing
 endif
 
-CONFIGS = $(patsubst %, %-configure, $(TESTS))
 BUILDS  = $(patsubst %, %-build,     $(TESTS))
 TESTRUN = $(patsubst %, %-testrun,   $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
 all: build
 
-configure: $(CONFIGS)
-build: $(BUILDS) lwt-build
+build: $(BUILDS)
 testrun: $(TESTRUN)
-clean: $(CLEANS) lwt-clean
+clean: $(CLEANS)
 
 ## lwt special cased
-lwt: lwt-clean lwt-build
-lwt-configure:
-	@ :
-
 lwt-build:
 	$(MAKE) -C lwt build
 
@@ -35,15 +29,13 @@ lwt-testrun:
 	@ :
 
 ## default tests
-%-configure:
+%-build:
 	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
-
-%-build: %-configure
 	cd $* && $(MAKE)
 
 %-clean:
 	$(MIRAGE) clean -f $*/config.ml
-	$(RM) log
+	cd $* && $(RM) log static*.mli
 
 %-testrun:
 	$(SUDO) sh ./testrun.sh $*
