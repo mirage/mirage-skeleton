@@ -27,4 +27,3 @@ You can test the server using `nslookup`, e.g.
 
     Name:	mail.d1.signpo.st
     Address: 127.0.0.94
-

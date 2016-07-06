@@ -17,10 +17,11 @@ let config_shell = impl @@ object
     method module_name = "Functoria_runtime"
     method name = "shell_config"
     method ty = shellconfig
-end
+  end
 
-
-let main = foreign ~deps:[abstract config_shell] "Unikernel.Main" (console @-> block @-> job)
+let main =
+  foreign ~deps:[abstract config_shell]
+    "Unikernel.Main" (console @-> block @-> job)
 
 let img = block_of_file "disk.img"
 
