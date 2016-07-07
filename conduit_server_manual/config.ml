@@ -17,7 +17,7 @@ let socket =
   let c = default_console in
   if_impl Key.is_xen
     noop
-    (handler $ c $ socket_stackv4 c [Ipaddr.V4.any])
+    (handler $ c $ socket_stackv4 [Ipaddr.V4.any])
 
 let () =
   register "conduit_server" [direct ; socket]
