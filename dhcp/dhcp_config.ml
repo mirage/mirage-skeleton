@@ -27,8 +27,10 @@ let options = [
 ]
 
 (*
- * Static hosts configuration, options are either override or are merged with
- * the global options above.
+ * Static hosts configuration, list options will be merged with global ones
+ * while non-list options will override the global, example: options `Routers',
+ * `Dns_servers', `Ntp_servers' will always be merged; `Domain_name',
+ * `Time_offset', `Max_datagram; will always override the global (if present).
  *)
 
 (* let static_host_1 = { *)
