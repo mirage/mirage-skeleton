@@ -1,10 +1,6 @@
 open V1_LWT
 open Lwt.Infix
 
-(* IP Configuration, all you need besides dhcpd.conf. *)
-let ipaddr = Ipaddr.V4.of_string_exn "192.168.1.5"
-
-
 let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
 let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
@@ -14,9 +10,10 @@ let string_of_stream s =
   let s = List.map Cstruct.to_string s in
   (String.concat "" s)
 
-module Main (C: CONSOLE) (KV: KV_RO) (N: NETWORK) (Clock : V1.CLOCK) = struct
+module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(Clock)(OS.Time)
+  module DC = Dhcp_config
 
   let log c s =
     Str.split_delim (Str.regexp "\n") s |>
@@ -49,31 +46,32 @@ module Main (C: CONSOLE) (KV: KV_RO) (N: NETWORK) (Clock : V1.CLOCK) = struct
         log c (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
         Lwt.return leases
 
-  let start c kv net _ =
+  let start c net _ =
     let or_error _c name fn t =
       fn t >>= function
       | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
       | `Ok t     -> Lwt.return t
     in
-    (* Read the config file *)
-    or_error c "Kv.size" (KV.size kv) "dhcpd.conf"
-    >>= fun size ->
-    or_error c "Kv.read" (KV.read kv "dhcpd.conf" 0) (Int64.to_int size)
-    >>= fun v -> Lwt.return (string_of_stream v)
-    >>= fun conf ->
-    log c (green "Using configuration:");
-    log c (green "%s" conf);
 
     (* Get an ARP stack *)
     or_error c "Ethif" E.connect net
     >>= fun e ->
     or_error c "Arpv4" A.connect e
     >>= fun a ->
-    A.add_ip a ipaddr
+    A.add_ip a DC.ip_address
     >>= fun () ->
 
     (* Build a dhcp server *)
-    let config = Dhcp_server.Config.parse conf (ipaddr, N.mac net) in
+    let config = Dhcp_server.Config.make
+        ~hostname:DC.hostname
+        ~default_lease_time:DC.default_lease_time
+        ~max_lease_time:DC.max_lease_time
+        ~hosts:DC.hosts
+        ~addr_tuple:(DC.ip_address, N.mac net)
+        ~network:DC.network
+        ~range:DC.range
+        ~options:DC.options
+    in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
     let listener = N.listen net (fun buf ->
         match (Wire_structs.parse_ethernet_frame buf) with
