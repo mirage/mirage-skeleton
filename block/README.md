@@ -10,7 +10,7 @@ make
 
 On Xen:
 ```
-mirage configure --xen
+mirage configure -t xen
 make
 sudo xl create -c block_test.xl
 ```

@@ -36,13 +36,13 @@ lwt-testrun:
 
 ## default tests
 %-configure:
-	$(MIRAGE) configure -f $*/config.ml --$(MODE) $(MIRAGE_FLAGS)
+	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
 %-build: %-configure
 	cd $* && $(MAKE)
 
 %-clean:
-	$(MIRAGE) clean -f $*/config.ml
+	make -C $* clean
 	$(RM) log
 
 %-testrun:
