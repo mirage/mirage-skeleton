@@ -35,11 +35,22 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
     OS.Time.sleep 3.0 >>= fun () ->
     Client_log.info (fun f -> f "Starting client resolver");
     let resolver = Resolver.create stack in
-    Resolver.gethostbyname resolver ~server:(Ipaddr.V4.of_string_exn server)
-                           ~dns_port:port test_hostname
-    >>= fun ips ->
-    Client_log.info (fun f -> f "Got IPS: %a" Format.(pp_print_list Ipaddr.pp_hum) ips);
-    Lwt.return ()
+    Lwt.catch
+      (fun () ->
+       Resolver.gethostbyname resolver ~server:(Ipaddr.V4.of_string_exn server)
+                              ~dns_port:port test_hostname
+       >>= fun ips ->
+       Client_log.info (fun f -> f "Got IPS: %a" Format.(pp_print_list Ipaddr.pp_hum) ips);
+       Lwt.return ())
+      (* Error handling *)
+      (function
+        | Dns.Protocol.Dns_resolve_error errors ->
+           let exn_formatter ppf exn = Format.fprintf ppf "%s" (Printexc.to_string exn) in
+           Client_log.warn
+             (fun f -> f "DNS resolution for %s failed: %a" test_hostname
+                         (Format.pp_print_list exn_formatter) errors);
+           Lwt.return ()
+        | exn -> Lwt.fail exn)
 
   let serve s zonebuf =
     let open Dns_server in
