@@ -42,7 +42,7 @@ lwt-testrun:
 	cd $* && $(MAKE)
 
 %-clean:
-	$(MIRAGE) clean -f $*/config.ml
+	$(MIRAGE) clean -f $*/config.ml || true
 	$(RM) log
 
 %-testrun:
