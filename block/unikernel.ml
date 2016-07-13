@@ -2,7 +2,7 @@ open Lwt.Infix
 open Printf
 open V1_LWT
 
-module Main (C: CONSOLE)(B: BLOCK) = struct
+module Main (B: BLOCK) = struct
 
   let tests_started = ref 0
   let tests_passed = ref 0
@@ -91,7 +91,7 @@ module Main (C: CONSOLE)(B: BLOCK) = struct
     | `Error _ ->
       incr tests_passed
 
-  let start _console b _ =
+  let start b () =
     B.get_info b >>= fun info ->
     printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
       info.B.size_sectors info.B.read_write info.B.sector_size;
