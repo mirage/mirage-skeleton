@@ -5,7 +5,7 @@ It also behaves as a DNS client, resolving `dark.recoil.org`.
 To test under Unix:
 
 ```
-$ mirage configure --unix --net=socket
+$ mirage configure -t unix --net=socket
 $ make
 $ sudo ./mir-dns
 Manager: connect

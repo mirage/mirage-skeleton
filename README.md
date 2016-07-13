@@ -65,9 +65,9 @@ directly.
 
 ### To configure a unikernel before building:
 
-    $ mirage configure [config.ml] [--unix|--xen]
+    $ mirage configure [config.ml] -t [unix|xen]
 
-The boot target is selected via `--unix` or `--xen`. The default is selected
+The boot target is selected via `-t unix` or `-t xen`. The default is selected
 based on the presence of target-specific packages, e.g., `mirage-unix` or
 `mirage-xen`.
 
@@ -81,8 +81,8 @@ The output will be created next to the `config.ml` file used.
 
     $ make run
 
-This will either execute the native binary created (if on `--unix`) or create
-a default `.xl` configuration file (if on `--xen`). In the latter case you
+This will either execute the native binary created (if on `-t unix`) or create
+a default `.xl` configuration file (if on `-t xen`). In the latter case you
 will need to edit the generated configuration file appropriately if you wish
 to use block or network devices.
 

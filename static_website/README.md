@@ -1,7 +1,7 @@
 On Unix, do:
 
 ```
-$ mirage configure --unix --net=socket
+$ mirage configure -t unix --net=socket
 $ make
 $ ./mir-www
 ```
@@ -13,7 +13,7 @@ content from htdocs directory.
 For a Xen DHCP kernel, do:
 
 ```
-$ mirage configure --xen --dhcp=true
+$ mirage configure -t xen --dhcp=true
 $ make
 $ sudo xl create -c www.xl
 ```
