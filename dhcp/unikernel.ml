@@ -23,11 +23,11 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
     Macaddr.compare dest (N.mac net) = 0 || not (Macaddr.is_unicast dest)
 
   let input_dhcp c net config leases buf =
-    let open Dhcp_server.Input in
     match (Dhcp_wire.pkt_of_buf buf (Cstruct.len buf)) with
     | Error e -> log c (red "Can't parse packet: %s" e);
       Lwt.return leases
     | Ok pkt ->
+      let open Dhcp_server.Input in
       match (input_pkt config leases pkt (Clock.time ())) with
       | Silence -> Lwt.return leases
       | Update leases ->
@@ -36,7 +36,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
       | Warning w ->
         log c (yellow "%s" w);
         Lwt.return leases
-      | Error e ->
+      | Dhcp_server.Input.Error e ->
         log c (red "%s" e);
         Lwt.return leases
       | Reply (reply, leases) ->
@@ -76,15 +76,15 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
     let listener = N.listen net (fun buf ->
         match Ethif_packet.Unmarshal.of_cstruct buf with
         | Result.Error s ->
-          C.log c "unparseable packet; dropping it";
+          log c (red "Can't parse packet: %s" s);
           Lwt.return_unit
         | Result.Ok (ethif_header, ethif_payload) ->
-        if of_interest ethif_header.destination net &&
+        if of_interest ethif_header.Ethif_packet.destination net &&
           Dhcp_wire.is_dhcp buf (Cstruct.len buf) then begin
           input_dhcp c net config !leases buf >>= fun new_leases ->
           leases := new_leases;
           Lwt.return_unit
-        end else if ethif_header.ethertype = Ethif_wire.ARP then
+        end else if ethif_header.Ethif_packet.ethertype = Ethif_wire.ARP then
           A.input a ethif_payload
         else Lwt.return_unit
       ) in
