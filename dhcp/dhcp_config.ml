@@ -10,7 +10,7 @@ let default_lease_time = 60 * 60 * 1 (* 1 hour *)
 let max_lease_time =     60 * 60 * 24 (* A day *)
 let ip_address =         ip "192.168.1.5"
 let network =            net "192.168.1.5/24"
-let range =              (ip "192.168.1.70", ip "192.168.1.100")
+let range =              Some (ip "192.168.1.70", ip "192.168.1.100")
 (* List of dhcp options to be advertised *)
 let options = [
   (* Routers is a list of default routers *)
