@@ -3,14 +3,14 @@ Generate it on Unix using the `generate_disk_img.sh` script.
 
 On Unix:
 ```
-mirage configure
+mirage configure -t unix
 make
 ./mir-block_test
 ```
 
 On Xen:
 ```
-mirage configure --xen
+mirage configure -t xen
 make
 sudo xl create -c block_test.xl
 ```
