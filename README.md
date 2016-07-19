@@ -65,7 +65,7 @@ directly.
 
 ### To configure a unikernel before building:
 
-    $ mirage configure [config.ml] -t [unix|xen]
+    $ mirage configure [-f config.ml] -t [unix|xen]
 
 The boot target is selected via `-t unix` or `-t xen`. The default is selected
 based on the presence of target-specific packages, e.g., `mirage-unix` or
