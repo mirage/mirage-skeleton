@@ -26,3 +26,4 @@ mir-*
 **/log
 make-fat*-image.sh
 *_gen.ml
+*_gen.ml.in
