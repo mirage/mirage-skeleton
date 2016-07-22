@@ -7,7 +7,7 @@ let data = crunch "./data"
     package, and it requires a logging console, a read-only
     key/value store and a TCP/IP stack. *)
 let dns_handler =
-  let libraries = ["dns.lwt-core"; "mirage-logs"] in
+  let libraries = ["dns.mirage"; "mirage-logs"] in
   let packages = ["dns"; "mirage-logs"] in
   foreign
     ~libraries ~packages

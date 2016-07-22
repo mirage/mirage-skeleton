@@ -9,7 +9,6 @@ module Server_log = (val Logs.src_log server_src : Logs.LOG)
 (* Settings for client test *)
 let server = "8.8.8.8"
 let port = 53
-let client_source_port = 7000
 let test_hostname = "dark.recoil.org"
 
 (* Server settings *)
@@ -19,6 +18,7 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
   module Logs_reporter = Mirage_logs.Make(Clock)
 
   module U = S.UDPV4
+  module Resolver = Dns_resolver_mirage.Make(OS.Time)(S)
 
   let load_zone k =
     K.size k "test.zone"
@@ -31,44 +31,26 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
       | `Error _ -> Lwt.fail (Failure "test.zone error reading")
       | `Ok pages -> Lwt.return (Cstruct.concat pages |> Cstruct.to_string)
 
-  let connect_to_resolver stack server port : Dns_resolver.commfn =
-    let udp = S.udpv4 stack in
-    let dest_ip = Ipaddr.V4.of_string_exn server in
-    let txfn buf =
-      let buf = Cstruct.of_bigarray buf in
-      (* Cstruct.hexdump buf; *)
-      U.write ~source_port:client_source_port ~dest_ip ~dest_port:port udp buf in
-    let st, push_st = Lwt_stream.create () in
-    S.listen_udpv4 stack ~port:client_source_port (
-      fun ~src:_ ~dst:_ ~src_port:_ buf ->
-        Client_log.info (fun f -> f "Got resolver response, length %d" (Cstruct.len buf));
-        let ba = Cstruct.to_bigarray buf in
-        push_st (Some ba);
-        Lwt.return ()
-    );
-    let rec rxfn f =
-      Lwt_stream.get st
-      >>= function
-      | None     -> Lwt.fail (Failure "resolver flow closed")
-      | Some buf -> begin
-          match f buf with
-          | None   -> rxfn f
-          | Some r -> Lwt.return r
-        end
-    in
-    let timerfn () = OS.Time.sleep 5.0 in
-    let cleanfn () = Lwt.return () in
-    { Dns_resolver.txfn; rxfn; timerfn; cleanfn }
-
   let make_client_request stack =
     OS.Time.sleep 3.0 >>= fun () ->
     Client_log.info (fun f -> f "Starting client resolver");
-    let commfn = connect_to_resolver stack server port in
-    let alloc () = (Io_page.get 1 :> Dns.Buf.t) in
-    Dns_resolver.gethostbyname ~alloc commfn test_hostname
-    >>= fun ips ->
-    Client_log.info (fun f -> f "Got IPS: %a" Format.(pp_print_list Ipaddr.pp_hum) ips);
-    Lwt.return ()
+    let resolver = Resolver.create stack in
+    Lwt.catch
+      (fun () ->
+       Resolver.gethostbyname resolver ~server:(Ipaddr.V4.of_string_exn server)
+                              ~dns_port:port test_hostname
+       >>= fun ips ->
+       Client_log.info (fun f -> f "Got IPS: %a" Format.(pp_print_list Ipaddr.pp_hum) ips);
+       Lwt.return ())
+      (* Error handling *)
+      (function
+        | Dns.Protocol.Dns_resolve_error errors ->
+           let exn_formatter ppf exn = Format.fprintf ppf "%s" (Printexc.to_string exn) in
+           Client_log.warn
+             (fun f -> f "DNS resolution for %s failed: %a" test_hostname
+                         (Format.pp_print_list exn_formatter) errors);
+           Lwt.return ()
+        | exn -> Lwt.fail exn)
 
   let serve s zonebuf =
     let open Dns_server in
