@@ -7,7 +7,7 @@ module Main (C: V1_LWT.CONSOLE) = struct
       | 0 -> Lwt.return_unit
       | n ->
         C.log c (Key_gen.hello ());
-        OS.Time.sleep 1.0 >>= fun () ->
+        OS.Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
         loop (n-1)
     in
     loop 4
