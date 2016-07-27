@@ -10,9 +10,9 @@ let string_of_stream s =
   let s = List.map Cstruct.to_string s in
   (String.concat "" s)
 
-module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
+module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
   module E = Ethif.Make(N)
-  module A = Arpv4.Make(E)(Clock)(OS.Time)
+  module A = Arpv4.Make(E)(Clock)(Time)
   module DC = Dhcp_config
 
   let log c s =
@@ -46,7 +46,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) = struct
         log c (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
         Lwt.return leases
 
-  let start c net _ =
+  let start c net _clock _time =
     let or_error _c name fn t =
       fn t >>= function
       | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))

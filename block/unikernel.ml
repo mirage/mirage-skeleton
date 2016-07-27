@@ -2,7 +2,7 @@ open Lwt.Infix
 open Printf
 open V1_LWT
 
-module Main (B: BLOCK) = struct
+module Main (Time: TIME)(B: BLOCK) = struct
 
   let tests_started = ref 0
   let tests_passed = ref 0
@@ -91,7 +91,7 @@ module Main (B: BLOCK) = struct
     | `Error _ ->
       incr tests_passed
 
-  let start b () =
+  let start _time b () =
     B.get_info b >>= fun info ->
     printf "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
       info.B.size_sectors info.B.read_write info.B.sector_size;
@@ -123,6 +123,6 @@ module Main (B: BLOCK) = struct
     printf "Total tests started: %d\n" !tests_started;
     printf "Total tests passed:  %d\n" !tests_passed;
     printf "Total tests failed:  %d\n%!" !tests_failed;
-    OS.Time.sleep 5.
+    Time.sleep 5.
 
 end

@@ -7,16 +7,16 @@ let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C:CONSOLE) (S:STACKV4) = struct
+module Main (Time:TIME) (C:CONSOLE) (S:STACKV4) = struct
 
-  module DNS = Dns_resolver_mirage.Make(OS.Time)(S)
+  module DNS = Dns_resolver_mirage.Make(Time)(S)
   module RES = Resolver_mirage.Make(DNS)
   module H   = Cohttp_mirage.Server(Conduit_mirage.Flow)
 
   let conduit = Conduit_mirage.empty
   let stackv4 = Conduit_mirage.stackv4 (module S)
 
-  let start console s () =
+  let start _time console s () =
 
     C.log_s console (sprintf "IP address: %s\n"
       (String.concat ", " (List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)))))
