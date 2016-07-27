@@ -123,6 +123,6 @@ module Main (B: BLOCK) = struct
     printf "Total tests started: %d\n" !tests_started;
     printf "Total tests passed:  %d\n" !tests_passed;
     printf "Total tests failed:  %d\n%!" !tests_failed;
-    OS.Time.sleep 5.
+    OS.Time.sleep_ns 5_000_000_000L
 
 end

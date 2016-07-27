@@ -27,7 +27,7 @@ module Main (C: CONSOLE) (X: KV_RO) (Y: KV_RO) = struct
           C.log_s c "NO! NO!"
       end
       >>= fun () ->
-      OS.Time.sleep 1.
+      OS.Time.sleep_ns 1_000_000_000L
       >>= aux
     in
     aux ()
