@@ -7,7 +7,7 @@ module Main (C: V1_LWT.CONSOLE) = struct
       | 0 -> Lwt.return_unit
       | n ->
         C.log_s c "hello" >>= fun () ->
-        OS.Time.sleep 1.0 >>= fun () ->
+        OS.Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
         C.log_s c "world" >>= fun () ->
         loop (n-1)
     in

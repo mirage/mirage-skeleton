@@ -1,8 +1,8 @@
 open Mirage
 
 let client =
-  let libraries = [ "mirage-http" ] in
-  let packages = [ "mirage-http" ] in
+  let libraries = [ "mirage-http"; "duration" ] in
+  let packages = [ "mirage-http"; "duration" ] in
   foreign
     ~libraries ~packages
     "Unikernel.Client" @@ console @-> resolver @-> conduit @-> job

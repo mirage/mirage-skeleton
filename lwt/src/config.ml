@@ -14,5 +14,9 @@ let (name, main) =
   with Not_found -> failwith "Must specify target"
 
 let () =
-  let main = foreign main (console @-> job) in
+  let main =
+    foreign
+      ~libraries:["duration"] ~packages:["duration"]
+      main (console @-> job)
+  in
   register name [ main $ default_console ]
