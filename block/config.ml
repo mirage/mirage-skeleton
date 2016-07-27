@@ -20,7 +20,12 @@ let config_shell = impl @@ object
 end
 
 
-let main = foreign ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
+let main =
+  let packages = [ "io-page" ; "duration" ] in
+  let libraries = [ "io-page" ; "duration" ] in
+  foreign
+    ~libraries ~packages
+    ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
 
 let img = block_of_file "disk.img"
 

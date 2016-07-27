@@ -32,7 +32,7 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
       | `Ok pages -> Lwt.return (Cstruct.concat pages |> Cstruct.to_string)
 
   let make_client_request stack =
-    OS.Time.sleep 3.0 >>= fun () ->
+    OS.Time.sleep_ns (Duration.of_sec 3) >>= fun () ->
     Client_log.info (fun f -> f "Starting client resolver");
     let resolver = Resolver.create stack in
     Lwt.catch
