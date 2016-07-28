@@ -2,7 +2,7 @@
 
 TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns \
         conduit_server conduit_server_manual static_website_tls http-fetch \
-        dhcp hello block kv_ro_crunch kv_ro netif-forward ping6
+        dhcp hello block kv_ro_crunch kv_ro netif-forward ping6 entropy
 
 ifdef WITH_TRACING
 TESTS += tracing
