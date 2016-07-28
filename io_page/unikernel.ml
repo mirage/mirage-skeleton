@@ -6,7 +6,7 @@ let sp = Printf.sprintf
 
 module Main (Time: V1_LWT.TIME) (C: V1_LWT.CONSOLE) = struct
 
-  let start c =
+  let start _time c =
     let one_page = P.get 1 in
     let cstruct_page = P.to_cstruct one_page in
     let cstruct_first_100bytes = Cstruct.sub cstruct_page 0 100 in
