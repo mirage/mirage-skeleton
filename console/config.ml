@@ -1,7 +1,7 @@
 open Mirage
 
 let main =
-  foreign "Unikernel.Main" (console @-> job)
+  foreign "Unikernel.Main" (console @-> time @-> job)
 
 let () =
-  register "console" [main $ default_console]
+  register "console" [main $ default_console $ default_time ]
