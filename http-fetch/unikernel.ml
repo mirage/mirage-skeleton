@@ -11,7 +11,7 @@ let domain = "anil.recoil.org"
 let uri = Uri.of_string "http://anil.recoil.org"
 let ns = "8.8.8.8"
 
-module Client (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.S) = struct
+module Client (T: TIME) (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.S) = struct
 
   let http_fetch c resolver ctx =
     C.log_s c (sprintf "Fetching %s with Cohttp:" (Uri.to_string uri))
@@ -45,7 +45,7 @@ module Client (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.S) = struc
       | `Ok buf -> C.log_s c (sprintf "OK\n%s\n" (Cstruct.to_string buf))
     end
 
-  let start c res (ctx:CON.t) =
+  let start _time c res (ctx:CON.t) =
     C.log_s c (sprintf "Resolving in 1s using DNS server %s" ns) >>= fun () ->
     OS.Time.sleep 1.0 >>= fun () ->
     http_fetch c res ctx >>= fun () ->

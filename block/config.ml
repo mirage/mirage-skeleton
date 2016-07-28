@@ -20,9 +20,9 @@ let config_shell = impl @@ object
 end
 
 
-let main = foreign ~deps:[abstract config_shell] "Unikernel.Main" (block @-> job)
+let main = foreign ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
 
 let img = block_of_file "disk.img"
 
 let () =
-  register "block_test" [main $ img]
+  register "block_test" [main $ default_time $ img]

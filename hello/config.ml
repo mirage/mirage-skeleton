@@ -7,7 +7,7 @@ let key =
 let main =
   foreign
     ~keys:[Key.abstract key]
-    "Unikernel.Main" (console @-> job)
+    "Unikernel.Main" (time @-> console @-> job)
 
 let () =
-  register "console" [main $ default_console]
+  register "console" [main $ default_time $ default_console]

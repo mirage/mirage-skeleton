@@ -9,10 +9,10 @@ let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 let ipaddr   = "fc00::2"
 let gateways = ["fc00::1"]
 
-module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.CLOCK) = struct
+module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.CLOCK) (Time : TIME) = struct
 
   module E = Ethif.Make(N)
-  module I = Ipv6.Make(E)(OS.Time)(Clock)
+  module I = Ipv6.Make(E)(Time)(Clock)
 
   let or_error c name fn t =
     fn t
@@ -20,7 +20,7 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.CLOCK) = struct
     | `Error e -> fail (Failure ("Error starting " ^ name))
     | `Ok t -> return t
 
-  let start c n _ =
+  let start c n _clock _time =
     C.log c (green "starting...");
     or_error c "Ethif" E.connect n >>= fun e ->
     or_error c "Ipv6"  I.connect e >>= fun i ->

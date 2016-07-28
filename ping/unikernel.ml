@@ -10,10 +10,10 @@ let ipaddr   = "10.0.0.2"
 let netmask  = "255.255.255.0"
 let gateways = ["10.0.0.1"]
 
-module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.CLOCK) = struct
+module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.CLOCK) (Time: V1_LWT.TIME) = struct
 
   module E = Ethif.Make(N)
-  module A = Arpv4.Make(E)(Clock)(OS.Time)
+  module A = Arpv4.Make(E)(Clock)(Time)
   module I = Ipv4.Make(E)(A)
 
   let or_error _c name fn t =
@@ -22,7 +22,7 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.CLOCK) = struct
     | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
     | `Ok t     -> Lwt.return t
 
-  let start c n _ =
+  let start c n _clock _time =
     C.log c (green "starting...");
     or_error c "Ethif" E.connect n >>= fun e ->
     or_error c "Arpv4" A.connect e >>= fun a ->

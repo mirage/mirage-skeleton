@@ -4,7 +4,7 @@ module P = Io_page
 
 let sp = Printf.sprintf
 
-module Main (C: V1_LWT.CONSOLE) = struct
+module Main (Time: V1_LWT.TIME) (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     let one_page = P.get 1 in
@@ -17,7 +17,7 @@ module Main (C: V1_LWT.CONSOLE) = struct
     P.string_blit "Hello world!" 0 one_page 0 12;
     Cstruct.hexdump cstruct_first_100bytes;
     C.log_s c (String.sub (P.to_string one_page) 0 12) >>= fun () ->
-    OS.Time.sleep 2.0
+    Time.sleep 2.0
 
 
 end
