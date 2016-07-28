@@ -8,7 +8,7 @@ let main =
   foreign
     ~keys:[Key.abstract key]
     ~libraries:["duration"] ~packages:["duration"]
-    "Unikernel.Main" (time @-> console @-> job)
+    "Unikernel.Main" (console @-> time @-> job)
 
 let () =
-  register "console" [main $ default_time $ default_console]
+  register "console" [main $ default_console $ default_time]

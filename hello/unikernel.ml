@@ -2,7 +2,7 @@ open Lwt
 
 module Main (C: V1_LWT.CONSOLE) (Time : V1_LWT.TIME) = struct
 
-  let start c =
+  let start c _time =
     let rec loop = function
       | 0 -> Lwt.return_unit
       | n ->
