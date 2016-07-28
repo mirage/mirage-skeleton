@@ -47,7 +47,7 @@ module Client (T: TIME) (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.
 
   let start _time c res (ctx:CON.t) =
     C.log_s c (sprintf "Resolving in 1s using DNS server %s" ns) >>= fun () ->
-    OS.Time.sleep 1.0 >>= fun () ->
+    OS.Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
     http_fetch c res ctx >>= fun () ->
     manual_http_fetch c res ctx
 

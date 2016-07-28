@@ -7,8 +7,8 @@ let data = crunch "./data"
     package, and it requires a logging console, a read-only
     key/value store and a TCP/IP stack. *)
 let dns_handler =
-  let libraries = ["dns.mirage"; "mirage-logs"] in
-  let packages = ["dns"; "mirage-logs"] in
+  let libraries = ["dns.lwt-core"; "mirage-logs"; "duration"] in
+  let packages = ["dns"; "mirage-logs"; "duration"] in
   foreign
     ~libraries ~packages
     "Unikernel.Main" (clock @-> kv_ro @-> stackv4 @-> job)
