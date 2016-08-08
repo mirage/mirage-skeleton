@@ -30,7 +30,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
     let local_port = 8080 in
     S.listen_tcpv4 s ~port:local_port (
       fun flow ->
-        let remote, remote_port = T.get_dest flow in
+        let remote, remote_port = T.dst flow in
         C.log_s console
           (green "TCP %s:%d > _:%d"
              (Ipaddr.V4.to_string remote) remote_port local_port)
