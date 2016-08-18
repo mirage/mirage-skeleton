@@ -14,8 +14,7 @@ let test_hostname = "dark.recoil.org"
 (* Server settings *)
 let listening_port = 53
 
-module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
-  module Logs_reporter = Mirage_logs.Make(Clock)
+module Main (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
 
   module U = S.UDPV4
   module Resolver = Dns_resolver_mirage.Make(OS.Time)(S)
@@ -76,9 +75,8 @@ module Main (Clock:V1.CLOCK) (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
     Server_log.info (fun f -> f "DNS server listening on UDP port %d" listening_port);
     S.listen s
 
-  let start () kv_store stack =
+  let start kv_store stack =
     Logs.(set_level (Some Info));
-    Logs_reporter.(create () |> run) @@ fun () ->
     load_zone kv_store >>= fun zonebuf ->
     Lwt.join [
       serve stack zonebuf;
