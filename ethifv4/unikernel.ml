@@ -6,7 +6,7 @@ let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
+module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) = struct
 
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(Clock)(Time)
@@ -21,10 +21,10 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
     | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
     | `Ok t -> Lwt.return t
 
-  let start c net _clock _time =
+  let start c net clock _time =
     or_error c "Ethif" E.connect net
     >>= fun e ->
-    or_error c "Arpv4" A.connect e
+    or_error c "Arpv4" (A.connect e) clock
     >>= fun a ->
     or_error c "Ipv4" (I.connect e) a
     >>= fun i ->
@@ -39,7 +39,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
     >>= fun udp ->
 
     let dhcp, _offers = D.create (N.mac net) udp in
-    or_error c "TCPv4" T.connect i
+    or_error c "TCPv4" (T.connect i) clock
     >>= fun tcp ->
 
     N.listen net (
@@ -57,7 +57,6 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
                           (Ipaddr.V4.to_string dst) dst_port
                         )
                       >>= fun () ->
-
                       T.read flow
                       >>= function
                       | `Ok b ->

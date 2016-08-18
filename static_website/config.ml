@@ -14,7 +14,7 @@ let main =
   let keys = [ Key.abstract port ] in
   foreign
     ~libraries ~packages ~keys
-    "Dispatch.Main" (clock @-> kv_ro @-> http @-> job)
+    "Dispatch.Main" (kv_ro @-> http @-> job)
 
 let () =
-  register "www" [main $ default_clock $ data $ http_srv]
+  register "www" [main $ data $ http_srv]
