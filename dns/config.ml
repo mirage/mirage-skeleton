@@ -11,9 +11,9 @@ let dns_handler =
   let packages = ["dns"; "mirage-logs"; "duration"] in
   foreign
     ~libraries ~packages
-    "Unikernel.Main" (clock @-> kv_ro @-> stackv4 @-> job)
+    "Unikernel.Main" (kv_ro @-> stackv4 @-> job)
 
 let stack = generic_stackv4 tap0
 
 let () =
-  register "dns" [dns_handler $ default_clock $ data $ stack]
+  register "dns" [dns_handler $ data $ stack]
