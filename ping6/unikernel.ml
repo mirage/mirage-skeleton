@@ -9,7 +9,7 @@ let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 let ipaddr   = "fc00::2"
 let gateways = ["fc00::1"]
 
-module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.CLOCK) (Time : TIME) = struct
+module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.MCLOCK) (Time : TIME) = struct
 
   module E = Ethif.Make(N)
   module I = Ipv6.Make(E)(Time)(Clock)
@@ -20,10 +20,10 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.CLOCK) (Time : TIME) = struct
     | `Error e -> fail (Failure ("Error starting " ^ name))
     | `Ok t -> return t
 
-  let start c n _clock _time =
+  let start c n clock _time =
     C.log c (green "starting...");
     or_error c "Ethif" E.connect n >>= fun e ->
-    or_error c "Ipv6"  I.connect e >>= fun i ->
+    or_error c "Ipv6"  (I.connect e) clock >>= fun i ->
 
     I.set_ip i (Ipaddr.V6.of_string_exn ipaddr) >>= fun () ->
     I.set_ip_gateways i (List.map Ipaddr.V6.of_string_exn gateways) >>= fun () ->

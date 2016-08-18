@@ -7,9 +7,9 @@ let main =
   let packages = ["tcpip"] in
   foreign
     ~libraries ~packages
-    "Unikernel.Main" (console @-> network @-> clock @-> time @-> job)
+    "Unikernel.Main" (console @-> network @-> mclock @-> time @-> job)
 
 let () =
   register "ethifv4" [
-    main $ default_console $ tap0 $ default_clock $ default_time
+    main $ default_console $ tap0 $ default_monotonic_clock $ default_time
   ]

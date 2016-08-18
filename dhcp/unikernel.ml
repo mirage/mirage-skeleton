@@ -10,9 +10,9 @@ let string_of_stream s =
   let s = List.map Cstruct.to_string s in
   (String.concat "" s)
 
-module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
+module Main (C: CONSOLE) (N: NETWORK) (MClock : V1.MCLOCK) (Time: TIME) = struct
   module E = Ethif.Make(N)
-  module A = Arpv4.Make(E)(Clock)(Time)
+  module A = Arpv4.Make(E)(MClock)(Time)
   module DC = Dhcp_config
 
   let log c s =
@@ -22,31 +22,31 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
   let of_interest dest net =
     Macaddr.compare dest (N.mac net) = 0 || not (Macaddr.is_unicast dest)
 
-  let input_dhcp c net config leases buf =
+  let input_dhcp console clock net config leases buf =
     match (Dhcp_wire.pkt_of_buf buf (Cstruct.len buf)) with
-    | Error e -> log c (red "Can't parse packet: %s" e);
+    | Error e -> log console (red "Can't parse packet: %s" e);
       Lwt.return leases
     | Ok pkt ->
       let open Dhcp_server.Input in
-      match (input_pkt config leases pkt (Clock.time ())) with
+      match (input_pkt config leases pkt (MClock.elapsed_ns clock |> Int64.to_float)) with
       | Silence -> Lwt.return leases
       | Update leases ->
-        log c (blue "Received packet %s - updated lease database" (Dhcp_wire.pkt_to_string pkt));
+        log console (blue "Received packet %s - updated lease database" (Dhcp_wire.pkt_to_string pkt));
         Lwt.return leases
       | Warning w ->
-        log c (yellow "%s" w);
+        log console (yellow "%s" w);
         Lwt.return leases
       | Dhcp_server.Input.Error e ->
-        log c (red "%s" e);
+        log console (red "%s" e);
         Lwt.return leases
       | Reply (reply, leases) ->
-        log c (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt));
+        log console (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt));
         N.write net (Dhcp_wire.buf_of_pkt reply)
         >>= fun () ->
-        log c (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
+        log console (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
         Lwt.return leases
 
-  let start c net _clock _time =
+  let start c net clock _time =
     let or_error _c name fn t =
       fn t >>= function
       | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
@@ -56,7 +56,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
     (* Get an ARP stack *)
     or_error c "Ethif" E.connect net
     >>= fun e ->
-    or_error c "Arpv4" A.connect e
+    or_error c "Arpv4" (A.connect e) clock
     >>= fun a ->
     A.add_ip a DC.ip_address
     >>= fun () ->
@@ -81,7 +81,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.CLOCK) (Time: TIME) = struct
         | Result.Ok (ethif_header, ethif_payload) ->
         if of_interest ethif_header.Ethif_packet.destination net &&
           Dhcp_wire.is_dhcp buf (Cstruct.len buf) then begin
-          input_dhcp c net config !leases buf >>= fun new_leases ->
+          input_dhcp c clock net config !leases buf >>= fun new_leases ->
           leases := new_leases;
           Lwt.return_unit
         end else if ethif_header.Ethif_packet.ethertype = Ethif_wire.ARP then
