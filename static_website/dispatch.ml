@@ -29,8 +29,6 @@ module Main (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
         ) (fun _exn -> S.respond_not_found ())
 
   let start fs http =
-    Logs.(set_level (Some Info));
-
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
       let cid = Cohttp.Connection.to_string cid in
