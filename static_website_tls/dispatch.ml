@@ -64,21 +64,21 @@ module Dispatch (FS: V1_LWT.KV_RO) (S: HTTP) = struct
 end
 
 module HTTPS
-    (Clock: V1.CLOCK) (DATA: V1_LWT.KV_RO) (KEYS: V1_LWT.KV_RO) (Http: HTTP) =
+    (Pclock: V1.PCLOCK) (DATA: V1_LWT.KV_RO) (KEYS: V1_LWT.KV_RO) (Http: HTTP) =
 struct
 
-  module X509 = Tls_mirage.X509(KEYS)(Clock)
+  module X509 = Tls_mirage.X509(KEYS)(Pclock)
   module D = Dispatch(DATA)(Http)
-  module Logs_reporter = Mirage_logs.Make(Clock)
+  module Logs_reporter = Mirage_logs.Make(Pclock)
 
   let tls_init kv =
     X509.certificate kv `Default >>= fun cert ->
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start _clock data keys http =
+  let start clock data keys http =
     Logs.(set_level (Some Info));
-    Logs_reporter.(create () |> run) @@ fun () ->
+    Logs_reporter.(create clock |> run) @@ fun () ->
 
     tls_init keys >>= fun cfg ->
     let https_port = Key_gen.https_port () in
