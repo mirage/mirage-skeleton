@@ -3,8 +3,7 @@ open Lwt.Infix
 let server_src = Logs.Src.create "server" ~doc:"HTTP server"
 module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
-module Main (Clock:V1.CLOCK) (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
-  module Logs_reporter = Mirage_logs.Make(Clock)
+module Main (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
 
   let read_fs fs name =
     FS.size fs name >>= function
@@ -29,10 +28,7 @@ module Main (Clock:V1.CLOCK) (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
           S.respond_string ~status:`OK ~body ~headers ()
         ) (fun _exn -> S.respond_not_found ())
 
-  let start _clock fs http =
-    Logs.(set_level (Some Info));
-    Logs_reporter.(create () |> run) @@ fun () ->
-
+  let start fs http =
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
       let cid = Cohttp.Connection.to_string cid in
