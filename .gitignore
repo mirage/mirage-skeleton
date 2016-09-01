@@ -27,3 +27,6 @@ mir-*
 make-fat*-image.sh
 *_gen.ml
 *_gen.ml.in
+**/_build-ukvm/
+**/Makefile.ukvm
+**/ukvm-bin
