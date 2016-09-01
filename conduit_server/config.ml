@@ -15,9 +15,9 @@ let direct =
 (* Only add the Unix socket backend if the configuration mode is Unix *)
 let socket =
   let c = default_console in
-  if_impl Key.is_xen
-    noop
+  if_impl Key.is_unix
     (handler $ c $ conduit_direct (socket_stackv4 [Ipaddr.V4.any]))
+    noop
 
 let () =
   register "conduit_server" [direct ; socket ]
