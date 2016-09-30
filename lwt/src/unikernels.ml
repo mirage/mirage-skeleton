@@ -39,7 +39,7 @@ module Heads3 (C: V1_LWT.CONSOLE) = struct
 
 end
 
-module Timeout1 (C: V1_LWT.CONSOLE) = struct
+module Timeout1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
 
   let timeout delay t =
     Time.sleep_ns delay >>= fun () ->
@@ -48,16 +48,15 @@ module Timeout1 (C: V1_LWT.CONSOLE) = struct
     | Lwt.Return v -> Lwt.return (Some v)
     | Lwt.Fail ex  -> Lwt.fail ex
 
-  let start c =
-    Random.self_init ();
-    let t = Time.sleep_ns (Duration.of_ms (Random.int 3000)) >|= fun () -> "Heads" in
+  let start c _r =
+    let t = Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:3000 R.generate)) >|= fun () -> "Heads" in
     timeout (Duration.of_sec 2) t >>= function
     | None   -> C.log_s c "Cancelled"
     | Some v -> C.log_s c (Printf.sprintf "Returned %S" v)
 
 end
 
-module Timeout2 (C: V1_LWT.CONSOLE) = struct
+module Timeout2 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
 
   let timeout delay t =
     let tmout = Time.sleep_ns delay in
@@ -66,22 +65,21 @@ module Timeout2 (C: V1_LWT.CONSOLE) = struct
       (t >|= fun v -> Some v);
     ]
 
-  let start c  =
-    Random.self_init ();
-    let t = Time.sleep_ns (Duration.of_ms (Random.int 3000)) >|= fun () -> "Heads" in
+  let start c _r =
+    let t = Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:3000 R.generate)) >|= fun () -> "Heads" in
     timeout (Duration.of_sec 2) t >>= function
     | None   -> C.log_s c "Cancelled"
     | Some v -> C.log_s c (Printf.sprintf "Returned %S" v)
 
 end
 
-module Echo_server1 (C: V1_LWT.CONSOLE) = struct
+module Echo_server1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
 
   let read_line () =
-    OS.Time.sleep_ns (Duration.of_ms (Random.int 2500)) >|= fun () ->
-    String.make (Random.int 20) 'a'
+    OS.Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 R.generate)) >|= fun () ->
+    String.make (Randomconv.int ~bound:20 R.generate) 'a'
 
-  let start c =
+  let start c _r =
     let rec echo_server = function
       | 0 -> Lwt.return ()
       | n ->
