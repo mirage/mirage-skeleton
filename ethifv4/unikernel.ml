@@ -6,14 +6,14 @@ let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) = struct
+module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RANDOM) = struct
 
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(Clock)(Time)
   module I = Ipv4.Make(E)(A)
   module U = Udp.Make(I)
-  module T = Tcp.Flow.Make(I)(Time)(Clock)(Random)
-  module D = Dhcp_clientv4.Make(Time)(Random)(U)
+  module T = Tcp.Flow.Make(I)(Time)(Clock)(R)
+  module D = Dhcp_clientv4.Make(Time)(R)(U)
 
   let or_error _c name fn t =
     fn t
@@ -21,7 +21,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) = struct
     | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
     | `Ok t -> Lwt.return t
 
-  let start c net clock _time =
+  let start c net clock _time _r =
     or_error c "Ethif" E.connect net
     >>= fun e ->
     or_error c "Arpv4" (A.connect e) clock
