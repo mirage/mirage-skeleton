@@ -47,19 +47,10 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : V1.MCLOCK) (Time: TIME) = struct
         Lwt.return leases
 
   let start c net clock _time =
-    let or_error _c name fn t =
-      fn t >>= function
-      | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
-      | `Ok t     -> Lwt.return t
-    in
-
     (* Get an ARP stack *)
-    or_error c "Ethif" E.connect net
-    >>= fun e ->
-    or_error c "Arpv4" (A.connect e) clock
-    >>= fun a ->
-    A.add_ip a DC.ip_address
-    >>= fun () ->
+    E.connect net >>= fun e ->
+    A.connect e clock >>= fun a ->
+    A.add_ip a DC.ip_address >>= fun () ->
 
     (* Build a dhcp server *)
     let config = Dhcp_server.Config.make
