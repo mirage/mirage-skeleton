@@ -1,22 +1,28 @@
 open Mirage
 
-let (name, main) =
-  try match Sys.getenv "TARGET" with
-      | "heads1" -> ("heads1", "Unikernels.Heads1")
-      | "heads2" -> ("heads2", "Unikernels.Heads2")
-      | "heads3" -> ("heads3", "Unikernels.Heads3")
-
-      | "timeout1" -> ("timeout1", "Unikernels.Timeout1")
-      | "timeout2" -> ("timeout2", "Unikernels.Timeout2")
-
-      | "echo_server1" -> ("echo_server1", "Unikernels.Echo_server1")
-
-  with Not_found -> failwith "Must specify target"
+let libraries = ["duration"; "randomconv"]
+and packages = ["duration"; "randomconv"]
 
 let () =
-  let main =
-    foreign
-      ~libraries:["duration"] ~packages:["duration"]
-      main (console @-> job)
-  in
-  register name [ main $ default_console ]
+  try match Sys.getenv "TARGET" with
+    | "heads1" ->
+      let main = foreign ~libraries ~packages "Unikernels.Heads1" (console @-> job) in
+      register "heads1" [ main $ default_console ]
+    | "heads2" ->
+      let main = foreign ~libraries ~packages "Unikernels.Heads2" (console @-> job) in
+      register "heads2" [ main $ default_console ]
+    | "heads3" ->
+      let main = foreign ~libraries ~packages "Unikernels.Heads3" (console @-> job) in
+      register "heads3" [ main $ default_console ]
+
+    | "timeout1" ->
+      let main = foreign ~libraries ~packages "Unikernels.Timeout1" (console @-> random @-> job) in
+      register "timeout1" [ main $ default_console $ stdlib_random ]
+    | "timeout2" ->
+      let main = foreign ~libraries ~packages "Unikernels.Timeout2" (console @-> random @-> job) in
+      register "timeout2" [ main $ default_console $ stdlib_random ]
+
+    | "echo_server1" ->
+      let main = foreign ~libraries ~packages "Unikernels.Echo_server1" (console @-> random @-> job) in
+      register "echo_server1" [ main $ default_console $ stdlib_random ]
+  with Not_found -> failwith "Must specify target"
