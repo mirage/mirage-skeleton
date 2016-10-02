@@ -15,32 +15,16 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RAND
   module T = Tcp.Flow.Make(I)(Time)(Clock)(R)
   module D = Dhcp_clientv4.Make(Time)(R)(U)
 
-  let or_error _c name fn t =
-    fn t
-    >>= function
-    | `Error _e -> Lwt.fail (Failure ("Error starting " ^ name))
-    | `Ok t -> Lwt.return t
-
   let start c net clock _time _r =
-    or_error c "Ethif" E.connect net
-    >>= fun e ->
-    or_error c "Arpv4" (A.connect e) clock
-    >>= fun a ->
-    or_error c "Ipv4" (I.connect e) a
-    >>= fun i ->
-
-    I.set_ip i (Ipaddr.V4.of_string_exn "10.0.0.2")
-    >>= fun () ->
-    I.set_ip_netmask i (Ipaddr.V4.of_string_exn "255.255.255.0")
-    >>= fun () ->
-    I.set_ip_gateways i [Ipaddr.V4.of_string_exn "10.0.0.1"]
-    >>= fun () ->
-    or_error c "UDPv4" U.connect i
-    >>= fun udp ->
-
+    E.connect net >>= fun e ->
+    A.connect e clock >>= fun a ->
+    I.connect e a >>= fun i ->
+    I.set_ip i (Ipaddr.V4.of_string_exn "10.0.0.2") >>= fun () ->
+    I.set_ip_netmask i (Ipaddr.V4.of_string_exn "255.255.255.0") >>= fun () ->
+    I.set_ip_gateways i [Ipaddr.V4.of_string_exn "10.0.0.1"] >>= fun () ->
+    U.connect i >>= fun udp ->
     let dhcp, _offers = D.create (N.mac net) udp in
-    or_error c "TCPv4" (T.connect i) clock
-    >>= fun tcp ->
+    T.connect i clock >>= fun tcp ->
 
     N.listen net (
       E.input
