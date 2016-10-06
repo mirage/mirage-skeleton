@@ -38,7 +38,7 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.MCLOCK) (Time : TIME) = struct
                   i
                )
          e)
-    >>= fun () ->
+    >>= fun _ ->
     C.log c (green "done!");
     return ()
 
