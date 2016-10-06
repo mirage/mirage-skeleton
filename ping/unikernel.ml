@@ -43,7 +43,7 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock: V1.MCLOCK) (Time: V1_LWT.TIME) = str
                )
          ~ipv6:(fun _buf -> Lwt.return (C.log c (red "IP6")))
          e)
-    >>= fun () ->
+    >>= fun _ ->
     C.log c (green "done!");
     Lwt.return ()
 

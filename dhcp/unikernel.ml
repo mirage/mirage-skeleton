@@ -41,8 +41,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : V1.MCLOCK) (Time: TIME) = struct
         Lwt.return leases
       | Reply (reply, leases) ->
         log console (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt));
-        N.write net (Dhcp_wire.buf_of_pkt reply)
-        >>= fun () ->
+        N.write net (Dhcp_wire.buf_of_pkt reply) >>= fun _ ->
         log console (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
         Lwt.return leases
 

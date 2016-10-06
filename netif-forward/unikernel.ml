@@ -13,7 +13,7 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
   let listen nf =
     let hw_addr =  Macaddr.to_string (N1.mac nf) in
     let _ = printf "listening on the interface with mac address '%s' \n%!" hw_addr in
-    N1.listen nf (fun frame -> return (in_push (Some frame)))
+    N1.listen nf (fun frame -> return (in_push (Some frame))) >|= fun _ -> ()
 
   let update_packet_count () =
     let _ = packets_in := Int32.succ !packets_in in
@@ -34,7 +34,7 @@ module Main (C: CONSOLE)(N1: NETWORK)(N2: NETWORK) = struct
       let rec outq () =
         Lwt_stream.next out_queue >>= fun frame ->
         packets_waiting := Int32.pred !packets_waiting ;
-        N2.write nf frame >>= fun () ->
+        N2.write nf frame >>= fun _ ->
         outq ()
       in
       (inq ()) <?> (outq ())
