@@ -15,12 +15,12 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.MCLOCK) (Time : TIME) = struct
   module I = Ipv6.Make(E)(Time)(Clock)
 
   let start c n clock _time =
+    let gateways = (List.map Ipaddr.V6.of_string_exn gateways) in
     C.log c (green "starting...");
     E.connect n >>= fun e ->
-    I.connect e clock >>= fun i ->
-
-    I.set_ip i (Ipaddr.V6.of_string_exn ipaddr) >>= fun () ->
-    I.set_ip_gateways i (List.map Ipaddr.V6.of_string_exn gateways) >>= fun () ->
+    I.connect ~ip:(Ipaddr.V6.of_string_exn ipaddr)
+              ~gateways
+              e clock >>= fun i ->
 
     let handler s = fun ~src ~dst data ->
       C.log_s c (yellow "%s > %s %s"
@@ -38,8 +38,12 @@ module Main (C:CONSOLE) (N:NETWORK) (Clock : V1.MCLOCK) (Time : TIME) = struct
                   i
                )
          e)
-    >>= fun _ ->
-    C.log c (green "done!");
-    return ()
+    >>= function
+    | Result.Ok () ->
+      C.log c (green "done!");
+      return ()
+    | Result.Error _ ->
+      C.log c (red "ipv6 ping failed!");
+      return ()
 
 end
