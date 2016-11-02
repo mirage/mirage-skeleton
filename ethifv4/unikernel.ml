@@ -15,13 +15,14 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RAND
   module T = Tcp.Flow.Make(I)(Time)(Clock)(R)
   module D = Dhcp_clientv4.Make(Time)(R)(U)
 
+  let ip = Ipaddr.V4.of_string_exn "10.0.0.2"
+  let network = Ipaddr.V4.Prefix.make 24 ip
+  let gateway = Some (Ipaddr.V4.of_string_exn "10.0.0.1")
+
   let start c net clock _time _r =
     E.connect net >>= fun e ->
     A.connect e clock >>= fun a ->
-    I.connect e a >>= fun i ->
-    I.set_ip i (Ipaddr.V4.of_string_exn "10.0.0.2") >>= fun () ->
-    I.set_ip_netmask i (Ipaddr.V4.of_string_exn "255.255.255.0") >>= fun () ->
-    I.set_ip_gateways i [Ipaddr.V4.of_string_exn "10.0.0.1"] >>= fun () ->
+    I.connect ~ip ~network ~gateway e a >>= fun i ->
     U.connect i >>= fun udp ->
     let dhcp, _offers = D.create (N.mac net) udp in
     T.connect i clock >>= fun tcp ->
