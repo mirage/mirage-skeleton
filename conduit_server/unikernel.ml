@@ -1,21 +1,15 @@
-open Lwt.Infix
 open V1_LWT
-open Printf
 
-let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
-
-module Main (C:CONSOLE) (CON:Conduit_mirage.S) = struct
+module Main (CON:Conduit_mirage.S) = struct
+  let src = Logs.Src.create "conduit_server" ~doc:"Conduit HTTP server"
+  module Log = (val Logs.src_log src: Logs.LOG)
 
   module H = Cohttp_mirage.Server(Conduit_mirage.Flow)
 
-  let start console conduit =
-
+  let start conduit =
     let http_callback _conn_id req _body =
       let path = Uri.path (Cohttp.Request.uri req) in
-      C.log_s console (sprintf "Got request for %s\n" path) >>= fun () ->
+      Log.debug (fun f -> f "Got request for %s\n" path);
       H.respond_string ~status:`OK ~body:"hello mirage world!\n" ()
     in
 
