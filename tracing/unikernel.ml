@@ -6,9 +6,10 @@ open Lwt.Infix
 let target_ip = Ipaddr.V4.of_string_exn "10.0.0.1"
 
 module Main (S: V1_LWT.STACKV4) = struct
+  let buffer = Io_page.get 1 |> Io_page.to_cstruct
 
-  let send_data t =
-    let buffer = Io_page.get 1 |> Io_page.to_cstruct in
+  let start s =
+    let t = S.tcpv4 s in
 
     S.TCPV4.create_connection t (target_ip, 7001) >>= function
     | `Error _err -> failwith "Connection to port 7001 failed"
@@ -22,12 +23,4 @@ module Main (S: V1_LWT.STACKV4) = struct
     | `Ok () ->
 
     S.TCPV4.close flow
-
-  let start s =
-    let t = S.tcpv4 s in
-    Lwt.pick [
-      S.listen s;
-      send_data t;
-    ]
-
 end
