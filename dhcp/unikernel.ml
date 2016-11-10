@@ -6,17 +6,13 @@ let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 
-let string_of_stream s =
-  let s = List.map Cstruct.to_string s in
-  (String.concat "" s)
-
 module Main (C: CONSOLE) (N: NETWORK) (MClock : V1.MCLOCK) (Time: TIME) = struct
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(MClock)(Time)
   module DC = Dhcp_config
 
   let log c s =
-    Str.split_delim (Str.regexp "\n") s |>
+    Astring.String.cuts ~sep:"\n" s |>
     List.iter (fun line -> C.log c line)
 
   let of_interest dest net =
