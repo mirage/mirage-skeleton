@@ -11,9 +11,6 @@ let () =
     | "heads2" ->
       let main = foreign ~libraries ~packages "Unikernels.Heads2" (console @-> job) in
       register "heads2" [ main $ default_console ]
-    | "heads3" ->
-      let main = foreign ~libraries ~packages "Unikernels.Heads3" (console @-> job) in
-      register "heads3" [ main $ default_console ]
 
     | "timeout1" ->
       let main = foreign ~libraries ~packages "Unikernels.Timeout1" (console @-> random @-> job) in

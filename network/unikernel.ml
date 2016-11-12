@@ -10,22 +10,14 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
   let start c s =
     S.listen_tcpv4 s ~port:8080 (fun flow ->
         let dst, dst_port = S.TCPV4.dst flow in
-        C.log_s c (green "new tcp connection from %s %d"
-                     (Ipaddr.V4.to_string dst) dst_port)
-        >>= fun () ->
-        S.TCPV4.read flow
-        >>= function
+        C.log c (green "new tcp connection from %s %d"
+                   (Ipaddr.V4.to_string dst) dst_port) >>= fun () ->
+        S.TCPV4.read flow >>= function
         | `Ok b ->
-          C.log_s c
-            (yellow "read: %d\n%s"
-               (Cstruct.len b) (Cstruct.to_string b)
-            )
-          >>= fun () ->
+          C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
           S.TCPV4.close flow
-
-        | `Eof -> C.log_s c (red "read: eof")
-
-        | `Error _e -> C.log_s c (red "read: error")
+        | `Eof -> C.log c (red "read: eof")
+        | `Error _e -> C.log c (red "read: error")
       );
 
     S.listen s
