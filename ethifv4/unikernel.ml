@@ -25,45 +25,28 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RAND
     U.connect i >>= fun udp ->
     T.connect i clock >>= fun tcp ->
 
+    let tcp_listeners = function
+      | 80 ->
+        Some (fun flow ->
+            let dst, dst_port = T.dst flow in
+            C.log c (green "new tcp from %s %d" (Ipaddr.V4.to_string dst) dst_port) >>= fun () ->
+            T.read flow >>= function
+            | `Ok b ->
+              C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
+              T.close flow
+            | `Eof -> C.log c (red "read: eof")
+            | `Error _e -> C.log c (red "read: error"))
+      | _ -> None
+    and udp_listeners ~dst_port =
+      Some (fun ~src:_ ~dst:_ ~src_port:_ _ -> C.log c (blue "udp packet on port %d" dst_port))
+    in
+
     N.listen net (
-      E.input
+      E.input e
         ~arpv4:(A.input a)
-        ~ipv4:(
-          I.input
-            ~tcp:(
-              T.input tcp ~listeners:
-                (function
-                  | 80 -> Some (fun flow ->
-                      let dst, dst_port = T.dst flow in
-                      C.log_s c
-                        (green "new tcp from %s %d"
-                          (Ipaddr.V4.to_string dst) dst_port
-                        )
-                      >>= fun () ->
-                      T.read flow
-                      >>= function
-                      | `Ok b ->
-                        C.log_s c
-                          (yellow "read: %d\n%s"
-                            (Cstruct.len b) (Cstruct.to_string b)
-                          )
-                        >>= fun () ->
-                        T.close flow
-                      | `Eof -> C.log_s c (red "read: eof")
-                      | `Error _e -> C.log_s c (red "read: error"))
-                  | _ -> None
-                ))
-            ~udp:(
-              U.input ~listeners:
-                (fun ~dst_port ->
-                   C.log c (blue "udp packet on port %d" dst_port);
-                   None
-                )
-                udp
-            )
-            ~default:(fun ~proto:_ ~src:_ ~dst:_ _ -> Lwt.return_unit)
-            i
-        )
-        ~ipv6:(fun _b -> C.log_s c (yellow "ipv6")) e
-    )
+        ~ipv4:(I.input i
+                 ~tcp:(T.input tcp ~listeners:tcp_listeners)
+                 ~udp:(U.input udp ~listeners:udp_listeners)
+                 ~default:(fun ~proto:_ ~src:_ ~dst:_ _ -> Lwt.return_unit))
+        ~ipv6:(fun _b -> C.log c (yellow "ipv6")))
 end

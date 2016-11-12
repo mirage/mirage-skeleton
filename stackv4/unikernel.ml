@@ -14,13 +14,13 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
   let start console s =
 
     let ips = List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)) in
-    C.log_s console (sprintf "IP address: %s\n" (String.concat ", " ips))
+    C.log console (sprintf "IP address: %s" (String.concat ", " ips))
 
     >>= fun () ->
     let local_port = 53 in
     S.listen_udpv4 s ~port:local_port (
       fun ~src ~dst ~src_port buf ->
-        C.log_s console
+        C.log console
           (red "UDP %s:%d > %s:%d: \"%s\""
              (Ipaddr.V4.to_string src) src_port
              (Ipaddr.V4.to_string dst) local_port
@@ -31,23 +31,16 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
     S.listen_tcpv4 s ~port:local_port (
       fun flow ->
         let remote, remote_port = T.dst flow in
-        C.log_s console
+        C.log console
           (green "TCP %s:%d > _:%d"
-             (Ipaddr.V4.to_string remote) remote_port local_port)
-
-        >>= fun () ->
-        T.read flow
-
-        >>= function
+             (Ipaddr.V4.to_string remote) remote_port local_port) >>= fun () ->
+        T.read flow >>= function
         | `Ok b ->
-          C.log_s console
-            (yellow "read: %d \"%s\"" (Cstruct.len b) (Cstruct.to_string b))
-
-          >>= fun () ->
+          C.log console
+            (yellow "read: %d \"%s\"" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
           T.close flow
-
-        | `Eof -> C.log_s console (red "read: eof")
-        | `Error _e -> C.log_s console (red "read: error")
+        | `Eof -> C.log console (red "read: eof")
+        | `Error _e -> C.log console (red "read: error")
     );
 
     S.listen s

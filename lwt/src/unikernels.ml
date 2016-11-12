@@ -5,36 +5,23 @@ module Heads1 (C: V1_LWT.CONSOLE) = struct
 
   let start c =
     Lwt.join [
-      (Time.sleep_ns (Duration.of_sec 1) >>= fun () -> C.log_s c "Heads");
-      (Time.sleep_ns (Duration.of_sec 2) >>= fun () -> C.log_s c "Tails")
+      (Time.sleep_ns (Duration.of_sec 1) >>= fun () -> C.log c "Heads");
+      (Time.sleep_ns (Duration.of_sec 2) >>= fun () -> C.log c "Tails")
     ] >>= fun () ->
-    C.log_s c ("Finished")
+    C.log c "Finished"
 
 end
 
 module Heads2 (C: V1_LWT.CONSOLE) = struct
 
   let start c =
-    Lwt.join [
-      (Time.sleep_ns (Duration.of_sec 1) >|= fun () -> C.log c "Heads");
-      (Time.sleep_ns (Duration.of_sec 2) >|= fun () -> C.log c "Tails");
-    ] >|= fun () ->
-    C.log c "Finished";
-
-end
-
-module Heads3 (C: V1_LWT.CONSOLE) = struct
-
-  let start c =
     let heads =
-      Time.sleep_ns (Duration.of_sec 1) >|= fun () ->
-      C.log c "Heads"
+      Time.sleep_ns (Duration.of_sec 1) >>= fun () -> C.log c "Heads"
     in
     let tails =
-      Time.sleep_ns (Duration.of_sec 2) >|= fun () ->
-      C.log c "Tails"
+      Time.sleep_ns (Duration.of_sec 2) >>= fun () -> C.log c "Tails"
     in
-    (heads <&> tails) >|= fun () ->
+    (heads <&> tails) >>= fun () ->
     C.log c "Finished"
 
 end
@@ -51,8 +38,8 @@ module Timeout1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
   let start c _r =
     let t = Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:3000 R.generate)) >|= fun () -> "Heads" in
     timeout (Duration.of_sec 2) t >>= function
-    | None   -> C.log_s c "Cancelled"
-    | Some v -> C.log_s c (Printf.sprintf "Returned %S" v)
+    | None   -> C.log c "Cancelled"
+    | Some v -> C.log c (Printf.sprintf "Returned %S" v)
 
 end
 
@@ -68,8 +55,8 @@ module Timeout2 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
   let start c _r =
     let t = Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:3000 R.generate)) >|= fun () -> "Heads" in
     timeout (Duration.of_sec 2) t >>= function
-    | None   -> C.log_s c "Cancelled"
-    | Some v -> C.log_s c (Printf.sprintf "Returned %S" v)
+    | None   -> C.log c "Cancelled"
+    | Some v -> C.log c (Printf.sprintf "Returned %S" v)
 
 end
 
@@ -84,7 +71,7 @@ module Echo_server1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
       | 0 -> Lwt.return ()
       | n ->
 	read_line () >>= fun s ->
-	C.log_s c s >>= fun () ->
+	C.log c s >>= fun () ->
 	echo_server (n - 1)
     in
     echo_server 10
