@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 
 module Main (C: V1_LWT.CONSOLE) (Time : V1_LWT.TIME) = struct
 
@@ -6,7 +6,7 @@ module Main (C: V1_LWT.CONSOLE) (Time : V1_LWT.TIME) = struct
     let rec loop = function
       | 0 -> Lwt.return_unit
       | n ->
-        C.log c (Key_gen.hello ());
+        C.log c (Key_gen.hello ()) >>= fun () ->
         Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
         loop (n-1)
     in
