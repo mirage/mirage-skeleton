@@ -31,11 +31,11 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RAND
             let dst, dst_port = T.dst flow in
             C.log c (green "new tcp from %s %d" (Ipaddr.V4.to_string dst) dst_port) >>= fun () ->
             T.read flow >>= function
-            | `Ok b ->
+            | Ok (`Data b) ->
               C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
               T.close flow
-            | `Eof -> C.log c (red "read: eof")
-            | `Error _e -> C.log c (red "read: error"))
+            | Ok `Eof -> C.log c (green "read: eof")
+            | Error (`Msg s) -> C.log c (red "read error: " ^ s))
       | _ -> None
     and udp_listeners ~dst_port =
       Some (fun ~src:_ ~dst:_ ~src_port:_ _ -> C.log c (blue "udp packet on port %d" dst_port))
