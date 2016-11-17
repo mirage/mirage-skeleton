@@ -35,12 +35,12 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
           (green "TCP %s:%d > _:%d"
              (Ipaddr.V4.to_string remote) remote_port local_port) >>= fun () ->
         T.read flow >>= function
-        | `Ok b ->
+        | Ok (`Data b) ->
           C.log console
             (yellow "read: %d \"%s\"" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
           T.close flow
-        | `Eof -> C.log console (red "read: eof")
-        | `Error _e -> C.log console (red "read: error")
+        | Ok `Eof -> C.log console (green "read: eof")
+        | Error (`Msg s) -> C.log console (red "read error: " ^ s)
     );
 
     S.listen s

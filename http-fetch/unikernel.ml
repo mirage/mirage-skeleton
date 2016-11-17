@@ -32,13 +32,12 @@ module Client (T: TIME) (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.
     Cstruct.blit_from_string http_get 0 page 0 (String.length http_get);
     let buf = Cstruct.sub page 0 (String.length http_get) in
     Conduit_mirage.Flow.write flow buf >>= function
-    | `Eof     -> C.log c "EOF on write"
-    | `Error _ -> C.log c "ERR on write"
-    | `Ok _buf ->
+    | Error e -> C.log c "ERR on write"
+    | Ok () ->
       Conduit_mirage.Flow.read flow >>= function
-      | `Eof -> C.log c "EOF"
-      | `Error _ -> C.log c "ERR"
-      | `Ok buf -> C.log c (sprintf "OK\n%s\n" (Cstruct.to_string buf))
+      | Error _ -> C.log c "ERR"
+      | Ok `Eof -> C.log c "EOF"
+      | Ok (`Data buf) -> C.log c (sprintf "OK\n%s\n" (Cstruct.to_string buf))
 
   let start _time c res (ctx:CON.t) =
     C.log c (sprintf "Resolving in 1s using DNS server %s" ns) >>= fun () ->
