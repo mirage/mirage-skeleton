@@ -1,10 +1,9 @@
 open Mirage
 
 let main =
-  let packages = [ "tcpip" ] in
-  let libraries = [ "tcpip.ethif"; "tcpip.ipv6" ] in
+  let packages = [ package ~sublibs:["ethif"; "ipv6"] "tcpip" ] in
   foreign
-    ~packages ~libraries
+    ~packages
     "Unikernel.Main" (console @-> network @-> mclock @-> time @-> job)
 
 let () =
