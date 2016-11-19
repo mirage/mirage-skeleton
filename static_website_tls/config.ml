@@ -15,15 +15,12 @@ let https_port =
   Key.(create "https_port" Arg.(opt int 4433 doc))
 
 let main =
-  let libraries = [
-    "uri"; "tls"; "tls.mirage"; "mirage-http"; "mirage-logs"; "magic-mime"
-  ] in
   let packages = [
-    "uri"; "tls"; "mirage-http"; "mirage-logs"; "magic-mime"
+    package "uri"; package "tls"; package "mirage-http"; package "magic-mime"
   ] in
   let keys = List.map Key.abstract [ http_port; https_port ] in
   foreign
-    ~libraries ~packages ~keys
+    ~packages ~keys
     "Dispatch.HTTPS" (pclock @-> kv_ro @-> kv_ro @-> http @-> job)
 
 let () =

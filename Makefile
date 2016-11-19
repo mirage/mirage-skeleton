@@ -39,7 +39,7 @@ lwt-testrun:
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
 %-build: %-configure
-	cd $* && $(MAKE)
+	cd $* && $(MAKE) depend && $(MAKE)
 
 %-clean:
 	make -C $* clean
