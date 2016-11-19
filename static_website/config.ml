@@ -9,11 +9,10 @@ let port =
   Key.(create "port" Arg.(opt int 8080 doc))
 
 let main =
-  let libraries = [ "re.str"; "magic-mime"; "mirage-logs" ] in
-  let packages = [ "re"; "magic-mime"; "mirage-logs" ] in
+  let packages = [ package "re"; package "magic-mime" ] in
   let keys = [ Key.abstract port ] in
   foreign
-    ~libraries ~packages ~keys
+    ~packages ~keys
     "Dispatch.Main" (kv_ro @-> http @-> job)
 
 let () =

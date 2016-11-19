@@ -2,7 +2,7 @@ open Mirage
 
 let main =
   foreign
-    ~libraries:["duration"] ~packages:["duration"]
+    ~packages:[package "duration"]
     "Unikernel.Main" (console @-> time @-> job)
 
 let () =

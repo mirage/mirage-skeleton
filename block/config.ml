@@ -6,13 +6,11 @@ let shellconfig = Type ShellConfig
 let config_shell = impl @@ object
     inherit base_configurable
 
-    method configure i =
-      let dir = Info.root i in
-      Functoria_app.Cmd.run "dd if=/dev/zero of=%s/disk.img count=100000" dir
+    method build _i =
+      Bos.OS.Cmd.run Bos.Cmd.(v "dd" % "if=/dev/zero" % "of=disk.img" % "count=100000")
 
-    method clean i =
-      let dir = Info.root i in
-      Functoria_app.Cmd.run "rm -f %s/disk.img" dir
+    method clean _i =
+      Bos.OS.File.delete (Fpath.v "disk.img")
 
     method module_name = "Functoria_runtime"
     method name = "shell_config"
@@ -21,10 +19,9 @@ end
 
 
 let main =
-  let packages = [ "io-page" ; "duration" ] in
-  let libraries = [ "io-page" ; "duration" ] in
+  let packages = [ package "io-page"; package "duration"; package ~build:true "bos"; package ~build:true "fpath" ] in
   foreign
-    ~libraries ~packages
+    ~packages
     ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
 
 let img = block_of_file "disk.img"
