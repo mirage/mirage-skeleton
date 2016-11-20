@@ -13,11 +13,11 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
         C.log c (green "new tcp connection from %s %d"
                    (Ipaddr.V4.to_string dst) dst_port) >>= fun () ->
         S.TCPV4.read flow >>= function
-        | `Ok b ->
+        | Ok (`Data b) ->
           C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
           S.TCPV4.close flow
-        | `Eof -> C.log c (red "read: eof")
-        | `Error _e -> C.log c (red "read: error")
+        | Ok `Eof -> C.log c (green "read: eof")
+        | Error (`Msg s) -> C.log c (red "read: error " ^ s)
       );
 
     S.listen s
