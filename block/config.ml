@@ -21,10 +21,9 @@ end
 
 
 let main =
-  let packages = [ "io-page" ; "duration" ] in
-  let libraries = [ "io-page" ; "duration" ] in
+  let packages = [ package "io-page" ; package "duration" ] in
   foreign
-    ~libraries ~packages
+    ~packages
     ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
 
 let img = block_of_file "disk.img"

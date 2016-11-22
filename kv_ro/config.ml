@@ -4,7 +4,7 @@ let disk = generic_kv_ro "t"
 
 let main =
   foreign
-    ~libraries:["duration"] ~packages:["duration"]
+    ~packages:[package "duration"]
     "Unikernel.Main" (console @-> kv_ro @-> kv_ro @-> job)
 
 let () =
