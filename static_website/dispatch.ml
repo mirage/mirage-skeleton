@@ -7,11 +7,13 @@ module Main (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
 
   let read_fs fs name =
     FS.size fs name >>= function
-    | `Error (FS.Unknown_key _) -> Lwt.fail (Failure ("read " ^ name))
-    | `Ok size ->
-      FS.read fs name 0 (Int64.to_int size) >>= function
-      | `Error (FS.Unknown_key _) -> Lwt.fail (Failure ("read " ^ name))
-      | `Ok bufs -> Lwt.return (Cstruct.copyv bufs)
+    | Error (`Msg s) -> Lwt.fail (Failure ("read " ^ s))
+    | Error `Unknown_key -> Lwt.fail (Failure ("read " ^ name))
+    | Ok size ->
+      FS.read fs name 0L size >>= function
+      | Error (`Msg s) -> Lwt.fail (Failure ("read " ^ s))
+      | Error `Unknown_key -> Lwt.fail (Failure ("read " ^ name))
+      | Ok bufs -> Lwt.return (Cstruct.copyv bufs)
 
   let rec dispatcher fs uri =
     match Uri.path uri with
