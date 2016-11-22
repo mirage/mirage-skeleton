@@ -22,13 +22,13 @@ module Main (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
   let load_zone k =
     K.size k "test.zone"
     >>= function
-    | `Error _ -> Lwt.fail (Failure "test.zone not found")
-    | `Ok sz ->
+    | Error _ -> Lwt.fail (Failure "test.zone not found")
+    | Ok sz ->
       Server_log.info (fun f -> f "Loading %Ld bytes of zone data" sz);
-      K.read k "test.zone" 0 (Int64.to_int sz)
+      K.read k "test.zone" 0L sz
       >>= function
-      | `Error _ -> Lwt.fail (Failure "test.zone error reading")
-      | `Ok pages -> Lwt.return (Cstruct.concat pages |> Cstruct.to_string)
+      | Error _ -> Lwt.fail (Failure "test.zone error reading")
+      | Ok pages -> Lwt.return (Cstruct.concat pages |> Cstruct.to_string)
 
   let make_client_request stack =
     OS.Time.sleep_ns (Duration.of_sec 3) >>= fun () ->

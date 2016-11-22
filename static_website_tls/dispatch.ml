@@ -14,12 +14,13 @@ module Dispatch (FS: V1_LWT.KV_RO) (S: HTTP) = struct
 
   let read_fs fs name =
     FS.size fs name >>= function
-    | `Error (FS.Unknown_key _) ->
-      Lwt.fail (Failure ("read " ^ name))
-    | `Ok size ->
-      FS.read fs name 0 (Int64.to_int size) >>= function
-      | `Error (FS.Unknown_key _) -> Lwt.fail (Failure ("read " ^ name))
-      | `Ok bufs -> Lwt.return (Cstruct.copyv bufs)
+    | Error (`Msg s) -> Lwt.fail (Failure ("sizing " ^ name ^ ": " ^ s))
+    | Error `Unknown_key -> Lwt.fail (Failure ("not found: " ^ name))
+    | Ok size ->
+      FS.read fs name 0L size >>= function
+      | Error (`Msg s) -> Lwt.fail (Failure ("reading " ^ name ^ ": " ^ s))
+      | Error `Unknown_key -> Lwt.fail (Failure ("read " ^ name))
+      | Ok bufs -> Lwt.return (Cstruct.copyv bufs)
 
   (* dispatch files *)
   let rec dispatcher fs uri =
