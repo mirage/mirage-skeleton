@@ -12,15 +12,15 @@ module Main (S: V1_LWT.STACKV4) = struct
     let t = S.tcpv4 s in
 
     S.TCPV4.create_connection t (target_ip, 7001) >>= function
-    | `Error _err -> failwith "Connection to port 7001 failed"
-    | `Ok flow ->
+    | Error _err -> failwith "Connection to port 7001 failed"
+    | Ok flow ->
 
     let payload = Cstruct.sub buffer 0 1 in
     Cstruct.set_char payload 0 '!';
 
     S.TCPV4.write flow payload >>= function
-    | `Error _ | `Eof -> assert false
-    | `Ok () ->
+    | Error _ -> assert false
+    | Ok () ->
 
     S.TCPV4.close flow
 end
