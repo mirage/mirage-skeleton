@@ -2,7 +2,7 @@ open Mirage
 
 let main =
   foreign
-    ~libraries:["duration"] ~packages:["duration"]
+    ~packages:[package "duration"]
     "Unikernel.Main" (time @-> console @-> kv_ro @-> kv_ro @-> job)
 
 let disk1 = crunch "t"

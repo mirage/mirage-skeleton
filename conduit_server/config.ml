@@ -1,10 +1,9 @@
 open Mirage
 
 let handler =
-  let libraries = ["mirage-http"] in
-  let packages = ["mirage-http"] in
+  let packages = [package "mirage-http"] in
   foreign
-    ~libraries ~packages
+    ~packages
     "Unikernel.Main" (conduit @-> job)
 
 let () =

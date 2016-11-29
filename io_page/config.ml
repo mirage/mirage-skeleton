@@ -2,7 +2,7 @@ open Mirage
 
 let main =
   foreign
-    ~libraries:["duration"; "io-page"] ~packages:["duration"; "io-page"]
+    ~packages:[package "duration"; package "io-page"]
     "Unikernel.Main" (time @-> console @-> job)
 
 let () = register "io_page" [
