@@ -9,5 +9,5 @@ let () =
   ]
   in
   register "dhcp" ~packages [
-    main $ default_console $ tap0 $ default_monotonic_clock $ default_time
+    main $ default_console $ default_network $ default_monotonic_clock $ default_time
   ]

@@ -7,4 +7,4 @@ let handler =
     "Unikernel.Main" (conduit @-> job)
 
 let () =
-  register "conduit_server" [ handler $ conduit_direct (generic_stackv4 tap0) ]
+  register "conduit_server" [ handler $ conduit_direct (generic_stackv4 default_network) ]
