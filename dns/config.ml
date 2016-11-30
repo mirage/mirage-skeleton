@@ -12,7 +12,7 @@ let dns_handler =
     ~packages
     "Unikernel.Main" (kv_ro @-> stackv4 @-> job)
 
-let stack = generic_stackv4 tap0
+let stack = generic_stackv4 default_network
 
 let () =
   register "dns" [dns_handler $ data $ stack]

@@ -1,6 +1,6 @@
 open Mirage
 
-let stack = generic_stackv4 tap0
+let stack = generic_stackv4 default_network
 let data = generic_kv_ro "htdocs"
 let https_srv = http_server @@ conduit_direct ~tls:true stack
 
