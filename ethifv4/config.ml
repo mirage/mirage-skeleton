@@ -8,5 +8,5 @@ let main =
 
 let () =
   register "ethifv4" [
-    main $ default_console $ tap0 $ default_monotonic_clock $ default_time $ default_random
+    main $ default_console $ default_network $ default_monotonic_clock $ default_time $ default_random
   ]
