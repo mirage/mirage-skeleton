@@ -39,10 +39,12 @@ lwt-testrun:
 	cd $* && $(MIRAGE) configure -t $(MODE) $(MIRAGE_FLAGS)
 
 %-build: %-configure
+	-cp Makefile.user $*
 	cd $* && $(MAKE) depend && $(MAKE)
 
 %-clean:
-	make -C $* clean
+	-cd $* && $(MAKE) clean
+	-$(RM) $*/Makefile.user
 	$(RM) log
 
 %-testrun:
