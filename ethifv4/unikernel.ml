@@ -11,7 +11,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RAND
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(Clock)(Time)
   module I = Static_ipv4.Make(E)(A)
-  module U = Udp.Make(I)
+  module U = Udp.Make(I)(R)
   module T = Tcp.Flow.Make(I)(Time)(Clock)(R)
 
   let ip = Ipaddr.V4.of_string_exn "10.0.0.2"
