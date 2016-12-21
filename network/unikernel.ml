@@ -1,9 +1,9 @@
 open Lwt.Infix
 
-let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
+let red fmt    = Fmt.strf ("\027[31m"^^fmt^^"\027[m")
+let green fmt  = Fmt.strf ("\027[32m"^^fmt^^"\027[m")
+let yellow fmt = Fmt.strf ("\027[33m"^^fmt^^"\027[m")
+let blue fmt   = Fmt.strf ("\027[36m"^^fmt^^"\027[m")
 
 module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
 
@@ -14,10 +14,11 @@ module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
                    (Ipaddr.V4.to_string dst) dst_port) >>= fun () ->
         S.TCPV4.read flow >>= function
         | Ok (`Data b) ->
-          C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
+          C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b))
+          >>= fun () ->
           S.TCPV4.close flow
         | Ok `Eof -> C.log c (green "read: eof")
-        | Error (`Msg s) -> C.log c (red "read: error " ^ s)
+        | Error e -> C.log c (red "read: error %a" S.TCPV4.pp_error e)
       );
 
     S.listen s
