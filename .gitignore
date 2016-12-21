@@ -8,6 +8,8 @@ main.ml
 myocamlbuild.ml
 **/Makefile
 !lwt/Makefile
+.mirage.configure
+*.opam
 
 # Generated outputs
 *.native
