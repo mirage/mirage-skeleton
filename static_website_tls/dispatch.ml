@@ -12,14 +12,14 @@ module Http_log = (val Logs.src_log http_src : Logs.LOG)
 
 module Dispatch (FS: V1_LWT.KV_RO) (S: HTTP) = struct
 
+  let failf fmt = Fmt.kstrf Lwt.fail_with fmt
+
   let read_fs fs name =
     FS.size fs name >>= function
-    | Error (`Msg s) -> Lwt.fail (Failure ("sizing " ^ name ^ ": " ^ s))
-    | Error `Unknown_key -> Lwt.fail (Failure ("not found: " ^ name))
+    | Error e -> failf "size: %a" FS.pp_error e
     | Ok size ->
       FS.read fs name 0L size >>= function
-      | Error (`Msg s) -> Lwt.fail (Failure ("reading " ^ name ^ ": " ^ s))
-      | Error `Unknown_key -> Lwt.fail (Failure ("read " ^ name))
+      | Error e -> failf "read: %a" FS.pp_error e
       | Ok bufs -> Lwt.return (Cstruct.copyv bufs)
 
   (* dispatch files *)
