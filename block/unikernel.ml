@@ -53,13 +53,15 @@ module Main (Time: TIME)(B: BLOCK) = struct
         sector :: (loop (n-1)) in
     loop n
 
+  open Mirage_block
+
   let check_sector_write b _kind _id offset length =
     Log.debug (fun f -> f "writing %d sectors at %Ld\n" length offset);
     incr tests_started;
     B.get_info b >>= fun info ->
-    let sectors = alloc info.B.sector_size length in
+    let sectors = alloc info.sector_size length in
     B.write b offset sectors >>*= fun () ->
-    let sectors' = alloc info.B.sector_size length in
+    let sectors' = alloc info.sector_size length in
     List.iter fill_with_zeroes sectors';
     B.read b offset sectors' >>*= fun () ->
     List.iter (fun (a, b) -> check_equal a b) (List.combine sectors sectors');
@@ -70,7 +72,7 @@ module Main (Time: TIME)(B: BLOCK) = struct
     Log.debug (fun f -> f "writing %d sectors at %Ld\n" length offset);
     incr tests_started;
     B.get_info b >>= fun info ->
-    let sectors = alloc info.B.sector_size length in
+    let sectors = alloc info.sector_size length in
     Log.err (fun f -> f "Expecting error output from the following operation...");
     B.write b offset sectors >|= function
     | Ok () ->
@@ -83,7 +85,7 @@ module Main (Time: TIME)(B: BLOCK) = struct
     printf "reading %d sectors at %Ld\n" length offset;
     incr tests_started;
     B.get_info b >>= fun info ->
-    let sectors = alloc info.B.sector_size length in
+    let sectors = alloc info.sector_size length in
     Log.err (fun f -> f "Expecting error output from the following operation...");
     B.read b offset sectors >|= function
     | Ok () ->
@@ -94,30 +96,32 @@ module Main (Time: TIME)(B: BLOCK) = struct
 
   let start _time b () =
     B.get_info b >>= fun info ->
+    (* FIXME(samoht): this should probably move into
+       Mirage_block.pp_info *)
     Log.info (fun f -> f "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!"
-      info.B.size_sectors info.B.read_write info.B.sector_size);
+      info.size_sectors info.read_write info.sector_size);
 
     check_sector_write b "local" "51712" 0L 1
     >>= fun () ->
-    check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 1L) 1
+    check_sector_write b "local" "51712" (Int64.sub info.size_sectors 1L) 1
     >>= fun () ->
     check_sector_write b "local" "51712" 0L 2
     >>= fun () ->
-    check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 2L) 2
+    check_sector_write b "local" "51712" (Int64.sub info.size_sectors 2L) 2
     >>= fun () ->
     check_sector_write b "local" "51712" 0L 12
     >>= fun () ->
-    check_sector_write b "local" "51712" (Int64.sub info.B.size_sectors 12L) 12
+    check_sector_write b "local" "51712" (Int64.sub info.size_sectors 12L) 12
     >>= fun () ->
 
-    check_sector_write_failure b "local" "51712" info.B.size_sectors 1
+    check_sector_write_failure b "local" "51712" info.size_sectors 1
     >>= fun () ->
-    check_sector_write_failure b "local" "51712" (Int64.sub info.B.size_sectors 11L) 12
+    check_sector_write_failure b "local" "51712" (Int64.sub info.size_sectors 11L) 12
     >>= fun () ->
-    check_sector_read_failure b "local" "51712" info.B.size_sectors 1
+    check_sector_read_failure b "local" "51712" info.size_sectors 1
     >>= fun () ->
 
-    check_sector_read_failure b "local" "51712" (Int64.sub info.B.size_sectors 11L) 12
+    check_sector_read_failure b "local" "51712" (Int64.sub info.size_sectors 11L) 12
     >>= fun () ->
 
     Log.info (fun f -> f "Test sequence finished\n");
