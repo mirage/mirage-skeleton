@@ -1,11 +1,10 @@
 open Lwt.Infix
 open V1_LWT
-open Printf
 
-let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
+let red fmt    = Fmt.strf ("\027[31m"^^fmt^^"\027[m")
+let green fmt  = Fmt.strf ("\027[32m"^^fmt^^"\027[m")
+let yellow fmt = Fmt.strf ("\027[33m"^^fmt^^"\027[m")
+let blue fmt   = Fmt.strf ("\027[36m"^^fmt^^"\027[m")
 
 module Main (C:CONSOLE) (S:STACKV4) = struct
 
@@ -14,7 +13,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
   let start console s =
 
     let ips = List.map Ipaddr.V4.to_string (S.IPV4.get_ip (S.ipv4 s)) in
-    C.log console (sprintf "IP address: %s" (String.concat ", " ips))
+    C.log console (Fmt.strf "IP address: %s" (String.concat ", " ips))
 
     >>= fun () ->
     let local_port = 53 in
@@ -40,7 +39,7 @@ module Main (C:CONSOLE) (S:STACKV4) = struct
             (yellow "read: %d \"%s\"" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
           T.close flow
         | Ok `Eof -> C.log console (green "read: eof")
-        | Error (`Msg s) -> C.log console (red "read error: " ^ s)
+        | Error e -> C.log console (red "read error: %a" T.pp_error e)
     );
 
     S.listen s

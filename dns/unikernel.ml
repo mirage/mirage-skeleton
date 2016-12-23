@@ -71,7 +71,7 @@ module Main (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
           let rbuf = Cstruct.of_bigarray rba in
           Server_log.info (fun f -> f "Sending reply");
           U.write ~src_port:listening_port ~dst:src ~dst_port:src_port udp rbuf >>= function
-          | Error e -> Server_log.warn (fun f -> f "Failure sending reply: %a" Mirage_pp.pp_udp_error e);
+          | Error e -> Server_log.warn (fun f -> f "Failure sending reply: %a" U.pp_error e);
             Lwt.return_unit
           | Ok () -> Lwt.return ()
     );

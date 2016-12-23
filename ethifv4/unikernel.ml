@@ -1,12 +1,13 @@
 open V1_LWT
 open Lwt.Infix
 
-let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
+let red fmt    = Fmt.strf ("\027[31m"^^fmt^^"\027[m")
+let green fmt  = Fmt.strf ("\027[32m"^^fmt^^"\027[m")
+let yellow fmt = Fmt.strf ("\027[33m"^^fmt^^"\027[m")
+let blue fmt   = Fmt.strf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RANDOM) = struct
+module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RANDOM) =
+struct
 
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(Clock)(Time)
@@ -35,7 +36,7 @@ module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RAND
               C.log c (yellow "read: %d\n%s" (Cstruct.len b) (Cstruct.to_string b)) >>= fun () ->
               T.close flow
             | Ok `Eof -> C.log c (green "read: eof")
-            | Error (`Msg s) -> C.log c (red "read error: " ^ s))
+            | Error e -> C.log c (red "read error: %a" T.pp_error e))
       | _ -> None
     and udp_listeners ~dst_port =
       Some (fun ~src:_ ~dst:_ ~src_port:_ _ -> C.log c (blue "udp packet on port %d" dst_port))

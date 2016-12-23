@@ -5,14 +5,14 @@ module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
 module Main (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
 
+  let failf fmt = Fmt.kstrf Lwt.fail_with fmt
+
   let read_fs fs name =
     FS.size fs name >>= function
-    | Error (`Msg s) -> Lwt.fail (Failure ("read " ^ s))
-    | Error `Unknown_key -> Lwt.fail (Failure ("read " ^ name))
+    | Error e -> failf "read: %a" FS.pp_error e
     | Ok size ->
       FS.read fs name 0L size >>= function
-      | Error (`Msg s) -> Lwt.fail (Failure ("read " ^ s))
-      | Error `Unknown_key -> Lwt.fail (Failure ("read " ^ name))
+      | Error e -> failf "read %a" FS.pp_error e
       | Ok bufs -> Lwt.return (Cstruct.copyv bufs)
 
   let rec dispatcher fs uri =
