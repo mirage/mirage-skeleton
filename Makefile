@@ -45,7 +45,6 @@ lwt-testrun:
 %-clean:
 	-cd $* && $(MAKE) clean
 	-$(RM) $*/Makefile.user
-	$(RM) log
 
 %-testrun:
 	$(SUDO) sh ./testrun.sh $*
