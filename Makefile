@@ -1,6 +1,6 @@
 -include Makefile.config
 
-TESTS = console network stackv4 ethifv4 io_page static_website dns \
+TESTS = noop console network stackv4 ethifv4 io_page static_website dns \
         conduit_server static_website_tls http-fetch \
         dhcp hello block kv_ro_crunch kv_ro netif-forward ping6
 
