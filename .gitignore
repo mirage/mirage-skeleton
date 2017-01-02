@@ -51,3 +51,8 @@ ping6/ping
 stackv4/stackv4
 static_website/www
 static_website_tls/https
+lwt/src/echo_server1
+lwt/src/heads1
+lwt/src/heads2
+lwt/src/timeout1
+lwt/src/timeout2
