@@ -2,7 +2,7 @@
 
 TESTS = noop console network stackv4 ethifv4 io_page static_website dns \
         conduit_server static_website_tls http-fetch \
-        dhcp hello block kv_ro_crunch kv_ro netif-forward ping6
+        dhcp hello block kv_ro_crunch kv_ro netif-forward ping6 lwt
 
 ifdef WITH_TRACING
 TESTS += tracing
