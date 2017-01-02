@@ -32,7 +32,7 @@ module Client (T: TIME) (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.
     Cstruct.blit_from_string http_get 0 page 0 (String.length http_get);
     let buf = Cstruct.sub page 0 (String.length http_get) in
     Conduit_mirage.Flow.write flow buf >>= function
-    | Error e -> C.log c "ERR on write"
+    | Error _ -> C.log c "ERR on write"
     | Ok () ->
       Conduit_mirage.Flow.read flow >>= function
       | Error _ -> C.log c "ERR"
