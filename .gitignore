@@ -56,3 +56,5 @@ lwt/src/heads1
 lwt/src/heads2
 lwt/src/timeout1
 lwt/src/timeout2
+hello/hello
+noop-functor/noop
