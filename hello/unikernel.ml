@@ -1,13 +1,24 @@
 open Lwt.Infix
 
-module Main (C: V1_LWT.CONSOLE) (Time : V1_LWT.TIME) = struct
+let log = Logs.Src.create "hello" ~doc:"Hello? Hello!"
+module Log = (val Logs.src_log log : Logs.LOG)
 
-  let start c _time =
+module Hello (PClock: V1.PCLOCK) = struct
+
+  module Logs_reporter = Mirage_logs.Make(PClock)
+
+  let start pclock =
+
+    Logs.(set_level (Some Info));
+    Logs_reporter.(create pclock |> run) @@ fun () ->
+
+    let hello = Key_gen.hello () in
+
     let rec loop = function
       | 0 -> Lwt.return_unit
       | n ->
-        C.log c (Key_gen.hello ()) >>= fun () ->
-        Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
+        Log.info (fun f -> f "%s" hello);
+        OS.Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
         loop (n-1)
     in
     loop 4
