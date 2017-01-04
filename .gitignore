@@ -40,7 +40,7 @@ console/console
 dhcp/dhcp
 dns/dns
 ethifv4/ethifv4
-hello/console
+hello-key/hello
 hello/hello
 http-fetch/http_fetch
 io_page/io_page
