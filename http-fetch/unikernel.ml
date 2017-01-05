@@ -1,5 +1,5 @@
 open Lwt.Infix
-open V1_LWT
+open Mirage_types_lwt
 open Printf
 
 let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")

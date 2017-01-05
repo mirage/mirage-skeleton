@@ -3,7 +3,7 @@ open Lwt.Infix
 let log = Logs.Src.create "hello" ~doc:"Hello? Hello!"
 module Log = (val Logs.src_log log : Logs.LOG)
 
-module Hello (PClock: V1.PCLOCK) = struct
+module Hello (PClock: Mirage_types.PCLOCK) = struct
 
   module Logs_reporter = Mirage_logs.Make(PClock)
 

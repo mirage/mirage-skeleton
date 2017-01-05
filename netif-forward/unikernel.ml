@@ -1,4 +1,4 @@
-open V1_LWT
+open Mirage_types_lwt
 open Lwt.Infix
 
 let packets_in = ref 0l

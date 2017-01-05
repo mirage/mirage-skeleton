@@ -1,4 +1,4 @@
-open V1_LWT
+open Mirage_types_lwt
 open Lwt.Infix
 
 let red fmt    = Printf.sprintf ("\027[31m"^^fmt^^"\027[m")
@@ -6,7 +6,7 @@ let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: CONSOLE) (N: NETWORK) (MClock : V1.MCLOCK) (Time: TIME) = struct
+module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME) = struct
   module E = Ethif.Make(N)
   module A = Arpv4.Make(E)(MClock)(Time)
   module DC = Dhcp_config
