@@ -1,7 +1,7 @@
 open OS
 open Lwt.Infix
 
-module Heads1 (C: V1_LWT.CONSOLE) = struct
+module Heads1 (C: Mirage_types_lwt.CONSOLE) = struct
 
   let start c =
     Lwt.join [
@@ -12,7 +12,7 @@ module Heads1 (C: V1_LWT.CONSOLE) = struct
 
 end
 
-module Heads2 (C: V1_LWT.CONSOLE) = struct
+module Heads2 (C: Mirage_types_lwt.CONSOLE) = struct
 
   let start c =
     let heads =
@@ -26,7 +26,7 @@ module Heads2 (C: V1_LWT.CONSOLE) = struct
 
 end
 
-module Timeout1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
+module Timeout1 (C: Mirage_types_lwt.CONSOLE) (R: Mirage_types_lwt.RANDOM) = struct
 
   let timeout delay t =
     Time.sleep_ns delay >>= fun () ->
@@ -46,7 +46,7 @@ module Timeout1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
 
 end
 
-module Timeout2 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
+module Timeout2 (C: Mirage_types_lwt.CONSOLE) (R: Mirage_types_lwt.RANDOM) = struct
 
   let timeout delay t =
     let tmout = Time.sleep_ns delay in
@@ -66,7 +66,7 @@ module Timeout2 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
 
 end
 
-module Echo_server1 (C: V1_LWT.CONSOLE) (R: V1_LWT.RANDOM) = struct
+module Echo_server1 (C: Mirage_types_lwt.CONSOLE) (R: Mirage_types_lwt.RANDOM) = struct
 
   let read_line () =
     OS.Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 R.generate))

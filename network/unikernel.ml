@@ -5,7 +5,7 @@ let green fmt  = Fmt.strf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Fmt.strf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Fmt.strf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: V1_LWT.CONSOLE) (S: V1_LWT.STACKV4) = struct
+module Main (C: Mirage_types_lwt.CONSOLE) (S: Mirage_types_lwt.STACKV4) = struct
 
   let start c s =
     S.listen_tcpv4 s ~port:8080 (fun flow ->

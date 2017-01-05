@@ -10,7 +10,7 @@ module Https_log = (val Logs.src_log https_src : Logs.LOG)
 let http_src = Logs.Src.create "http" ~doc:"HTTP server"
 module Http_log = (val Logs.src_log http_src : Logs.LOG)
 
-module Dispatch (FS: V1_LWT.KV_RO) (S: HTTP) = struct
+module Dispatch (FS: Mirage_types_lwt.KV_RO) (S: HTTP) = struct
 
   let failf fmt = Fmt.kstrf Lwt.fail_with fmt
 
@@ -65,7 +65,7 @@ module Dispatch (FS: V1_LWT.KV_RO) (S: HTTP) = struct
 end
 
 module HTTPS
-    (Pclock: V1.PCLOCK) (DATA: V1_LWT.KV_RO) (KEYS: V1_LWT.KV_RO) (Http: HTTP) =
+    (Pclock: Mirage_types.PCLOCK) (DATA: Mirage_types_lwt.KV_RO) (KEYS: Mirage_types_lwt.KV_RO) (Http: HTTP) =
 struct
 
   module X509 = Tls_mirage.X509(KEYS)(Pclock)

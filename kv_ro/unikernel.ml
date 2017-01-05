@@ -1,4 +1,4 @@
-open V1_LWT
+open Mirage_types_lwt
 open Lwt.Infix
 
 let string_of_stream s =

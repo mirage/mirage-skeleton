@@ -3,7 +3,7 @@ open Lwt.Infix
 let log = Logs.Src.create "speaking clock" ~doc:"At the third stroke..."
 module Log = (val Logs.src_log log : Logs.LOG)
 
-module Main (Time: V1.TIME) (PClock: V1.PCLOCK) (MClock: V1.MCLOCK) = struct
+module Main (Time: Mirage_types_lwt.TIME) (PClock: Mirage_types.PCLOCK) (MClock: Mirage_types.MCLOCK) = struct
 
   module Logs_reporter = Mirage_logs.Make(PClock)
 
@@ -22,7 +22,7 @@ module Main (Time: V1.TIME) (PClock: V1.PCLOCK) (MClock: V1.MCLOCK) = struct
         Printf.sprintf
           "%Lu nanoseconds have elapsed. \n\
           \ At the stroke, the time will be %s \x07 *BEEP*"
-          (Mclock.elapsed_ns mclock) @@ str_of_time (current_time, tz)
+          (MClock.elapsed_ns mclock) @@ str_of_time (current_time, tz)
       in
       Log.info (fun f -> f "%s" str);
       OS.Time.sleep_ns 1_000_000_000L >>= fun () ->

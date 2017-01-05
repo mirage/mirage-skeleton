@@ -1,6 +1,6 @@
 open Lwt.Infix
 open Printf
-open V1_LWT
+open Mirage_types_lwt
 
 module Main (Time: TIME)(B: BLOCK) = struct
   let log_src = Logs.Src.create "block" ~doc:"block tester"
