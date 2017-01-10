@@ -1,5 +1,3 @@
-open V1_LWT
-
 module Main (CON:Conduit_mirage.S) = struct
   let src = Logs.Src.create "conduit_server" ~doc:"Conduit HTTP server"
   module Log = (val Logs.src_log src: Logs.LOG)

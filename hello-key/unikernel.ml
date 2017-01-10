@@ -12,10 +12,12 @@ module Hello (PClock: V1.PCLOCK) = struct
     Logs.(set_level (Some Info));
     Logs_reporter.(create pclock |> run) @@ fun () ->
 
+    let hello = Key_gen.hello () in
+
     let rec loop = function
       | 0 -> Lwt.return_unit
       | n ->
-        Log.info (fun f -> f "hello");
+        Log.info (fun f -> f "%s" hello);
         OS.Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
         loop (n-1)
     in

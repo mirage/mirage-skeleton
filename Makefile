@@ -1,8 +1,28 @@
 -include Makefile.config
 
-TESTS = console network stackv4 ethifv4 io_page static_website dns \
-        conduit_server static_website_tls http-fetch \
-        dhcp hello block kv_ro_crunch kv_ro netif-forward ping6
+TESTS = \
+  block \
+  clock \
+  conduit_server \
+  console \
+  dhcp \
+  dns \
+  ethifv4 \
+  hello \
+  hello-key \
+  http-fetch \
+  io_page \
+  kv_ro \
+  kv_ro_crunch \
+  lwt \
+  netif-forward \
+  network \
+  noop \
+  noop-functor \
+  ping6 \
+  stackv4 \
+  static_website \
+  static_website_tls
 
 ifdef WITH_TRACING
 TESTS += tracing
@@ -45,7 +65,6 @@ lwt-testrun:
 %-clean:
 	-cd $* && $(MAKE) clean
 	-$(RM) $*/Makefile.user
-	$(RM) log
 
 %-testrun:
 	$(SUDO) sh ./testrun.sh $*

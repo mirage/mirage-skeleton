@@ -9,7 +9,7 @@ let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 module Main (C:CONSOLE) (N: NETWORK) (E: ETHIF) (I:IPV6) = struct
 
   let start c n e i =
-    let handler s = fun ~src ~dst data ->
+    let handler s = fun ~src ~dst _data ->
       C.log c (yellow "%s > %s %s" (Ipaddr.V6.to_string src) (Ipaddr.V6.to_string dst) s)
     in
     N.listen n
@@ -19,7 +19,7 @@ module Main (C:CONSOLE) (N: NETWORK) (E: ETHIF) (I:IPV6) = struct
          ~ipv6:(I.input
                   ~tcp:(handler "TCP")
                   ~udp:(handler "UDP")
-                  ~default:(fun ~proto ~src ~dst data ->
+                  ~default:(fun ~proto ~src:_ ~dst:_ _data ->
                       C.log c (red "%d DEFAULT" proto))
                   i
                )
