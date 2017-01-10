@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Main (C: V1_LWT.CONSOLE) (Time: V1_LWT.TIME) = struct
+module Main (C: Mirage_types_lwt.CONSOLE) (Time: Mirage_types_lwt.TIME) = struct
 
   let start c _time =
     let rec loop = function

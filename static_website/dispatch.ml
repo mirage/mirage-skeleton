@@ -3,7 +3,7 @@ open Lwt.Infix
 let server_src = Logs.Src.create "server" ~doc:"HTTP server"
 module Server_log = (val Logs.src_log server_src : Logs.LOG)
 
-module Main (FS:V1_LWT.KV_RO) (S:Cohttp_lwt.Server) = struct
+module Main (FS:Mirage_types_lwt.KV_RO) (S:Cohttp_lwt.Server) = struct
 
   let failf fmt = Fmt.kstrf Lwt.fail_with fmt
 

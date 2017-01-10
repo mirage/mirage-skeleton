@@ -4,7 +4,7 @@ module P = Io_page
 
 let sp = Printf.sprintf
 
-module Main (Time: V1_LWT.TIME) (C: V1_LWT.CONSOLE) = struct
+module Main (Time: Mirage_types_lwt.TIME) (C: Mirage_types_lwt.CONSOLE) = struct
 
   let start _time c =
     let one_page = P.get 1 in

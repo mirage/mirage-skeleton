@@ -1,4 +1,4 @@
-open V1_LWT
+open Mirage_types_lwt
 open Lwt.Infix
 
 let red fmt    = Fmt.strf ("\027[31m"^^fmt^^"\027[m")
@@ -6,7 +6,7 @@ let green fmt  = Fmt.strf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Fmt.strf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Fmt.strf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C: CONSOLE) (N: NETWORK) (Clock : V1.MCLOCK) (Time: TIME) (R : RANDOM) =
+module Main (C: CONSOLE) (N: NETWORK) (Clock : Mirage_types.MCLOCK) (Time: TIME) (R : RANDOM) =
 struct
 
   module E = Ethif.Make(N)

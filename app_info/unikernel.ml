@@ -1,5 +1,5 @@
 
-module Main (C: V1_LWT.CONSOLE) = struct
+module Main (C: Mirage_types_lwt.CONSOLE) = struct
 
   let start c info =
     let {Mirage_info. name; packages; libraries} = info in

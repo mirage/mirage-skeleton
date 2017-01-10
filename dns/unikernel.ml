@@ -14,7 +14,7 @@ let test_hostname = "dark.recoil.org"
 (* Server settings *)
 let listening_port = 53
 
-module Main (K:V1_LWT.KV_RO) (S:V1_LWT.STACKV4) = struct
+module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
 
   module U = S.UDPV4
   module Resolver = Dns_resolver_mirage.Make(OS.Time)(S)
