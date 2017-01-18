@@ -6,13 +6,17 @@ env:
   global:
     - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
     - TESTS=false
-    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing mirage-profile:https://github.com/mirage/mirage-profile.git"
+# MCP - restore when lwt pins work again    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
   matrix:
-    - OCAML_VERSION=4.03 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
-    - OCAML_VERSION=4.03 WITH_TRACING=1 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=xen  && make clean"
+# MCP - restore when lwt pins work again    - OCAML_VERSION=4.03 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
+# MCP - restore when lwt pins work again    - OCAML_VERSION=4.03 WITH_TRACING=1 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=xen  && make clean"
+    - OCAML_VERSION=4.03 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean" #remove when lwt pins work
+    - OCAML_VERSION=4.03 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=xen  && make clean" #remove when lwt pins work
     - OCAML_VERSION=4.03 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=ukvm  && make clean"
     - OCAML_VERSION=4.03 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=virtio  && make clean"
-    - OCAML_VERSION=4.04 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
-    - OCAML_VERSION=4.04 WITH_TRACING=1 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=xen  && make clean"
+# MCP - restore when lwt pinning problem in opam is fixed    - OCAML_VERSION=4.04 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
+# MCP - restore when lwt pinning problem in opam is fixed    - OCAML_VERSION=4.04 WITH_TRACING=1 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=xen  && make clean"
+    - OCAML_VERSION=4.04 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean" #remove when lwt pins work
+    - OCAML_VERSION=4.04 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=xen  && make clean" #remove when lwt pins work
     - OCAML_VERSION=4.04 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=ukvm  && make clean"
     - OCAML_VERSION=4.04 UPDATE_GCC_BINUTILS=1 POST_INSTALL_HOOK="make MODE=virtio  && make clean"
