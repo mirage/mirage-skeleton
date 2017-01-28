@@ -9,7 +9,7 @@ let port =
   Key.(create "port" Arg.(opt int 8080 doc))
 
 let main =
-  let packages = [ package "re"; package "magic-mime" ] in
+  let packages = [ package "magic-mime" ] in
   let keys = [ Key.abstract port ] in
   foreign
     ~packages ~keys
