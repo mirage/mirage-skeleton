@@ -14,7 +14,9 @@ module Dispatch (FS: Mirage_types_lwt.KV_RO) (S: HTTP) = struct
 
   let failf fmt = Fmt.kstrf Lwt.fail_with fmt
 
-  let read_fs fs name =
+  (* a convenience function for getting the full contents
+   * of the file at a given path from the file system. *)
+  let read_whole_file fs name =
     FS.size fs name >>= function
     | Error e -> failf "size: %a" FS.pp_error e
     | Ok size ->
@@ -22,7 +24,8 @@ module Dispatch (FS: Mirage_types_lwt.KV_RO) (S: HTTP) = struct
       | Error e -> failf "read: %a" FS.pp_error e
       | Ok bufs -> Lwt.return (Cstruct.copyv bufs)
 
-  (* dispatch files *)
+  (* given a URI, find the appropriate file,
+   * and construct a response with its contents. *)
   let rec dispatcher fs uri =
     match Uri.path uri with
     | "" | "/" -> dispatcher fs (Uri.with_path uri "index.html")
@@ -34,7 +37,7 @@ module Dispatch (FS: Mirage_types_lwt.KV_RO) (S: HTTP) = struct
       let headers = Cohttp.Header.add header "content-type" mimetype in
       Lwt.catch
         (fun () ->
-           read_fs fs path >>= fun body ->
+           read_whole_file fs path >>= fun body ->
            S.respond_string ~status:`OK ~body ~headers ())
         (fun _exn ->
            S.respond_not_found ())

@@ -1,33 +1,28 @@
 -include Makefile.config
 
 TESTS = \
-  lwt_tutorial/echo_server \
-  lwt_tutorial/heads1 \
-  lwt_tutorial/heads2 \
-  lwt_tutorial/timeout1 \
-  lwt_tutorial/timeout2 \
-  block \
-  clock \
-  conduit_server \
-  console \
-  dhcp \
-  dns \
-  hello \
-  hello-key \
-  http-fetch \
-  kv_ro \
-  lwt \
-  netif-forward \
-  network \
-  noop \
-  noop-functor \
-  ping6 \
-  stackv4 \
-  static_website \
-  static_website_tls
+  tutorial/noop \
+  tutorial/noop-functor \
+  tutorial/hello \
+  tutorial/hello-key \
+  tutorial/lwt/echo_server \
+  tutorial/lwt/heads1 \
+  tutorial/lwt/heads2 \
+  tutorial/lwt/timeout1 \
+  tutorial/lwt/timeout2 \
+  device-usage/block \
+  device-usage/clock \
+  device-usage/conduit_server \
+  device-usage/console \
+  device-usage/kv_ro \
+  device-usage/network \
+  device-usage/ping6 \
+  applications/dhcp \
+  applications/dns \
+  applications/static_website_tls
 
 ifdef WITH_TRACING
-TESTS += tracing
+TESTS += device-usage/tracing
 endif
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
