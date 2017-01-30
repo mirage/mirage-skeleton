@@ -11,9 +11,7 @@ TESTS = \
   hello \
   hello-key \
   http-fetch \
-  io_page \
   kv_ro \
-  kv_ro_crunch \
   lwt \
   netif-forward \
   network \
