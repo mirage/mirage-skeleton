@@ -1,13 +1,17 @@
 -include Makefile.config
 
 TESTS = \
+  lwt_tutorial/echo_server \
+  lwt_tutorial/heads1 \
+  lwt_tutorial/heads2 \
+  lwt_tutorial/timeout1 \
+  lwt_tutorial/timeout2 \
   block \
   clock \
   conduit_server \
   console \
   dhcp \
   dns \
-  ethifv4 \
   hello \
   hello-key \
   http-fetch \
@@ -37,20 +41,6 @@ configure: $(CONFIGS)
 build: $(BUILDS)
 testrun: $(TESTRUN)
 clean: $(CLEANS)
-
-## lwt special cased
-lwt: lwt-clean lwt-build
-lwt-configure:
-	@ :
-
-lwt-build:
-	$(MAKE) -C lwt build
-
-lwt-clean:
-	$(MAKE) -C lwt clean
-
-lwt-testrun:
-	@ :
 
 ## default tests
 %-configure:
