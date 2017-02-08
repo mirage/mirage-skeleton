@@ -8,7 +8,7 @@ let main =
   foreign
     ~keys:[Key.abstract key]
     ~packages:[package "duration"]
-    "Unikernel.Hello" (pclock @-> job)
+    "Unikernel.Hello" (time @-> job)
 
 let () =
-  register "hello" [main $ default_posix_clock]
+  register "hello" [main $ default_time]
