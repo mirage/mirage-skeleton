@@ -3,12 +3,8 @@
 Prerequisites
 =============
 
-- Install latest OPAM (at least 1.1.0), following instructions at
+- Install latest OPAM (at least 1.2.2), following instructions at
 <http://opam.ocaml.org/>
-
-- Add the MirageOS development repositories from
-
-    $ opam remote add mirage-dev git://github.com/mirage/mirage-dev
 
 - Install the `mirage` package with OPAM, updating your package first if
 necessary:
@@ -19,40 +15,59 @@ necessary:
     $ eval `opam config env`
 ```
 
-- Please ensure that your Mirage command-line version is at least 2.7.0 before
+- Please ensure that your Mirage command-line version is at least 3.0.0 before
 proceeding:
 
 ```
     $ mirage --version
-    2.7.0
+    3.0.0
 ```
+
+
+What's Here
+===========
+
+This repository is a collection of tutorial code referred to from [the Mirage
+website](https://mirage.io), example code for using specific devices like
+filesystems and networks, and higher-level applications like
+DHCP, DNS, and Web servers.
+
+* `tutorial/` contains the tutorial content.
+* `device-usage/` contains examples showing specific devices.
+* `applications/` contains the higher-level examples, which may use several
+  different devices.
 
 Configure, Build, Run
 =====================
 
-Each example is invoked in the same way:
+Each unikernel lives in its own directory, and can be configured, built, and run
+from that location.  For example:
 
-    $ make ${example}-configure
-    $ make ${example}-build
+```
+    $ cd applications/static_website_tls
+    $ mirage configure -t unix # initial setup for UNIX backend
+    $ make depend # install dependencies
+    $ make # build the program
+    $ ./https # run the program
+```
 
-So to configure the hello example, run `make hello-configure`, and to build it, run `make hello-build`.
-The binaries built in the process can then be found in the example's directory:
+If you want to clean up `mirage`'s artifacts after building, `mirage clean`
+will do the trick:
 
-    $ cd hello/
-    $ ./mir-console
-    Hello World!
-    Hello World!
-    ...
+```
+    $ cd applications/static_website_tls
+    $ mirage clean
+```
 
-If you want to clean up afterwards, the usual does the trick:
+There is also a top-level `Makefile` at the root of this repository with
+convenience functions for configuring, building, and running all of the examples
+in one step.
 
-    $ make ${example}-clean
-
-Some global targets are also provided in the `Makefile`:
-
+```
     $ make all                   ## equivalent to ...
     $ make configure build
     $ make clean
+```
 
 Details
 -------
@@ -69,11 +84,27 @@ directly.
 
 ### To configure a unikernel before building:
 
-    $ mirage configure [-f config.ml] -t [unix|xen]
+    $ mirage configure -t [ukvm|kvm|qubes|macosx|unix|xen]
 
-The boot target is selected via `-t unix` or `-t xen`. The default is selected
-based on the presence of target-specific packages, e.g., `mirage-unix` or
-`mirage-xen`.
+The boot target is selected via the `-t` flag. The default target is `unix`.
+Depending on what devices are present in `config.ml`, there may be additional
+configuration options for the unikernel.  To list the options,
+
+```
+    $ mirage help configure
+```
+
+and see the section labeled `UNIKERNEL PARAMETERS`.
+
+### To install dependencies
+
+After running `mirage configure`:
+
+```
+    $ make depend
+```
+
+to install the list of dependencies discovered in the `mirage configure` phase.
 
 ### To build a unikernel:
 
@@ -83,12 +114,79 @@ The output will be created next to the `config.ml` file used.
 
 ### To run a unikernel:
 
-    $ make run
+The mechanics of running the generated artifact will be dependent on the backend
+used.  For details, see
+[solo5's readme for Ukvm and Virtio](https://github.com/solo5/solo5),
+[the qubes-test-mirage repository's readme for Qubes](https://github.com/talex5/qubes-test-mirage), or
+[the MirageOS website instructions on booting Xen unikernels](https://mirage.io/tmpl/wiki/xen-boot).
 
-This will either execute the native binary created (if on `-t unix`) or create
-a default `.xl` configuration file (if on `-t xen`). In the latter case you
-will need to edit the generated configuration file appropriately if you wish
-to use block or network devices.
+For the `Macosx` and `Unix` backends, running as a normal process should sufice.
+
+For summaries
+by backend that assume the `hello` example, see below:
+
+Unix:
+
+```
+    $ cd hello
+    $ mirage configure -t unix
+    $ make depend
+    $ make
+    $ ./hello
+```
+
+Xen:
+
+```
+    $ cd hello
+    $ mirage configure -t xen
+    $ make depend
+    $ make
+    $ sudo xl create xen.xl -c
+```
+
+Ukvm:
+
+```
+    $ cd hello
+    $ mirage configure -t ukvm
+    $ make depend
+    $ make
+    $ ./ukvm-bin hello.ukvm
+```
+
+Virtio:
+
+```
+    $ cd hello
+    $ mirage configure -t virtio
+    $ make depend
+    $ make
+    $ solo5-run-virtio ./https.virtio
+```
+
+Macosx:
+
+```
+    $ cd hello
+    $ mirage configure -t macosx
+    $ make depend
+    $ make
+    $ ./hello
+```
+
+Qubes:
+
+Some specific setup in the QubesOS manager is necessary to be able to easily run
+MirageOS unikernels -- please see [the qubes-test-mirage readme](https://github.com/talex5/qubes-test-mirage) for details.
+
+```
+    $ cd hello
+    $ mirage configure -t qubes
+    $ make depend
+    $ make
+    $ ~/test-unikernel hello.xen unikernel-test-vm
+```
 
 ### To clean up after building a unikernel:
 
