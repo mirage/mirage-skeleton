@@ -1,29 +1,22 @@
-open Mirage_types_lwt
 open Lwt.Infix
 
-let string_of_stream s =
-  let s = List.map Cstruct.to_string s in
-  Lwt.return (String.concat "" s)
+module Main (KV: Mirage_kv_lwt.RO) = struct
 
-module Main (C: CONSOLE) (X: KV_RO) (Y: KV_RO) = struct
+  let read_whole_file kv key =
+    KV.size kv key >>= function
+    | Error e -> Lwt.return @@ Error e
+    | Ok size -> KV.read kv key 0L size
 
-  let start c x y =
-    let rec aux () =
-      X.read x "a" 0L 4096L >>= fun vx ->
-      Y.read y "a" 0L 4096L >>= fun vy ->
-      begin match vx, vy with
-        | Ok sx, Ok sy ->
-          string_of_stream sx >>= fun sx ->
-          string_of_stream sy >>= fun sy ->
-          if sx = sy then
-            C.log c "YES!"
-          else
-            C.log c "NO!"
-        | _ ->
-          C.log c "NO! NO!"
-      end >>= fun () ->
-      OS.Time.sleep_ns (Duration.of_sec 1) >>= fun () ->
-      aux ()
-    in
-    aux ()
+  let start kv =
+    let our_secret = Cstruct.of_string "foo\n" in
+    read_whole_file kv "secret" >|= function
+    | Error e ->
+      Logs.warn (fun f -> f "Could not compare the secret against a known constant: %a"
+        KV.pp_error e)
+    | Ok stored_secret ->
+      match Cstruct.compare our_secret (Cstruct.concat stored_secret) with
+      | 0 ->
+        Logs.info (fun f -> f "Contents of extremely secret vital storage confirmed!")
+      | _ ->
+        Logs.warn (fun f -> f "The secret provided does not match!")
 end
