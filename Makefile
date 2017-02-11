@@ -17,6 +17,7 @@ TESTS = \
   device-usage/kv_ro \
   device-usage/network \
   device-usage/ping6 \
+  device-usage/prng \
   applications/dhcp \
   applications/dns \
   applications/static_website_tls
