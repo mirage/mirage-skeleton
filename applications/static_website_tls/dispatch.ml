@@ -73,17 +73,13 @@ struct
 
   module X509 = Tls_mirage.X509(KEYS)(Pclock)
   module D = Dispatch(DATA)(Http)
-  module Logs_reporter = Mirage_logs.Make(Pclock)
 
   let tls_init kv =
     X509.certificate kv `Default >>= fun cert ->
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start clock data keys http =
-    Logs.(set_level (Some Info));
-    Logs_reporter.(create clock |> run) @@ fun () ->
-
+  let start _clock data keys http =
     tls_init keys >>= fun cfg ->
     let https_port = Key_gen.https_port () in
     let tls = `TLS (cfg, `TCP https_port) in
