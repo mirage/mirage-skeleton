@@ -25,7 +25,8 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
       Lwt.return leases
     | Ok pkt ->
       let open Dhcp_server.Input in
-      match input_pkt config leases pkt (MClock.elapsed_ns clock |> Int64.to_float) with
+      let now = MClock.elapsed_ns clock |> Duration.to_sec |> float_of_int in
+      match input_pkt config leases pkt now with
       | Silence -> Lwt.return leases
       | Update leases ->
         log console (blue "Received packet %s - updated lease database" (Dhcp_wire.pkt_to_string pkt)) >>= fun () ->
