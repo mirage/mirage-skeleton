@@ -1,11 +1,29 @@
 -include Makefile.config
 
-TESTS = console network stackv4 ethifv4 io_page lwt ping static_website dns \
-        conduit_server conduit_server_manual static_website_tls http-fetch \
-        dhcp hello block kv_ro_crunch kv_ro netif-forward ping6
+TESTS = \
+  tutorial/noop \
+  tutorial/noop-functor \
+  tutorial/hello \
+  tutorial/hello-key \
+  tutorial/lwt/echo_server \
+  tutorial/lwt/heads1 \
+  tutorial/lwt/heads2 \
+  tutorial/lwt/timeout1 \
+  tutorial/lwt/timeout2 \
+  device-usage/block \
+  device-usage/clock \
+  device-usage/conduit_server \
+  device-usage/console \
+  device-usage/kv_ro \
+  device-usage/network \
+  device-usage/ping6 \
+  device-usage/prng \
+  applications/dhcp \
+  applications/dns \
+  applications/static_website_tls
 
 ifdef WITH_TRACING
-TESTS += tracing
+TESTS += device-usage/tracing
 endif
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
@@ -16,34 +34,21 @@ CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 all: build
 
 configure: $(CONFIGS)
-build: $(BUILDS) lwt-build
+build: $(BUILDS)
 testrun: $(TESTRUN)
-clean: $(CLEANS) lwt-clean
-
-## lwt special cased
-lwt: lwt-clean lwt-build
-lwt-configure:
-	@ :
-
-lwt-build:
-	$(MAKE) -C lwt build
-
-lwt-clean:
-	$(MAKE) -C lwt clean
-
-lwt-testrun:
-	@ :
+clean: $(CLEANS)
 
 ## default tests
 %-configure:
-	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
+	cd $* && $(MIRAGE) configure -t $(MODE) $(MIRAGE_FLAGS)
 
 %-build: %-configure
-	cd $* && $(MAKE)
+	-cp Makefile.user $*
+	cd $* && $(MAKE) depend && $(MAKE)
 
 %-clean:
-	make -C $* clean
-	$(RM) log
+	-cd $* && $(MAKE) clean
+	-$(RM) $*/Makefile.user
 
 %-testrun:
 	$(SUDO) sh ./testrun.sh $*
