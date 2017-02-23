@@ -4,7 +4,6 @@ script: bash -ex .travis-opam.sh
 sudo: required
 env:
   global:
-    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
     - TESTS=false
     - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
     - UPDATE_GCC_BINUTILS=1
