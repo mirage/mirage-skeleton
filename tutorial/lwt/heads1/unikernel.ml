@@ -1,7 +1,7 @@
 open OS
 open Lwt.Infix
 
-module Heads1 (C: Mirage_types_lwt.CONSOLE) = struct
+module Heads1 (C: Mirage_console_lwt.S) = struct
 
   let start c =
     Lwt.join [

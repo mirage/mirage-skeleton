@@ -1,6 +1,6 @@
 open Mirage
 
-let packages = [package "duration"; package "randomconv"]
+let packages = [package "duration"]
 
 let () =
   let main = foreign ~packages "Unikernel.Heads1" (console @-> job) in

@@ -1,7 +1,7 @@
 open OS
 open Lwt.Infix
 
-module Echo_server (C: Mirage_types_lwt.CONSOLE) (R: Mirage_types_lwt.RANDOM) = struct
+module Echo_server (C: Mirage_console_lwt.S) (R: Mirage_random.C) = struct
 
   let read_line () =
     OS.Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 R.generate))
