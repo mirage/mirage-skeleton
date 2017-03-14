@@ -25,7 +25,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
       Lwt.return leases
     | Ok pkt ->
       let open Dhcp_server.Input in
-      let now = MClock.elapsed_ns clock |> Duration.to_sec |> float_of_int in
+      let now = MClock.elapsed_ns clock |> Duration.to_sec |> Int32.of_int in
       match input_pkt config leases pkt now with
       | Silence -> Lwt.return leases
       | Update leases ->
