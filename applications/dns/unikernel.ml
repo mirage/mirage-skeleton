@@ -59,16 +59,13 @@ module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
     S.listen_udpv4 s ~port:listening_port (
       fun ~src ~dst ~src_port buf ->
         Server_log.info (fun f -> f "Got DNS query via UDP");
-        let ba = Cstruct.to_bigarray buf in
         let src' = (Ipaddr.V4 dst), listening_port in
         let dst' = (Ipaddr.V4 src), src_port in
-        let obuf = (Io_page.get 1 :> Dns.Buf.t) in
-        process_query ba (Dns.Buf.length ba) obuf src' dst' processor >>= function
+        process_query buf (Cstruct.len buf) src' dst' processor >>= function
         | None ->
           Server_log.info (fun f -> f "No response");
           Lwt.return ()
-        | Some rba ->
-          let rbuf = Cstruct.of_bigarray rba in
+        | Some rbuf ->
           Server_log.info (fun f -> f "Sending reply");
           U.write ~src_port:listening_port ~dst:src ~dst_port:src_port udp rbuf >>= function
           | Error e -> Server_log.warn (fun f -> f "Failure sending reply: %a" U.pp_error e);
