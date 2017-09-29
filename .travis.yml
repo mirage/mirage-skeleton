@@ -9,7 +9,6 @@ env:
     - UPDATE_GCC_BINUTILS=1
   matrix:
     - OCAML_VERSION=4.03 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
-    - OCAML_VERSION=4.03 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=xen  && make clean"
     - OCAML_VERSION=4.03 POST_INSTALL_HOOK="make MODE=ukvm   && make clean"
     - OCAML_VERSION=4.03 POST_INSTALL_HOOK="make MODE=virtio && make clean"
     - OCAML_VERSION=4.04 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
