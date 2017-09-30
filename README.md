@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mirage/mirage-skeleton.png?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
+[![Build Status](https://travis-ci.org/mirage/mirage-skeleton.svg?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
 
 Prerequisites
 =============
