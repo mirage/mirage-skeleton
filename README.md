@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/mirage/mirage-skeleton.svg?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
 
-mirage-skeleton
-===============
+# mirage-skeleton
 
 This repository is a collection of **tutorial code** referred to from [the Mirage
 website](https://mirage.io), **example code** for using specific devices like
@@ -13,8 +12,7 @@ DHCP, DNS, and Web servers.
 * `applications/` contains the higher-level examples, which may use several
   different devices.
 
-Prerequisites
--------------
+## Prerequisites
 
 - Install latest OPAM (at least 1.2.2), following instructions at
 <https://opam.ocaml.org/>
@@ -36,8 +34,7 @@ proceeding:
     3.0.0
 ```
 
-Configure, Build, Run
----------------------
+## Configure, Build, Run
 
 Each unikernel lives in its own directory, and can be configured, built, and run
 from that location.  For example:
