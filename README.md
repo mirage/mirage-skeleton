@@ -80,7 +80,9 @@ directly.
 
 #### To configure a unikernel before building:
 
+```
     $ mirage configure -t [ukvm|kvm|qubes|macosx|unix|xen]
+```
 
 The boot target is selected via the `-t` flag. The default target is `unix`.
 Depending on what devices are present in `config.ml`, there may be additional
@@ -104,7 +106,9 @@ to install the list of dependencies discovered in the `mirage configure` phase.
 
 #### To build a unikernel:
 
+```
     $ make
+```
 
 The output will be created next to the `config.ml` file used.
 
@@ -118,8 +122,7 @@ used.  For details, see
 
 For the `Macosx` and `Unix` backends, running as a normal process should suffice.
 
-For summaries
-by backend that assume the `hello` example, see below:
+For summaries by backend that assume the `hello` example, see below:
 
 Unix:
 
@@ -186,5 +189,7 @@ MirageOS unikernels -- please see [the qubes-test-mirage readme](https://github.
 
 #### To clean up after building a unikernel:
 
+```
     $ make clean
+```
 
