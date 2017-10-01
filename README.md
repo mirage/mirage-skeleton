@@ -1,10 +1,21 @@
 [![Build Status](https://travis-ci.org/mirage/mirage-skeleton.svg?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
 
-Prerequisites
-=============
+# mirage-skeleton
+
+This repository is a collection of **tutorial code** referred to from [the Mirage
+website](https://mirage.io), **example code** for using specific devices like
+filesystems and networks, and **higher-level applications** like
+DHCP, DNS, and Web servers.
+
+* `tutorial/` contains the tutorial content.
+* `device-usage/` contains examples showing specific devices.
+* `applications/` contains the higher-level examples, which may use several
+  different devices.
+
+## Prerequisites
 
 - Install latest OPAM (at least 1.2.2), following instructions at
-<http://opam.ocaml.org/>
+<https://opam.ocaml.org/>
 
 - Install the `mirage` package with OPAM, updating your package first if
 necessary:
@@ -23,22 +34,7 @@ proceeding:
     3.0.5
 ```
 
-
-What's Here
-===========
-
-This repository is a collection of tutorial code referred to from [the Mirage
-website](https://mirage.io), example code for using specific devices like
-filesystems and networks, and higher-level applications like
-DHCP, DNS, and Web servers.
-
-* `tutorial/` contains the tutorial content.
-* `device-usage/` contains examples showing specific devices.
-* `applications/` contains the higher-level examples, which may use several
-  different devices.
-
-Configure, Build, Run
-=====================
+## Configure, Build, Run
 
 Each unikernel lives in its own directory, and can be configured, built, and run
 from that location.  For example:
@@ -69,20 +65,20 @@ in one step.
     $ make clean
 ```
 
-Details
--------
+### Details
+
 
 The `Makefile` simply invokes sample-specific `sample/Makefile`. Each of those
 invokes the `mirage` command-line tool to configure, build and run the sample,
 passing flags and environment as directed. The `mirage` command-line tool
-assumes that the [OPAM](http://opam.ocaml.org/) package manager is present and
+assumes that the [OPAM](https://opam.ocaml.org/) package manager is present and
 is used to manage installation of an OCaml dependencies.
 
 The `mirage` command-line tool supports four commands, each of which either
 uses `config.ml` in the current directory or supports passing a `config.ml`
 directly.
 
-### To configure a unikernel before building:
+#### To configure a unikernel before building:
 
     $ mirage configure -t [ukvm|kvm|qubes|macosx|unix|xen]
 
@@ -96,7 +92,7 @@ configuration options for the unikernel.  To list the options,
 
 and see the section labeled `UNIKERNEL PARAMETERS`.
 
-### To install dependencies
+#### To install dependencies
 
 After running `mirage configure`:
 
@@ -106,13 +102,13 @@ After running `mirage configure`:
 
 to install the list of dependencies discovered in the `mirage configure` phase.
 
-### To build a unikernel:
+#### To build a unikernel:
 
     $ make
 
 The output will be created next to the `config.ml` file used.
 
-### To run a unikernel:
+#### To run a unikernel:
 
 The mechanics of running the generated artifact will be dependent on the backend
 used.  For details, see
@@ -120,7 +116,7 @@ used.  For details, see
 [the qubes-test-mirage repository's readme for Qubes](https://github.com/talex5/qubes-test-mirage), or
 [the MirageOS website instructions on booting Xen unikernels](https://mirage.io/tmpl/wiki/xen-boot).
 
-For the `Macosx` and `Unix` backends, running as a normal process should sufice.
+For the `Macosx` and `Unix` backends, running as a normal process should suffice.
 
 For summaries
 by backend that assume the `hello` example, see below:
@@ -188,7 +184,7 @@ MirageOS unikernels -- please see [the qubes-test-mirage readme](https://github.
     $ ~/test-unikernel hello.xen unikernel-test-vm
 ```
 
-### To clean up after building a unikernel:
+#### To clean up after building a unikernel:
 
     $ make clean
 
