@@ -4,7 +4,7 @@ Prerequisites
 =============
 
 - Install latest OPAM (at least 1.2.2), following instructions at
-<http://opam.ocaml.org/>
+<https://opam.ocaml.org/>
 
 - Install the `mirage` package with OPAM, updating your package first if
 necessary:
@@ -75,7 +75,7 @@ Details
 The `Makefile` simply invokes sample-specific `sample/Makefile`. Each of those
 invokes the `mirage` command-line tool to configure, build and run the sample,
 passing flags and environment as directed. The `mirage` command-line tool
-assumes that the [OPAM](http://opam.ocaml.org/) package manager is present and
+assumes that the [OPAM](https://opam.ocaml.org/) package manager is present and
 is used to manage installation of an OCaml dependencies.
 
 The `mirage` command-line tool supports four commands, each of which either
@@ -120,7 +120,7 @@ used.  For details, see
 [the qubes-test-mirage repository's readme for Qubes](https://github.com/talex5/qubes-test-mirage), or
 [the MirageOS website instructions on booting Xen unikernels](https://mirage.io/tmpl/wiki/xen-boot).
 
-For the `Macosx` and `Unix` backends, running as a normal process should sufice.
+For the `Macosx` and `Unix` backends, running as a normal process should suffice.
 
 For summaries
 by backend that assume the `hello` example, see below:
