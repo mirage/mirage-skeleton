@@ -1,5 +1,9 @@
 [![Build Status](https://travis-ci.org/mirage/mirage-skeleton.svg?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
 
+# mirage-skeleton
+
+Examples of simple [MirageOS](https://mirage.io/) apps.
+
 Prerequisites
 =============
 
