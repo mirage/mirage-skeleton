@@ -1,11 +1,20 @@
 [![Build Status](https://travis-ci.org/mirage/mirage-skeleton.svg?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
 
-# mirage-skeleton
+mirage-skeleton
+===============
 
-Examples of simple [MirageOS](https://mirage.io/) apps.
+This repository is a collection of **tutorial code** referred to from [the Mirage
+website](https://mirage.io), **example code** for using specific devices like
+filesystems and networks, and **higher-level applications** like
+DHCP, DNS, and Web servers.
+
+* `tutorial/` contains the tutorial content.
+* `device-usage/` contains examples showing specific devices.
+* `applications/` contains the higher-level examples, which may use several
+  different devices.
 
 Prerequisites
-=============
+-------------
 
 - Install latest OPAM (at least 1.2.2), following instructions at
 <https://opam.ocaml.org/>
@@ -27,22 +36,8 @@ proceeding:
     3.0.0
 ```
 
-
-What's Here
-===========
-
-This repository is a collection of tutorial code referred to from [the Mirage
-website](https://mirage.io), example code for using specific devices like
-filesystems and networks, and higher-level applications like
-DHCP, DNS, and Web servers.
-
-* `tutorial/` contains the tutorial content.
-* `device-usage/` contains examples showing specific devices.
-* `applications/` contains the higher-level examples, which may use several
-  different devices.
-
 Configure, Build, Run
-=====================
+---------------------
 
 Each unikernel lives in its own directory, and can be configured, built, and run
 from that location.  For example:
@@ -73,8 +68,8 @@ in one step.
     $ make clean
 ```
 
-Details
--------
+### Details
+
 
 The `Makefile` simply invokes sample-specific `sample/Makefile`. Each of those
 invokes the `mirage` command-line tool to configure, build and run the sample,
@@ -86,7 +81,7 @@ The `mirage` command-line tool supports four commands, each of which either
 uses `config.ml` in the current directory or supports passing a `config.ml`
 directly.
 
-### To configure a unikernel before building:
+#### To configure a unikernel before building:
 
     $ mirage configure -t [ukvm|kvm|qubes|macosx|unix|xen]
 
@@ -100,7 +95,7 @@ configuration options for the unikernel.  To list the options,
 
 and see the section labeled `UNIKERNEL PARAMETERS`.
 
-### To install dependencies
+#### To install dependencies
 
 After running `mirage configure`:
 
@@ -110,13 +105,13 @@ After running `mirage configure`:
 
 to install the list of dependencies discovered in the `mirage configure` phase.
 
-### To build a unikernel:
+#### To build a unikernel:
 
     $ make
 
 The output will be created next to the `config.ml` file used.
 
-### To run a unikernel:
+#### To run a unikernel:
 
 The mechanics of running the generated artifact will be dependent on the backend
 used.  For details, see
@@ -192,7 +187,7 @@ MirageOS unikernels -- please see [the qubes-test-mirage readme](https://github.
     $ ~/test-unikernel hello.xen unikernel-test-vm
 ```
 
-### To clean up after building a unikernel:
+#### To clean up after building a unikernel:
 
     $ make clean
 
