@@ -1,7 +1,7 @@
 open Mirage
 
 let client =
-  let packages = [ package "mirage-http"; package "duration" ] in
+  let packages = [ package "cohttp-mirage"; package "duration" ] in
   foreign
     ~packages
     "Unikernel.Client" @@ time @-> console @-> resolver @-> conduit @-> job
