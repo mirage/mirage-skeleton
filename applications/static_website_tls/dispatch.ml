@@ -1,7 +1,7 @@
 open Lwt.Infix
 
 (** Common signature for http and https. *)
-module type HTTP = Cohttp_lwt.Server
+module type HTTP = Cohttp_lwt.S.Server
 
 (* Logging *)
 let https_src = Logs.Src.create "https" ~doc:"HTTPS server"
