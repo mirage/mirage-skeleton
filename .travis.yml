@@ -6,6 +6,8 @@ env:
   global:
     - TESTS=false
     - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
+    # Needed until the cohttp-mirage (formerly mirage-http) is merged
+    - EXTRA_REMOTES="git://github.com/djs55/mirage-dev.git#cohttp"
     - UPDATE_GCC_BINUTILS=1
   matrix:
     - OCAML_VERSION=4.03 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
