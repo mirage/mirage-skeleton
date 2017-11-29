@@ -8,18 +8,18 @@ let mac = Macaddr.of_string_exn
 let hostname =           "charrua-dhcp-server"
 let default_lease_time = 60 * 60 * 1 (* 1 hour *)
 let max_lease_time =     60 * 60 * 24 (* A day *)
-let ip_address =         ip "192.168.1.5"
-let network =            net "192.168.1.5/24"
-let range =              Some (ip "192.168.1.70", ip "192.168.1.100")
+let ip_address =         ip "192.168.42.2"
+let network =            net "192.168.42.0/24"
+let range =              Some (ip "192.168.42.10", ip "192.168.42.100")
 (* List of dhcp options to be advertised *)
 let options = [
   (* Routers is a list of default routers *)
-  Routers [ip "192.168.1.5"];
+  Routers [ ip "192.168.42.1" ];
   (* Dns_servers is a list of dns servers *)
-  Dns_servers [ip "192.168.1.5"; (* ip "192.168.1.6" *)];
+  Dns_servers [ ip "192.168.42.3" ];
   (* Ntp_servers is a list of ntp servers, Time_servers (old protocol) is also available *)
   (* Ntp_servers [ip "192.168.1.5"]; *)
-  Domain_name "pampas";
+  Domain_name "home";
   (*
    * Check dhcp_wire.mli for the other options:
    * https://github.com/haesbaert/charrua-core/blob/master/lib/dhcp_wire.mli
