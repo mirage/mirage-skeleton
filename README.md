@@ -47,7 +47,9 @@ the normal workflow by trying to compile the `noop` application.
     $ ./noop # run the program
 ```
 
-Note that in the general case, you may need to specify what networking
+Note that in the general case, you may need to specify more options at
+the `mirage configure` stage. You can find out about them with
+`mirage configure --help`. For example, you may need to specify what networking
 method should be used, with, e.g., `--net socket` or `--net direct` at
 the `mirage configure` stage.
 
