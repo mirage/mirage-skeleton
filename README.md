@@ -34,6 +34,25 @@ proceeding:
     3.0.5
 ```
 
+## Trivial example
+
+You can check that your build environment is working and get a feel for
+the normal workflow by trying to compile the `noop` application.
+
+```
+    $ cd tutorials/noop
+    $ mirage configure -t unix # initial setup for UNIX backend
+    $ make depend # install dependencies
+    $ make # build the program
+    $ ./noop # run the program
+```
+
+Note that in the general case, you may need to specify more options at
+the `mirage configure` stage. You can find out about them with
+`mirage configure --help`. For example, you may need to specify what networking
+method should be used, with, e.g., `--net socket` or `--net direct` at
+the `mirage configure` stage.
+
 ## Configure, Build, Run
 
 Each unikernel lives in its own directory, and can be configured, built, and run
