@@ -17,7 +17,7 @@ module Client (T: TIME) (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.
     C.log c (sprintf "Fetching %s with Cohttp:" (Uri.to_string uri)) >>= fun () ->
     let ctx = Cohttp_mirage.Client.ctx resolver ctx in
     Cohttp_mirage.Client.get ~ctx uri >>= fun (response, body) ->
-    Cohttp_lwt_body.to_string body >>= fun body ->
+    Cohttp_lwt.Body.to_string body >>= fun body ->
     C.log c (Sexplib.Sexp.to_string_hum (Cohttp.Response.sexp_of_t response)) >>= fun () ->
     C.log c (sprintf "Received body length: %d" (String.length body)) >>= fun () ->
     C.log c "Cohttp fetch done\n------------\n"
