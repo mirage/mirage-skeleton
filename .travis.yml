@@ -5,7 +5,7 @@ sudo: required
 env:
   global:
     - TESTS=false
-    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
+    - PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing charrua-core udns:https://github.com/roburio/udns.git"
     - UPDATE_GCC_BINUTILS=1
   matrix:
     - OCAML_VERSION=4.04 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
