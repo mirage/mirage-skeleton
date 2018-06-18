@@ -21,6 +21,7 @@ module Main (R : Mirage_types_lwt.RANDOM) = struct
   let t_to_str = function
     | `Unix  -> "unix"
     | `Xen -> "xen"
+    | `Muen -> "muen"
     | `Qubes -> "qubes"
     | `MacOSX -> "macosx"
     | `Virtio -> "virtio"
