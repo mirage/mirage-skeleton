@@ -1,6 +1,6 @@
 -include Makefile.config
 
-TESTS = \
+BASE_TESTS = \
   tutorial/noop \
   tutorial/noop-functor \
   tutorial/hello \
@@ -10,7 +10,6 @@ TESTS = \
   tutorial/lwt/heads2 \
   tutorial/lwt/timeout1 \
   tutorial/lwt/timeout2 \
-  device-usage/block \
   device-usage/clock \
   device-usage/conduit_server \
   device-usage/console \
@@ -21,6 +20,13 @@ TESTS = \
   applications/dhcp \
   applications/dns \
   applications/static_website_tls
+
+ifeq ($(MODE),muen)
+	TESTS = $(BASE_TESTS)
+else
+	TESTS = $(BASE_TESTS)
+	TESTS += device-usage/block
+endif
 
 ifdef WITH_TRACING
 TESTS += device-usage/tracing
