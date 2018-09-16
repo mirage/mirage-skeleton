@@ -25,7 +25,7 @@ module Main (R : Mirage_types_lwt.RANDOM) = struct
     | `Qubes -> "qubes"
     | `MacOSX -> "macosx"
     | `Virtio -> "virtio"
-    | `Ukvm -> "ukvm"
+    | `Hvt -> "hvt"
 
   let start _ _r =
     let rng = Key_gen.prng () in
