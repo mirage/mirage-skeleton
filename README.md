@@ -100,7 +100,7 @@ directly.
 #### To configure a unikernel before building:
 
 ```
-    $ mirage configure -t [ukvm|kvm|qubes|macosx|unix|xen]
+    $ mirage configure -t [hvt|virtio|qubes|macosx|unix|xen]
 ```
 
 The boot target is selected via the `-t` flag. The default target is `unix`.
@@ -167,10 +167,10 @@ Ukvm:
 
 ```
     $ cd hello
-    $ mirage configure -t ukvm
+    $ mirage configure -t hvt
     $ make depend
     $ make
-    $ ./ukvm-bin hello.ukvm
+    $ ./solo5-hvt hello.hvt
 ```
 
 Virtio:
@@ -180,7 +180,7 @@ Virtio:
     $ mirage configure -t virtio
     $ make depend
     $ make
-    $ solo5-run-virtio ./https.virtio
+    $ solo5-virtio-run ./https.virtio
 ```
 
 Macosx:

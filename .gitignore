@@ -21,6 +21,9 @@ myocamlbuild.ml
 *.xl.in
 *.xe
 *_libvirt.xml
+*.virtio
+*.hvt
+*.muen
 static*.ml
 static*.mli
 main.ml
@@ -29,8 +32,9 @@ mir-*
 make-fat*-image.sh
 *_gen.ml
 *_gen.ml.in
-**/Makefile.ukvm
-**/ukvm-bin
+**/Makefile.solo5-hvt
+**/solo5-hvt
+**/_build-solo5-hvt
 **/.mirage.config
 
 block/block_test
