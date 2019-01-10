@@ -39,7 +39,7 @@ module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
        Resolver.gethostbyname resolver ~server:(Ipaddr.V4.of_string_exn server)
                               ~dns_port:port test_hostname
        >>= fun ips ->
-       Client_log.info (fun f -> f "Got IPS: %a" Format.(pp_print_list Ipaddr.pp_hum) ips);
+       Client_log.info (fun f -> f "Got IPS: %a" Format.(pp_print_list Ipaddr.pp) ips);
        Lwt.return ())
       (* Error handling *)
       (function

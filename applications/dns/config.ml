@@ -7,7 +7,12 @@ let data = crunch "./data"
     package, and it requires a logging console, a read-only
     key/value store and a TCP/IP stack. *)
 let dns_handler =
-  let packages = [package ~min:"1.0.0" "dns"; package "mirage-dns"; package "duration"] in
+  let packages = [
+    package ~min:"1.0.0" "dns";
+    package "mirage-dns";
+    package ~min:"2.9.0" "ipaddr";
+    package "duration"
+  ] in
   foreign
     ~packages
     "Unikernel.Main" (kv_ro @-> stackv4 @-> job)
