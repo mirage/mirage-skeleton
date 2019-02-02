@@ -7,8 +7,8 @@ let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 
 module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME) = struct
-  module E = Ethif.Make(N)
-  module A = Arpv4.Make(E)(MClock)(Time)
+  module E = Ethernet.Make(N)
+  module A = Arp.Make(E)(Time)
   module DC = Dhcp_config
 
   let log c s =
@@ -46,7 +46,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
   let start c net clock _time =
     (* Get an ARP stack *)
     E.connect net >>= fun e ->
-    A.connect e clock >>= fun a ->
+    A.connect e >>= fun a ->
     A.add_ip a DC.ip_address >>= fun () ->
 
     (* Build a dhcp server *)
@@ -62,16 +62,16 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
     in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
     let listener = N.listen net (fun buf ->
-        match Ethif_packet.Unmarshal.of_cstruct buf with
+        match Ethernet_packet.Unmarshal.of_cstruct buf with
         | Result.Error s ->
           log c (red "Can't parse packet: %s" s)
         | Result.Ok (ethif_header, ethif_payload) ->
-          if of_interest ethif_header.Ethif_packet.destination net &&
+          if of_interest ethif_header.Ethernet_packet.destination net &&
              Dhcp_wire.is_dhcp buf (Cstruct.len buf) then begin
             input_dhcp c clock net config !leases buf >>= fun new_leases ->
             leases := new_leases;
             Lwt.return_unit
-          end else if ethif_header.Ethif_packet.ethertype = Ethif_wire.ARP then
+          end else if ethif_header.Ethernet_packet.ethertype = Ethernet_wire.ARP then
             A.input a ethif_payload
           else Lwt.return_unit
       ) in

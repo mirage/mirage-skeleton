@@ -5,7 +5,8 @@ let main = foreign "Unikernel.Main" (console @-> network @-> mclock @-> time @->
 let () =
   let packages = [
     package ~min:"0.5" ~sublibs:["server"; "wire"] "charrua-core";
-    package ~sublibs:["ethif"; "arpv4"] "tcpip"
+    package "arp-mirage";
+    package "ethernet"
   ]
   in
   register "dhcp" ~packages [
