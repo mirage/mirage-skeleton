@@ -39,7 +39,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
         Lwt.return leases
       | Reply (reply, leases) ->
         log console (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt)) >>= fun () ->
-        N.write net (Dhcp_wire.buf_of_pkt reply) >>= fun _ ->
+        N.write net (Dhcp_wire.pkt_into_buf reply) >>= fun _ ->
         log console (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply)) >>= fun () ->
         Lwt.return leases
 
@@ -71,7 +71,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
             input_dhcp c clock net config !leases buf >>= fun new_leases ->
             leases := new_leases;
             Lwt.return_unit
-          end else if ethif_header.Ethernet_packet.ethertype = Ethernet_wire.ARP then
+          end else if ethif_header.Ethernet_packet.ethertype = `ARP then
             A.input a ethif_payload
           else Lwt.return_unit
       ) in
