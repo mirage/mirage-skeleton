@@ -39,7 +39,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
         Lwt.return leases
       | Reply (reply, leases) ->
         log console (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt)) >>= fun () ->
-        N.write net (Dhcp_wire.pkt_into_buf reply) >>= fun _ ->
+        N.write net ~size:(N.mtu net + Ethernet_wire.sizeof_ethernet) (Dhcp_wire.pkt_into_buf reply) >>= fun _ ->
         log console (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply)) >>= fun () ->
         Lwt.return leases
 
@@ -61,7 +61,7 @@ module Main (C: CONSOLE) (N: NETWORK) (MClock : Mirage_types.MCLOCK) (Time: TIME
         ~options:DC.options
     in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
-    let listener = N.listen net (fun buf ->
+    let listener = N.listen net ~header_size:Ethernet_wire.sizeof_ethernet (fun buf ->
         match Ethernet_packet.Unmarshal.of_cstruct buf with
         | Result.Error s ->
           log c (red "Can't parse packet: %s" s)
