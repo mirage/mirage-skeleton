@@ -12,7 +12,7 @@ module Main (C:CONSOLE) (N: NETWORK) (E: ETHIF) (I:IPV6) = struct
     let handler s = fun ~src ~dst _data ->
       C.log c (yellow "%s > %s %s" (Ipaddr.V6.to_string src) (Ipaddr.V6.to_string dst) s)
     in
-    N.listen n
+    N.listen n ~header_size:Ethernet_wire.sizeof_ethernet
       (E.input
          ~arpv4:(fun _ -> C.log c (red "ARP4"))
          ~ipv4:(fun _ -> C.log c (red "IP4"))
