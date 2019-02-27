@@ -20,15 +20,11 @@ module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
   module Resolver = Dns_resolver_mirage.Make(OS.Time)(S)
 
   let load_zone k =
-    K.size k "test.zone"
-    >>= function
+    K.get k (Mirage_kv.Key.v "test.zone") >>= function
     | Error _ -> Lwt.fail (Failure "test.zone not found")
-    | Ok sz ->
-      Server_log.info (fun f -> f "Loading %Ld bytes of zone data" sz);
-      K.read k "test.zone" 0L sz
-      >>= function
-      | Error _ -> Lwt.fail (Failure "test.zone error reading")
-      | Ok pages -> Lwt.return (Cstruct.concat pages |> Cstruct.to_string)
+    | Ok data ->
+      Server_log.info (fun f -> f "Loaded %d bytes of zone data" (String.length data));
+      Lwt.return data
 
   let make_client_request stack =
     OS.Time.sleep_ns (Duration.of_sec 3) >>= fun () ->
