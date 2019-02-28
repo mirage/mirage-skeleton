@@ -18,3 +18,4 @@ env:
     - OCAML_VERSION=4.05 POST_INSTALL_HOOK="make MODE=muen && make clean"
     - OCAML_VERSION=4.04 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=xen && make clean" PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
     - OCAML_VERSION=4.04 POST_INSTALL_HOOK="make MODE=virtio && make clean"
+    - OCAML_VERSION=4.04 POST_INSTALL_HOOK="make MODE=qubes && make clean"
