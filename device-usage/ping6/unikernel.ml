@@ -6,7 +6,7 @@ let green fmt  = Printf.sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = Printf.sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = Printf.sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Main (C:CONSOLE) (N: NETWORK) (E: ETHIF) (I:IPV6) = struct
+module Main (C:CONSOLE) (N: NETWORK) (E: ETHERNET) (I:IPV6) = struct
 
   let start c n e i =
     let handler s = fun ~src ~dst _data ->
