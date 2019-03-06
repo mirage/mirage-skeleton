@@ -6,7 +6,7 @@ env:
   global:
     - TESTS=false
     - UPDATE_GCC_BINUTILS=1
-    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git#layering"
+    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
   matrix:
     - OCAML_VERSION=4.07 POST_INSTALL_HOOK="make MODE=hvt && make clean"
     - OCAML_VERSION=4.07 POST_INSTALL_HOOK="make MODE=virtio && make clean"
