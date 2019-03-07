@@ -6,15 +6,13 @@ env:
   global:
     - TESTS=false
     - UPDATE_GCC_BINUTILS=1
-    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git#layering"
+    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
   matrix:
+    - OCAML_VERSION=4.07 POST_INSTALL_HOOK="make MODE=hvt && make clean"
+    - OCAML_VERSION=4.07 POST_INSTALL_HOOK="make MODE=virtio && make clean"
+    - OCAML_VERSION=4.07 POST_INSTALL_HOOK="make MODE=muen && make clean"
     - OCAML_VERSION=4.06 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean" PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
-    - OCAML_VERSION=4.06 POST_INSTALL_HOOK="make MODE=hvt && make clean"
-    - OCAML_VERSION=4.06 POST_INSTALL_HOOK="make MODE=virtio && make clean"
-    - OCAML_VERSION=4.06 POST_INSTALL_HOOK="make MODE=muen && make clean"
-    - OCAML_VERSION=4.05 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
-    - OCAML_VERSION=4.05 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=xen && make clean" PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
+    - OCAML_VERSION=4.06 POST_INSTALL_HOOK="make MODE=unix && make testrun SUDO=sudo && make clean"
+    - OCAML_VERSION=4.06 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=xen && make clean" PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
     - OCAML_VERSION=4.05 POST_INSTALL_HOOK="make MODE=hvt && make clean"
-    - OCAML_VERSION=4.05 POST_INSTALL_HOOK="make MODE=muen && make clean"
-    - OCAML_VERSION=4.04 WITH_TRACING=1 POST_INSTALL_HOOK="make MODE=xen && make clean" PINS="lwt.dev:https://github.com/mirage/lwt.git#tracing"
-    - OCAML_VERSION=4.04 POST_INSTALL_HOOK="make MODE=virtio && make clean"
+    - OCAML_VERSION=4.05 POST_INSTALL_HOOK="make MODE=qubes && make clean"
