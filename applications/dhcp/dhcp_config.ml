@@ -33,21 +33,24 @@ let options = [
  * `Time_offset', `Max_datagram; will always override the global (if present).
  *)
 
-(* let static_host_1 = { *)
-(*   hostname = "Static host 1"; *)
-(*   options = [ *)
-(*     Routers [ip "192.168.1.4"]; *)
-(*   ]; *)
-(*   hw_addr = mac "7a:bb:c1:aa:50:01"; *)
-(*   fixed_addr = Some (ip "192.168.1.151"); (\* Must be outside of range. *\) *)
-(* } *)
-
-(* let static_host_2 = { *)
-(*   hostname = "Static host 2"; *)
-(*   options = []; *)
-(*   hw_addr = mac "7a:bb:c1:aa:50:02"; *)
-(*   fixed_addr = Some (ip "192.168.1.152"); (\* Must be outside of range. *\) *)
-(* } *)
-
-(* let hosts = [static_host_1;static_host_2] *)
 let hosts = []
+
+(*
+let static_host_1 = {
+   Dhcp_server.Config.hostname = "Static host 1";
+   options = [
+     Routers [ip "192.168.1.4"];
+   ];
+   hw_addr = mac "7a:bb:c1:aa:50:01";
+   fixed_addr = Some (ip "192.168.1.151"); (* Must be outside of range. *)
+}
+
+let static_host_2 = {
+   Dhcp_server.Config.hostname = "Static host 2";
+   options = [];
+   hw_addr = mac "7a:bb:c1:aa:50:02";
+   fixed_addr = Some (ip "192.168.1.152"); (* Must be outside of range. *)
+}
+
+let hosts = [static_host_1;static_host_2]
+*)
