@@ -4,7 +4,8 @@ let main = foreign "Unikernel.Main" (console @-> network @-> mclock @-> time @->
 
 let () =
   let packages = [
-    package ~min:"0.5" ~sublibs:["server"; "wire"] "charrua-core";
+    package ~min:"1.0.0" "charrua";
+    package "charrua-server";
     package "arp-mirage";
     package "ethernet"
   ]
