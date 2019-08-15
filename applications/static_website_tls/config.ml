@@ -4,7 +4,7 @@ let stack = generic_stackv4 default_network
 let data_key = Key.(value @@ kv_ro ~group:"data" ())
 let data = generic_kv_ro ~key:data_key "htdocs"
 (* set ~tls to false to get a plain-http server *)
-let https_srv = http_server @@ conduit_direct ~tls:true stack
+let https_srv = cohttp_server @@ conduit_direct ~tls:true stack
 
 let http_port =
   let doc = Key.Arg.info ~doc:"Listening HTTP port." ["http"] in

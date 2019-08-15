@@ -6,10 +6,10 @@ let shellconfig = Type ShellConfig
 let config_shell = impl @@ object
     inherit base_configurable
 
-    method build _i =
+    method! build _i =
       Bos.OS.Cmd.run Bos.Cmd.(v "dd" % "if=/dev/zero" % "of=disk.img" % "count=100000")
 
-    method clean _i =
+    method! clean _i =
       Bos.OS.File.delete (Fpath.v "disk.img")
 
     method module_name = "Functoria_runtime"
