@@ -1,8 +1,13 @@
 open Mirage
 
+let uri =
+  let doc = Key.Arg.info ~doc:"URL to fetch" ["uri"] in
+  Key.(create "uri" Arg.(opt string "http://mirage.io" doc))
+
 let client =
   let packages = [ package "cohttp-mirage"; package "duration" ] in
   foreign
+    ~keys:[Key.abstract uri]
     ~packages
     "Unikernel.Client" @@ time @-> console @-> resolver @-> conduit @-> job
 
