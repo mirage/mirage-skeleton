@@ -8,6 +8,7 @@ env:
     - UPDATE_GCC_BINUTILS=1
     - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
   matrix:
+    - OCAML_VERSION=4.09 POST_INSTALL_HOOK="make MODE=spt && make clean"
     - OCAML_VERSION=4.08 POST_INSTALL_HOOK="make MODE=hvt && make clean"
     - OCAML_VERSION=4.08 POST_INSTALL_HOOK="make MODE=virtio && make clean"
     - OCAML_VERSION=4.08 POST_INSTALL_HOOK="make MODE=muen && make clean"
