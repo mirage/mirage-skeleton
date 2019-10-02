@@ -14,7 +14,7 @@ DHCP, DNS, and Web servers.
 
 ## Prerequisites
 
-- Install latest OPAM (at least 1.2.2), following instructions at
+- Install latest OPAM (at least 2.0.0), following instructions at
 <https://opam.ocaml.org/>
 
 - Install the `mirage` package with OPAM, updating your package first if
@@ -26,12 +26,12 @@ necessary:
     $ eval `opam config env`
 ```
 
-- Please ensure that your Mirage command-line version is at least 3.0.0 before
+- Please ensure that your Mirage command-line version is at least 3.6.0 before
 proceeding:
 
 ```
     $ mirage --version
-    3.0.5
+    3.6.0
 ```
 
 ## Trivial example
@@ -100,7 +100,7 @@ directly.
 #### To configure a unikernel before building:
 
 ```
-    $ mirage configure -t [hvt|virtio|qubes|macosx|unix|xen]
+    $ mirage configure -t [hvt|virtio|qubes|macosx|unix|xen|genode|muen|spt]
 ```
 
 The boot target is selected via the `-t` flag. The default target is `unix`.
@@ -139,7 +139,7 @@ The output will be created next to the `config.ml` file used.
 
 The mechanics of running the generated artifact will be dependent on the backend
 used.  For details, see
-[solo5's readme for Ukvm and Virtio](https://github.com/solo5/solo5),
+[solo5's readme for hvt, virtio, etc.](https://github.com/solo5/solo5),
 [the qubes-test-mirage repository's readme for Qubes](https://github.com/talex5/qubes-test-mirage), or
 [the MirageOS website instructions on booting Xen unikernels](https://mirage.io/tmpl/wiki/xen-boot).
 
@@ -167,14 +167,14 @@ Xen:
     $ sudo xl create xen.xl -c
 ```
 
-Ukvm:
+Hvt:
 
 ```
     $ cd hello
     $ mirage configure -t hvt
     $ make depend
     $ make
-    $ ./solo5-hvt hello.hvt
+    $ solo5-hvt hello.hvt
 ```
 
 Virtio:
