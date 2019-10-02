@@ -24,7 +24,7 @@ let main =
     ~packages
     ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
 
-let img = block_of_file "disk.img"
+let img = Key.(if_impl is_solo5 (block_of_file "storage") (block_of_file "disk.img"))
 
 let () =
   register "block_test" [main $ default_time $ img]
