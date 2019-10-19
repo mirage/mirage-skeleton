@@ -25,7 +25,7 @@ module Main (Time: Mirage_types_lwt.TIME) (PClock: Mirage_types.PCLOCK) (MClock:
           (MClock.elapsed_ns mclock) @@ str_of_time (current_time, tz)
       in
       Log.info (fun f -> f "%s" str);
-      OS.Time.sleep_ns 1_000_000_000L >>= fun () ->
+      Time.sleep_ns 1_000_000_000L >>= fun () ->
       speak pclock mclock ()
     in
     speak pclock mclock ()

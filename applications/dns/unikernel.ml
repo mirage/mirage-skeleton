@@ -14,10 +14,10 @@ let test_hostname = "dark.recoil.org"
 (* Server settings *)
 let listening_port = 53
 
-module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
+module Main (Time : Mirage_time_lwt.S) (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
 
   module U = S.UDPV4
-  module Resolver = Dns_resolver_mirage.Make(OS.Time)(S)
+  module Resolver = Dns_resolver_mirage.Make(Time)(S)
 
   let load_zone k =
     K.get k (Mirage_kv.Key.v "test.zone") >>= function
@@ -27,7 +27,7 @@ module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
       Lwt.return data
 
   let make_client_request stack =
-    OS.Time.sleep_ns (Duration.of_sec 3) >>= fun () ->
+    Time.sleep_ns (Duration.of_sec 3) >>= fun () ->
     Client_log.info (fun f -> f "Starting client resolver");
     let resolver = Resolver.create stack in
     Lwt.catch
@@ -71,7 +71,7 @@ module Main (K:Mirage_types_lwt.KV_RO) (S:Mirage_types_lwt.STACKV4) = struct
     Server_log.info (fun f -> f "DNS server listening on UDP port %d" listening_port);
     S.listen s
 
-  let start kv_store stack =
+  let start _time kv_store stack =
     Logs.(set_level (Some Info));
     load_zone kv_store >>= fun zonebuf ->
     Lwt.join [
