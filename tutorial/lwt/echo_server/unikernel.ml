@@ -1,14 +1,13 @@
-open OS
 open Lwt.Infix
 
-module Echo_server (C: Mirage_console_lwt.S) (R: Mirage_random.C) = struct
+module Echo_server (C: Mirage_console_lwt.S) (Time: Mirage_time_lwt.S) (R: Mirage_random.C) = struct
 
   let read_line () =
-    OS.Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 R.generate))
+    Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 R.generate))
     >|= fun () ->
     String.make (Randomconv.int ~bound:20 R.generate) 'a'
 
-  let start c _r =
+  let start c _time _r =
     let rec echo_server = function
       | 0 -> Lwt.return ()
       | n ->

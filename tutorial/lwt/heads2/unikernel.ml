@@ -1,9 +1,8 @@
-open OS
 open Lwt.Infix
 
-module Heads2 (C: Mirage_types_lwt.CONSOLE) = struct
+module Heads2 (C: Mirage_types_lwt.CONSOLE) (Time: Mirage_time_lwt.S) = struct
 
-  let start c =
+  let start c _time =
     let heads =
       Time.sleep_ns (Duration.of_sec 1) >>= fun () -> C.log c "Heads"
     in

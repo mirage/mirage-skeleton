@@ -15,9 +15,9 @@ let dns_handler =
   ] in
   foreign
     ~packages
-    "Unikernel.Main" (kv_ro @-> stackv4 @-> job)
+    "Unikernel.Main" (time @-> kv_ro @-> stackv4 @-> job)
 
 let stack = generic_stackv4 default_network
 
 let () =
-  register "dns" [dns_handler $ data $ stack]
+  register "dns" [dns_handler $ default_time $ data $ stack]
