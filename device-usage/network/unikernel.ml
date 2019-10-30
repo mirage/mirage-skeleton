@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Main (S: Mirage_stack_lwt.V4) = struct
+module Main (S: Mirage_stack.V4) = struct
 
   let start s =
     let port = Key_gen.port () in

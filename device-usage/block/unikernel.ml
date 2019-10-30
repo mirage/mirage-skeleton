@@ -1,8 +1,7 @@
 open Lwt.Infix
 open Printf
-open Mirage_types_lwt
 
-module Main (Time: TIME)(B: BLOCK) = struct
+module Main (Time: Mirage_time.S)(B: Mirage_block.S) = struct
   let log_src = Logs.Src.create "block" ~doc:"block tester"
   module Log = (val Logs.src_log log_src : Logs.LOG)
 
