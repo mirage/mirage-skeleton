@@ -7,7 +7,7 @@ sudo: false
 env:
   global:
     - TESTS=false
-    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
+    - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git#easy"
   matrix:
     - DISTRO=alpine OCAML_VERSION=4.09 POST_INSTALL_HOOK="make MODE=spt && make clean"
     - DISTRO=alpine OCAML_VERSION=4.08 POST_INSTALL_HOOK="make MODE=hvt && make clean"
