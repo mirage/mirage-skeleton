@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Main (KV: Mirage_kv_lwt.RO) = struct
+module Main (KV: Mirage_kv.RO) = struct
 
   let start kv =
     let our_secret = "foo\n" in

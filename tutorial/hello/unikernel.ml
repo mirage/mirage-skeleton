@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Hello (Time : Mirage_time_lwt.S) = struct
+module Hello (Time : Mirage_time.S) = struct
 
   let start _time =
 

@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Main (R : Mirage_types_lwt.RANDOM) = struct
+module Main (R : Mirage_random.S) = struct
 
   let s_to_str (s : Entropy.source) = match s with
     | `Timer -> "timer (rdtsc)"

@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Heads1 (C: Mirage_console_lwt.S) (Time: Mirage_time_lwt.S) = struct
+module Heads1 (C: Mirage_console.S) (Time: Mirage_time.S) = struct
 
   let start c _time =
     Lwt.join [

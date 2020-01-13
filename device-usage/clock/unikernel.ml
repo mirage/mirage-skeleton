@@ -3,18 +3,12 @@ open Lwt.Infix
 let log = Logs.Src.create "speaking clock" ~doc:"At the third stroke..."
 module Log = (val Logs.src_log log : Logs.LOG)
 
-module Main (Time: Mirage_types_lwt.TIME) (PClock: Mirage_types.PCLOCK) (MClock: Mirage_types.MCLOCK) = struct
-
-  module Logs_reporter = Mirage_logs.Make(PClock)
+module Main (Time: Mirage_time.S) (PClock: Mirage_clock.PCLOCK) (MClock: Mirage_clock.MCLOCK) = struct
 
   let str_of_time (posix_time, timezone) =
     Format.asprintf "%a" (Ptime.pp_human ?tz_offset_s:timezone ()) posix_time
 
   let start _time pclock mclock =
-
-    Logs.(set_level (Some Info));
-    Logs_reporter.(create pclock |> run) @@ fun () ->
-
     let rec speak pclock mclock () =
       let current_time = PClock.now_d_ps pclock |> Ptime.v in
       let tz = PClock.current_tz_offset_s pclock in

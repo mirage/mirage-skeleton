@@ -1,5 +1,4 @@
 open Lwt.Infix
-open Mirage_types_lwt
 open Printf
 
 let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")
@@ -7,7 +6,7 @@ let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
 let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
 let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
 
-module Client (T: TIME) (C: CONSOLE) (RES: Resolver_lwt.S) (CON: Conduit_mirage.S) = struct
+module Client (T: Mirage_time.S) (C: Mirage_console.S) (RES: Resolver_lwt.S) (CON: Conduit_mirage.S) = struct
 
   let http_fetch c resolver ctx uri =
     C.log c (sprintf "Fetching %s with Cohttp:" (Uri.to_string uri)) >>= fun () ->
