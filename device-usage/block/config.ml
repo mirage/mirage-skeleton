@@ -1,7 +1,7 @@
 open Mirage
 
 type shellconfig = ShellConfig
-let shellconfig = Type ShellConfig
+let shellconfig = Type.v ShellConfig
 
 let config_shell =
   let build _ =
