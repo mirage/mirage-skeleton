@@ -5,9 +5,9 @@ let shellconfig = Type.v ShellConfig
 
 let config_shell =
   let build _ =
-    Bos.OS.Cmd.run Bos.Cmd.(v "dd" % "if=/dev/zero" % "of=disk.img" % "count=100000")
+    Action.run_cmd Bos.Cmd.(v "dd" % "if=/dev/zero" % "of=disk.img" % "count=100000")
   in
-  let clean _ = Bos.OS.File.delete (Fpath.v "disk.img") in
+  let clean _ = Action.rm (Fpath.v "disk.img") in
   impl ~build ~clean "Functoria_runtime" shellconfig
 
 let main =
