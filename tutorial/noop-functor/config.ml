@@ -4,4 +4,4 @@ let main =
   foreign "Unikernel.Main" job
 
 let () =
-  register "noop" [main]
+  register "noop-functor" [main]

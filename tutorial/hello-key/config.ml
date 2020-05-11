@@ -11,4 +11,4 @@ let main =
     "Unikernel.Hello" (time @-> job)
 
 let () =
-  register "hello" [main $ default_time]
+  register "hello-key" [main $ default_time]

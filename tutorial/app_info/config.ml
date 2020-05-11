@@ -7,4 +7,4 @@ let main =
     (console @-> job)
 
 let () =
-  register "console" [main $ default_console]
+  register "app-info" [main $ default_console]
