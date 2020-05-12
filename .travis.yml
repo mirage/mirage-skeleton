@@ -3,7 +3,6 @@ install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.t
 script: bash -ex .travis-docker.sh
 services:
   - docker
-sudo: false
 env:
   global:
     - TESTS=false
