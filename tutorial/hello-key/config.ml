@@ -1,12 +1,12 @@
 open Mirage
 
-let key =
+let hello =
   let doc = Key.Arg.info ~doc:"How to say hello." ["hello"] in
   Key.(create "hello" Arg.(opt string "Hello World!" doc))
 
 let main =
-  foreign
-    ~keys:[Key.abstract key]
+  main
+    ~keys:[key hello]
     ~packages:[package "duration"]
     "Unikernel.Hello" (time @-> job)
 

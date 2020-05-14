@@ -1,6 +1,6 @@
 open Mirage
 
-let main = foreign "Unikernel.Main" (random @-> job)
+let main = main "Unikernel.Main" (random @-> job)
 
 let () =
   let packages = [

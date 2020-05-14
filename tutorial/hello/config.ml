@@ -1,7 +1,7 @@
 open Mirage
 
 let main =
-  foreign
+  main
     ~packages:[package "duration"]
     "Unikernel.Hello" (time @-> job)
 

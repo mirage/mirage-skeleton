@@ -1,9 +1,9 @@
 open Mirage
 
 let main =
-  foreign "Unikernel.Main"
+  main "Unikernel.Main"
     ~packages:[package "fmt"]
-    ~deps:[abstract app_info]
+    ~extra_deps:[dep app_info]
     (console @-> job)
 
 let () =

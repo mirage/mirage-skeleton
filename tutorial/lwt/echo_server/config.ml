@@ -1,9 +1,9 @@
 open Mirage
 
-let packages = [package "duration"; package "randomconv"]
+let main =
+  let packages = [package "duration"; package "randomconv"] in
+  main ~packages "Unikernel.Echo_server" (console @-> time @-> random @-> job)
 
 let () =
-  let main = foreign ~packages "Unikernel.Echo_server"
-      (console @-> time @-> random @-> job) in
   register "echo_server"
     [ main $ default_console $ default_time $ default_random ]

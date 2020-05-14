@@ -6,8 +6,8 @@ let uri =
 
 let client =
   let packages = [ package "cohttp-mirage"; package "duration" ] in
-  foreign
-    ~keys:[Key.abstract uri]
+  main
+    ~keys:[key uri]
     ~packages
     "Unikernel.Client" @@ http_client @-> job
 
