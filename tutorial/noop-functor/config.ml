@@ -1,7 +1,7 @@
 open Mirage
 
 let main =
-  foreign "Unikernel.Main" job
+  main "Unikernel.Main" job
 
 let () =
   register "noop-functor" [main]

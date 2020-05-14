@@ -1,7 +1,9 @@
 open Mirage
 
-let packages = [package "duration"; package "randomconv"]
+let main =
+  main
+    ~packages:[package "duration"; package "randomconv"]
+    "Unikernel.Heads2" (console @-> time @-> job)
 
 let () =
-  let main = foreign ~packages "Unikernel.Heads2" (console @-> time @-> job) in
   register "heads2" [ main $ default_console $ default_time ]

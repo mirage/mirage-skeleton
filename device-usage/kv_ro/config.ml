@@ -3,7 +3,7 @@ open Mirage
 let disk = generic_kv_ro "t"
 
 let main =
-  foreign
+  main
     "Unikernel.Main" (kv_ro @-> job)
 
 let () =

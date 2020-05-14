@@ -12,9 +12,10 @@ let config_shell =
 
 let main =
   let packages = [ package "io-page"; package "duration"; package ~build:true "bos"; package ~build:true "fpath" ] in
-  foreign
+  main
     ~packages
-    ~deps:[abstract config_shell] "Unikernel.Main" (time @-> block @-> job)
+    ~extra_deps:[dep config_shell]
+    "Unikernel.Main" (time @-> block @-> job)
 
 let img = Key.(if_impl is_solo5 (block_of_file "storage") (block_of_file "disk.img"))
 

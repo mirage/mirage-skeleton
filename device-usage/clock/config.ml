@@ -1,7 +1,7 @@
 open Mirage
 
 let main =
-  foreign "Unikernel.Main" (time @-> pclock @-> mclock @-> job)
+  main "Unikernel.Main" (time @-> pclock @-> mclock @-> job)
 
 let () =
   register "speaking_clock" [

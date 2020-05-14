@@ -37,14 +37,14 @@ let password =
 ;;
 
 let server =
-  foreign
+  main
     "Unikernel.Make"
     ~keys:
-      [ Key.abstract port
-      ; Key.abstract hostname
-      ; Key.abstract user
-      ; Key.abstract password
-      ; Key.abstract database
+      [ key port
+      ; key hostname
+      ; key user
+      ; key password
+      ; key database
       ]
     ~packages
     (random @-> pclock @-> mclock @-> stackv4 @-> job)
@@ -55,4 +55,3 @@ let () =
     "pgx_unikernel"
     [ server $ default_random $ default_posix_clock $ default_monotonic_clock $ stack ]
 ;;
-
