@@ -1,10 +1,10 @@
 open Mirage
 
 let handler =
-  let packages = [package "cohttp-mirage"] in
+  let packages = [package ~sublibs:[ "tcp" ] "conduit-mirage"; package "cohttp-mirage"] in
   foreign
     ~packages
-    "Unikernel.Main" (conduit @-> job)
+    "Unikernel.Main" (stackv4 @-> job)
 
 let () =
-  register "conduit_server" [ handler $ conduit_direct (generic_stackv4 default_network) ]
+  register "conduit_server" [ handler $ (generic_stackv4 default_network) ]
