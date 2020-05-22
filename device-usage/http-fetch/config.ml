@@ -5,15 +5,16 @@ let uri =
   Key.(create "uri" Arg.(opt string "http://mirage.io" doc))
 
 let client =
-  let packages = [ package "cohttp-mirage"; package "duration" ] in
+  let packages = [ package "cohttp-mirage"
+                 ; package "duration"
+                 ; package "conduit-mirage" ~sublibs:[ "tcp"; "tls"; "dns"; ]
+                 ; package "conduit" ] in
   foreign
-    ~keys:[Key.abstract uri]
+    ~keys:[Key.abstract uri; Key.(abstract (resolver ())); Key.(abstract (resolver_port ())) ]
     ~packages
-    "Unikernel.Client" @@ time @-> console @-> resolver @-> conduit @-> job
+    "Unikernel.Client" @@ random @-> time @-> mclock @-> stackv4 @-> console @-> job
 
 let () =
   let stack = generic_stackv4 default_network in
-  let res_dns = resolver_dns stack in
-  let conduit = conduit_direct stack in
-  let job =  [ client $ default_time $ default_console $ res_dns $ conduit ] in
+  let job =  [ client $ default_random $ default_time $ default_monotonic_clock $ stack $ default_console ] in
   register "http-fetch" job
