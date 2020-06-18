@@ -13,7 +13,7 @@ let dns_handler =
     package ~min:"2.9.0" "ipaddr";
     package "duration"
   ] in
-  foreign
+  main
     ~packages
     "Unikernel.Main" (time @-> kv_ro @-> stackv4 @-> job)
 

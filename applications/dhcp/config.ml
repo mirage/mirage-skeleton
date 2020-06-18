@@ -1,6 +1,6 @@
 open Mirage
 
-let main = foreign "Unikernel.Main" (console @-> network @-> mclock @-> time @-> job)
+let main = main "Unikernel.Main" (console @-> network @-> mclock @-> time @-> job)
 
 let () =
   let packages = [
