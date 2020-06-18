@@ -56,7 +56,7 @@ clean: $(CLEANS)
 	cd $* && $(MAKE) depend && $(MAKE)
 
 %-clean:
-	-cd $* && $(MAKE) clean
+	-cd $* && mirage clean
 	-$(RM) $*/Makefile.user
 
 %-testrun:
