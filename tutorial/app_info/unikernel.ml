@@ -2,7 +2,7 @@
 module Main (C: Mirage_console.S) = struct
 
   let start c info =
-    let {Mirage_info. name; packages; libraries} = info in
+    let {Mirage_runtime. name; packages; libraries} = info in
     let s =
       Format.asprintf
         "name = %s@.\
