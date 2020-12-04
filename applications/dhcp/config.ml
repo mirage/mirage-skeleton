@@ -6,7 +6,7 @@ let () =
   let packages = [
     package ~min:"1.0.0" "charrua";
     package "charrua-server";
-    package "arp-mirage";
+    package ~min:"2.3.0" ~sublibs:["mirage"] "arp";
     package "ethernet"
   ]
   in
