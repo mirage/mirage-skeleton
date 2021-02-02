@@ -1,6 +1,17 @@
 open Mirage
 
-let main = foreign "Unikernel.Main" (console @-> network @-> mclock @-> time @-> job)
+let main packages =
+  foreign "Unikernel.Main" ~packages
+    (console @-> network @-> mclock @-> time @-> job)
+
+(* [charrua] needs [caml_tcpip_ones_complement_checksum],
+   which is provided by [tcpip.unix] on unix and by the
+   [mirage-solo5] for the other targets (and which is
+   automatically added by the mirage tool in that case). *)
+let main =
+  match_impl Key.(value target)
+    [`Unix, main [package "tcpip" ~sublibs:["unix"]]]
+     ~default:(main [])
 
 let () =
   let packages = [
@@ -11,5 +22,9 @@ let () =
   ]
   in
   register "dhcp" ~packages [
-    main $ default_console $ default_network $ default_monotonic_clock $ default_time
+      main
+      $ default_console
+      $ default_network
+      $ default_monotonic_clock
+      $ default_time
   ]

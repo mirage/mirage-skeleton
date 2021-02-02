@@ -1,8 +1,8 @@
-module Main (CON:Conduit_mirage.S) = struct
+module Main (C:Conduit_mirage.S) = struct
   let src = Logs.Src.create "conduit_server" ~doc:"Conduit HTTP server"
   module Log = (val Logs.src_log src: Logs.LOG)
 
-  module H = Cohttp_mirage.Server(Conduit_mirage.Flow)
+  module H = Cohttp_mirage.Server.Make(C)
 
   let start conduit =
     let http_callback _conn_id req _body =
@@ -12,5 +12,5 @@ module Main (CON:Conduit_mirage.S) = struct
     in
 
     let spec = H.make ~callback:http_callback () in
-    CON.listen conduit (`TCP 80) (H.listen spec)
+    H.listen conduit (`TCP 80) spec
 end
