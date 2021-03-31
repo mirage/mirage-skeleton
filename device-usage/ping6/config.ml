@@ -6,13 +6,7 @@ let main =
 
 let net = default_network
 let ethif = etif net
-let ipv6 =
-  let config = {
-    addresses = [];
-    netmasks  = [];
-    gateways  = [];
-  } in
-  create_ipv6 ethif config
+let ipv6 = create_ipv6 net ethif
 
 let () =
   register "ping" [ main $ default_console $ default_network $ ethif $ ipv6 ]
