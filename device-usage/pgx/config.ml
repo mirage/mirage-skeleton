@@ -6,6 +6,7 @@ let packages =
   ; package "pgx_lwt_mirage"
   ; package "logs"
   ; package "mirage-logs"
+  ; package ~max:"2.2.0" "conduit" (* force conduit-mirage and conduit to have the same version. *)
   ]
 ;;
 
