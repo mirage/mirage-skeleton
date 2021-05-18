@@ -1,11 +1,12 @@
 open Mirage
 
 let packages =
-  [ package "pgx"
+  [ package ~min:"2.0" "pgx"
   ; package "pgx_lwt"
   ; package "pgx_lwt_mirage"
   ; package "logs"
   ; package "mirage-logs"
+  ; package ~max:"2.2.0" "conduit" (* force conduit-mirage and conduit to have the same version. *)
   ]
 ;;
 
@@ -47,11 +48,11 @@ let server =
       ; key database
       ]
     ~packages
-    (random @-> pclock @-> mclock @-> stackv4 @-> job)
+    (random @-> time @-> pclock @-> mclock @-> stackv4 @-> job)
 ;;
 
 let () =
   register
     "pgx_unikernel"
-    [ server $ default_random $ default_posix_clock $ default_monotonic_clock $ stack ]
+    [ server $ default_random $ default_time $ default_posix_clock $ default_monotonic_clock $ stack ]
 ;;
