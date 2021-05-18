@@ -2,11 +2,12 @@ open Lwt.Infix
 
 module Make
     (RANDOM : Mirage_random.S)
+    (TIME : Mirage_time.S)
     (PCLOCK : Mirage_clock.PCLOCK)
     (MCLOCK : Mirage_clock.MCLOCK)
     (STACK : Mirage_stack.V4) =
 struct
-  module Pgx_mirage = Pgx_lwt_mirage.Make (RANDOM) (MCLOCK) (STACK)
+  module Pgx_mirage = Pgx_lwt_mirage.Make (RANDOM) (TIME) (MCLOCK) (STACK)
   module Logs_reporter = Mirage_logs.Make (PCLOCK)
 
   type user =
@@ -54,7 +55,7 @@ struct
       users
   ;;
 
-  let start _random _pclock _mclock stack =
+  let start _random _time _pclock _mclock stack =
     Logs.(set_level (Some Info));
     Logs_reporter.(create () |> run)
     @@ fun () ->
