@@ -14,26 +14,26 @@ module Main (Time: Mirage_time.S)(B: Mirage_block.S) = struct
     | Ok x -> f x
 
   let fill_with_pattern x phrase =
-    for i = 0 to Cstruct.len x - 1 do
+    for i = 0 to Cstruct.length x - 1 do
       Cstruct.set_char x i phrase.[i mod (String.length phrase)]
     done
 
   let fill_with_zeroes x =
-    for i = 0 to Cstruct.len x - 1 do
+    for i = 0 to Cstruct.length x - 1 do
       Cstruct.set_uint8 x i 0
     done
 
   let cstruct_equal a b =
     let check_contents a b =
       try
-        for i = 0 to Cstruct.len a - 1 do
+        for i = 0 to Cstruct.length a - 1 do
           let a' = Cstruct.get_char a i in
           let b' = Cstruct.get_char b i in
           if a' <> b' then raise Not_found (* won't escape *)
         done;
         true
       with _ -> false in
-    (Cstruct.len a = (Cstruct.len b)) && (check_contents a b)
+    (Cstruct.length a = (Cstruct.length b)) && (check_contents a b)
 
   let check_equal a b =
     if not(cstruct_equal a b) then begin
