@@ -3,7 +3,7 @@ open Mirage
 let packages =
   [ package "pgx"
   ; package "pgx_lwt"
-  ; package "pgx_lwt_mirage"
+  ; package "pgx_lwt_mirage" ~min:"2.0"
   ; package "logs"
   ; package "mirage-logs"
   ]
@@ -47,12 +47,12 @@ let server =
       ; Key.abstract database
       ]
     ~packages
-    (random @-> pclock @-> mclock @-> stackv4 @-> job)
+    (random @-> time @-> pclock @-> mclock @-> stackv4 @-> job)
 ;;
 
 let () =
   register
     "pgx_unikernel"
-    [ server $ default_random $ default_posix_clock $ default_monotonic_clock $ stack ]
+    [ server $ default_random $ default_time $ default_posix_clock $ default_monotonic_clock $ stack ]
 ;;
 

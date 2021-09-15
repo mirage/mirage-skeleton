@@ -18,7 +18,7 @@ module Main (C: Mirage_console.S) (N: Mirage_net.S) (MClock : Mirage_clock.MCLOC
     Macaddr.compare dest (N.mac net) = 0 || not (Macaddr.is_unicast dest)
 
   let input_dhcp console clock net config leases buf =
-    match Dhcp_wire.pkt_of_buf buf (Cstruct.len buf) with
+    match Dhcp_wire.pkt_of_buf buf (Cstruct.length buf) with
     | Error e ->
       log console (red "Can't parse packet: %s" e) >>= fun () ->
       Lwt.return leases
@@ -57,7 +57,7 @@ module Main (C: Mirage_console.S) (N: Mirage_net.S) (MClock : Mirage_clock.MCLOC
         ~addr_tuple:(DC.ip_address, N.mac net)
         ~network:DC.network
         ~range:DC.range
-        ~options:DC.options
+        ~options:DC.options ()
     in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
     let listener = N.listen net ~header_size:Ethernet_wire.sizeof_ethernet (fun buf ->
@@ -66,7 +66,7 @@ module Main (C: Mirage_console.S) (N: Mirage_net.S) (MClock : Mirage_clock.MCLOC
           log c (red "Can't parse packet: %s" s)
         | Result.Ok (ethif_header, ethif_payload) ->
           if of_interest ethif_header.Ethernet_packet.destination net &&
-             Dhcp_wire.is_dhcp buf (Cstruct.len buf) then begin
+             Dhcp_wire.is_dhcp buf (Cstruct.length buf) then begin
             input_dhcp c clock net config !leases buf >>= fun new_leases ->
             leases := new_leases;
             Lwt.return_unit
