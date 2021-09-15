@@ -57,7 +57,7 @@ module Main (C: Mirage_console.S) (N: Mirage_net.S) (MClock : Mirage_clock.MCLOC
         ~addr_tuple:(DC.ip_address, N.mac net)
         ~network:DC.network
         ~range:DC.range
-        ~options:DC.options
+        ~options:DC.options ()
     in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
     let listener = N.listen net ~header_size:Ethernet_wire.sizeof_ethernet (fun buf ->
