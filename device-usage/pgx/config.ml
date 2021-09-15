@@ -3,7 +3,7 @@ open Mirage
 let packages =
   [ package ~min:"2.0" "pgx"
   ; package "pgx_lwt"
-  ; package "pgx_lwt_mirage"
+  ; package "pgx_lwt_mirage" ~min:"2.0"
   ; package "logs"
   ; package "mirage-logs"
   ; package ~max:"2.2.0" "conduit" (* force conduit-mirage and conduit to have the same version. *)
