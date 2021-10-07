@@ -28,9 +28,9 @@ let mimic_tcp_conf =
         modname stack modname
     | _ -> assert false
   in
-  impl ~packages ~connect "Git_mirage_tcp.Make" (stackv4 @-> mimic)
+  impl ~packages ~connect "Git_mirage_tcp.Make" (stackv4v6 @-> mimic)
 
-let mimic_tcp_impl stackv4 = mimic_tcp_conf $ stackv4
+let mimic_tcp_impl stackv4v6 = mimic_tcp_conf $ stackv4v6
 
 let mimic_ssh_conf ~kind ~seed ~auth =
   let seed = Key.v seed in
@@ -55,11 +55,11 @@ let mimic_ssh_conf ~kind ~seed ~auth =
           modname Key.serialize_call auth
     | _ -> assert false
   in
-  impl ~keys ~packages ~connect "Git_mirage_ssh.Make" (stackv4 @-> mimic @-> mclock @-> mimic)
+  impl ~keys ~packages ~connect "Git_mirage_ssh.Make" (stackv4v6 @-> mimic @-> mclock @-> mimic)
 
-let mimic_ssh_impl ~kind ~seed ~auth stackv4 mimic_git mclock =
+let mimic_ssh_impl ~kind ~seed ~auth stackv4v6 mimic_git mclock =
   mimic_ssh_conf ~kind ~seed ~auth
-  $ stackv4
+  $ stackv4v6
   $ mimic_git
   $ mclock
 
@@ -78,10 +78,10 @@ let mimic_dns_conf =
           modname stack
     | _ -> assert false
   in
-  impl ~packages ~connect "Git_mirage_dns.Make" (random @-> mclock @-> time @-> stackv4 @-> mimic @-> mimic)
+  impl ~packages ~connect "Git_mirage_dns.Make" (random @-> mclock @-> time @-> stackv4v6 @-> mimic @-> mimic)
 
-let mimic_dns_impl random mclock time stackv4 mimic_tcp =
-  mimic_dns_conf $ random $ mclock $ time $ stackv4 $ mimic_tcp
+let mimic_dns_impl random mclock time stackv4v6 mimic_tcp =
+  mimic_dns_conf $ random $ mclock $ time $ stackv4v6 $ mimic_tcp
 
 type hash = Hash
 
@@ -123,6 +123,24 @@ let git_conf ?path () =
 
 let git_impl ?path hash = git_conf ?path () $ hash
 
+let mimic_paf_conf () =
+  let packages = [ package "git-paf" ] in
+  let connect _ modname = function
+    | [ _; _; _; tcp_ctx; ] ->
+        Fmt.str
+          {ocaml|let paf_ctx00 = Mimic.merge %s %s.ctx in
+                 Lwt.return paf_ctx00|ocaml}
+          tcp_ctx modname
+    | _ -> assert false in
+  impl ~packages ~connect "Git_paf.Make" (time @-> pclock @-> stackv4v6 @-> mimic @-> mimic)
+
+let mimic_paf_impl time pclock stackv4v6 mimic_tcp =
+  mimic_paf_conf ()
+  $ time
+  $ pclock
+  $ stackv4v6
+  $ mimic_tcp
+
 (* User space *)
 
 let remote =
@@ -145,20 +163,22 @@ let minigit =
     ~keys:[ Key.v remote; Key.v ssh_seed; Key.v ssh_auth ]
     (git @-> mimic @-> job)
 
-let mimic ~kind ~seed ~auth stackv4 random mclock time =
-  let mtcp = mimic_tcp_impl stackv4 in
-  let mdns = mimic_dns_impl random mclock time stackv4 mtcp in
-  let mssh = mimic_ssh_impl ~kind ~seed ~auth stackv4 mtcp mclock in
-  merge mssh mdns
+let mimic ~kind ~seed ~auth stackv4v6 random pclock mclock time =
+  let mtcp = mimic_tcp_impl stackv4v6 in
+  let mdns = mimic_dns_impl random mclock time stackv4v6 mtcp in
+  let mssh = mimic_ssh_impl ~kind ~seed ~auth stackv4v6 mtcp mclock in
+  let mpaf = mimic_paf_impl time pclock stackv4v6 mtcp in
+  merge mpaf (merge mssh mdns)
 
-let stackv4 = generic_stackv4 default_network
+let stackv4v6 = generic_stackv4v6 default_network
 let mclock = default_monotonic_clock
+let pclock = default_posix_clock
 let time = default_time
 let random = default_random
 let git = git_impl sha1
 let mimic = mimic ~kind:`Rsa ~seed:ssh_seed ~auth:ssh_auth
-let mimic = mimic stackv4 random mclock time
+let mimic = mimic stackv4v6 random pclock mclock time
 
 let () =
-  register "minigit" ~packages:[ package "ptime"; package ~sublibs:["de"] ~min:"1.3.0" "decompress" ]
+  register "minigit" ~packages:[ package "ptime"; package "git-paf" ]
     [ minigit $ git $ mimic ]

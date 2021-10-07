@@ -4,7 +4,7 @@ module Make
     (Store : Git.S)
     (_ : sig end) =
 struct
-  module Sync = Git.Mem.Sync (Store) (Git_cohttp_mirage)
+  module Sync = Git.Mem.Sync (Store) (Git_paf)
 
   let author () =
     { Git.User.name= "Romain Calascibetta"
