@@ -143,7 +143,6 @@ let ssh_auth =
 let minigit =
   foreign "Unikernel.Make"
     ~keys:[ Key.v remote; Key.v ssh_seed; Key.v ssh_auth ]
-    ~packages:[ package "git-cohttp-mirage"; package ~max:"3.0.0" "cohttp-mirage"; package ~min:"2.1.0" ~max:"2.3.0" "conduit" ]
     (git @-> mimic @-> job)
 
 let mimic ~kind ~seed ~auth stackv4 random mclock time =
