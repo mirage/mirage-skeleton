@@ -5,9 +5,11 @@ module Echo_server
     (Time : Mirage_time.S)
     (R : Mirage_random.S) =
 struct
+  let generate n = R.generate n
+
   let read_line () =
-    Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 R.generate))
-    >|= fun () -> String.make (Randomconv.int ~bound:20 R.generate) 'a'
+    Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:2500 generate))
+    >|= fun () -> String.make (Randomconv.int ~bound:20 generate) 'a'
 
   let start c _time _r =
     let rec echo_server = function

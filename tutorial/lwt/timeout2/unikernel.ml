@@ -9,9 +9,11 @@ struct
     let tmout = Time.sleep_ns delay in
     Lwt.pick [ (tmout >|= fun () -> None); (t >|= fun v -> Some v) ]
 
+  let generate i = R.generate i
+
   let start c _time _r =
     let t =
-      Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:3000 R.generate))
+      Time.sleep_ns (Duration.of_ms (Randomconv.int ~bound:3000 generate))
       >|= fun () -> "Heads"
     in
     timeout (Duration.of_sec 2) t >>= function
