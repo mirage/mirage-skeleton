@@ -37,7 +37,6 @@ TESTS += device-usage/tracing
 endif
 
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
-TESTRUN = $(patsubst %, %-testrun,   $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
 OPAM_SWITCH = $(patsubst %, %/mirage/*-switch.opam, $(TESTS))
@@ -50,7 +49,6 @@ all:
 	$(MAKE) build
 
 configure: $(CONFIGS)
-testrun: $(TESTRUN)
 clean: $(CLEANS)
 	rm -f *.opam $(LOCK)
 	rm -rf duniverse
@@ -75,9 +73,6 @@ build:
 
 %-clean:
 	mirage clean -f $*/config.ml
-
-%-testrun:
-	$(SUDO) sh ./testrun.sh $*
 
 repo-add:
 	$(OPAM) repo add dune-universe https://github.com/mirage/opam-overlays.git ||\
