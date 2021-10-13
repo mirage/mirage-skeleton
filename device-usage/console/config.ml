@@ -1,9 +1,7 @@
 open Mirage
 
 let main =
-  main
-    ~packages:[package "duration"]
-    "Unikernel.Main" (console @-> time @-> job)
+  main ~packages:[ package "duration" ] "Unikernel.Main"
+    (console @-> time @-> job)
 
-let () =
-  register "console" [main $ default_console $ default_time ]
+let () = register "console" [ main $ default_console $ default_time ]

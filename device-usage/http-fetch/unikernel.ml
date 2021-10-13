@@ -1,13 +1,12 @@
 open Lwt.Infix
 open Printf
 
-let red fmt    = sprintf ("\027[31m"^^fmt^^"\027[m")
-let green fmt  = sprintf ("\027[32m"^^fmt^^"\027[m")
-let yellow fmt = sprintf ("\027[33m"^^fmt^^"\027[m")
-let blue fmt   = sprintf ("\027[36m"^^fmt^^"\027[m")
+let red fmt = sprintf ("\027[31m" ^^ fmt ^^ "\027[m")
+let green fmt = sprintf ("\027[32m" ^^ fmt ^^ "\027[m")
+let yellow fmt = sprintf ("\027[33m" ^^ fmt ^^ "\027[m")
+let blue fmt = sprintf ("\027[36m" ^^ fmt ^^ "\027[m")
 
-module Client (Client: Cohttp_lwt.S.Client) = struct
-
+module Client (Client : Cohttp_lwt.S.Client) = struct
   let http_fetch ctx uri =
     Fmt.pr "Fetching %a with Cohttp\n" Uri.pp uri;
     Client.get ~ctx uri >>= fun (response, body) ->

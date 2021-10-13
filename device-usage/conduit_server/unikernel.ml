@@ -1,8 +1,8 @@
-module Main (CON:Conduit_mirage.S) = struct
+module Main (CON : Conduit_mirage.S) = struct
   let src = Logs.Src.create "conduit_server" ~doc:"Conduit HTTP server"
-  module Log = (val Logs.src_log src: Logs.LOG)
 
-  module H = Cohttp_mirage.Server.Make(CON)
+  module Log = (val Logs.src_log src : Logs.LOG)
+  module H = Cohttp_mirage.Server.Make (CON)
 
   let start conduit =
     let http_callback _conn_id req _body =

@@ -1,8 +1,7 @@
 open Mirage
 
 let main =
-  main
-    "Unikernel.Main" (console @-> network @-> ethernet @-> ipv6 @-> job)
+  main "Unikernel.Main" (console @-> network @-> ethernet @-> ipv6 @-> job)
 
 let net = default_network
 let ethif = etif net
