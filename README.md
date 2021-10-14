@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/mirage/mirage-skeleton.svg?branch=master)](https://travis-ci.org/mirage/mirage-skeleton)
-
 # mirage-skeleton
 
 This repository is a collection of **tutorial code** referred to from [the Mirage
@@ -215,4 +213,3 @@ MirageOS unikernels -- please see [the qubes-test-mirage readme](https://github.
 ```
     $ make clean
 ```
-
