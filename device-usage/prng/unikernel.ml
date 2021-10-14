@@ -9,6 +9,8 @@ module Main (R : Mirage_random.S) = struct
     | `Hvt -> "hvt"
     | `Spt -> "spt"
 
+  let generate i = R.generate i
+
   let start _r =
     let t = Key_gen.target () in
     Logs.info (fun m ->
@@ -21,7 +23,7 @@ module Main (R : Mirage_random.S) = struct
         m "32 byte random:@ %a" Cstruct.hexdump_pp (R.generate 32));
     let open Randomconv in
     Logs.info (fun m ->
-        m "Random numbers: 0x%02X 0x%04X 0x%08lX 0x%016LX" (int8 R.generate)
-          (int16 R.generate) (int32 R.generate) (int64 R.generate));
+        m "Random numbers: 0x%02X 0x%04X 0x%08lX 0x%016LX" (int8 generate)
+          (int16 generate) (int32 generate) (int64 generate));
     Lwt.return_unit
 end
