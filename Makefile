@@ -21,6 +21,8 @@ BASE_TESTS = \
   device-usage/ping6 \
   device-usage/prng \
   applications/dhcp \
+  applications/git \
+  applications/crypto \
   applications/static_website_tls
 # disabled as it is using an old version of conduit:
 # device-usage/pgx
