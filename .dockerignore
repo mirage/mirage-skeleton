@@ -1,0 +1,8 @@
+_opam/*
+duniverse/*
+_build/*
+.git
+*.opam
+*~
+Dockerfile
+.dockerignore
