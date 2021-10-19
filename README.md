@@ -141,7 +141,7 @@ The mechanics of running the generated artifact will be dependent on the backend
 used.  For details, see
 [solo5's readme for hvt, virtio, etc.](https://github.com/solo5/solo5),
 [the qubes-test-mirage repository's readme for Qubes](https://github.com/talex5/qubes-test-mirage), or
-[the MirageOS website instructions on booting Xen unikernels](https://mirage.io/tmpl/wiki/xen-boot).
+[the MirageOS website instructions on booting Xen unikernels](https://mirage.io/wiki/xen-boot).
 
 For the `Macosx` and `Unix` backends, running as a normal process should suffice.
 
