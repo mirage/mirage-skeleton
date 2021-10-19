@@ -45,8 +45,8 @@ OPAM_SWITCH = $(patsubst %, %/mirage/*-switch.opam, $(TESTS))
 
 all:
 	$(MAKE) configure
-	$(MAKE) depends
 	$(MAKE) lock
+	$(MAKE) depends
 	$(MAKE) pull
 	$(MAKE) build
 
@@ -58,14 +58,15 @@ clean: $(CLEANS)
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
-depends:
-	opam install $(OPAM_SWITCH) --deps-only --yes
-
 lock:
 	@for i in $(TESTS); do cp $$i/mirage/*-monorepo.opam .; done
 	@$(MAKE) -s repo-add
 	$(OPAM) monorepo lock --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
 	@$(MAKE) -s repo-rm
+
+depends:
+	opam install $(OPAM_SWITCH) --deps-only --yes
+	opam monorepo depext -y -l $(LOCK)
 
 pull:
 	opam monorepo pull
@@ -77,8 +78,8 @@ build:
 	mirage clean -f $*/config.ml
 
 repo-add:
-	$(OPAM) repo add dune-universe https://github.com/mirage/opam-overlays.git ||\
-	$(OPAM) repo set-url dune-universe https://github.com/mirage/opam-overlays.git
+	$(OPAM) repo add dune-universe $(OVERLAY) ||\
+	$(OPAM) repo set-url dune-universe $(OVERLAY)
 
 repo-rm:
 	$(OPAM) repo remove dune-universe
