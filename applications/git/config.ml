@@ -63,9 +63,9 @@ let mimic_ssh_impl ~kind ~seed ~auth stackv4v6 mimic_git mclock =
 (* TODO(dinosaure): user-defined nameserver and port. *)
 
 let mimic_dns_conf =
-  let packages = [ package "git-mirage" ~sublibs:[ "dns" ] ] in
+  let packages = [ package "git-mirage" ~min:"3.6.0" ~sublibs:[ "dns" ] ] in
   let connect _ modname = function
-    | [ _; _; _; stack; tcp_ctx ] ->
+    | [ _; _; _; _; stack; tcp_ctx ] ->
         Fmt.str
           {ocaml|let dns_ctx00 = Mimic.merge %s %s.ctx in
                  let dns_ctx01 = %s.with_dns %s dns_ctx00 in
@@ -74,10 +74,10 @@ let mimic_dns_conf =
     | _ -> assert false
   in
   impl ~packages ~connect "Git_mirage_dns.Make"
-    (random @-> mclock @-> time @-> stackv4v6 @-> mimic @-> mimic)
+    (random @-> mclock @-> pclock @-> time @-> stackv4v6 @-> mimic @-> mimic)
 
-let mimic_dns_impl random mclock time stackv4v6 mimic_tcp =
-  mimic_dns_conf $ random $ mclock $ time $ stackv4v6 $ mimic_tcp
+let mimic_dns_impl random mclock pclock time stackv4v6 mimic_tcp =
+  mimic_dns_conf $ random $ mclock $ pclock $ time $ stackv4v6 $ mimic_tcp
 
 type hash = Hash
 
@@ -157,7 +157,7 @@ let minigit =
 
 let mimic ~kind ~seed ~auth stackv4v6 random pclock mclock time =
   let mtcp = mimic_tcp_impl stackv4v6 in
-  let mdns = mimic_dns_impl random mclock time stackv4v6 mtcp in
+  let mdns = mimic_dns_impl random mclock pclock time stackv4v6 mtcp in
   let mssh = mimic_ssh_impl ~kind ~seed ~auth stackv4v6 mtcp mclock in
   let mpaf = mimic_paf_impl time pclock stackv4v6 mtcp in
   merge mpaf (merge mssh mdns)
