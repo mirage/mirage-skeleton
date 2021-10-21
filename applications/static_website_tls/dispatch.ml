@@ -12,7 +12,7 @@ module Http_log = (val Logs.src_log http_src : Logs.LOG)
 
 module Dispatch (FS: Mirage_kv.RO) (S: HTTP) = struct
 
-  let failf fmt = Fmt.kstrf Lwt.fail_with fmt
+  let failf fmt = Fmt.kstr Lwt.fail_with fmt
 
   (* given a URI, find the appropriate file,
    * and construct a response with its contents. *)

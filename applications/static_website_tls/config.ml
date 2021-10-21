@@ -21,7 +21,7 @@ let https_port =
 
 let main =
   let packages = [
-    package "uri"; package "magic-mime"
+    package "uri"; package "magic-mime"; package ~min:"0.8.7" "fmt"
   ] in
   let keys = List.map Key.abstract [ http_port; https_port ] in
   foreign
