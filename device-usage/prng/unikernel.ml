@@ -15,7 +15,7 @@ module Main (R : Mirage_random.S) = struct
     Logs.info (fun m -> m "PRNG example running on %s (target %s)"
                   Sys.os_type (t_to_str t)) ;
     Logs.info (fun m -> m "using Fortuna, entropy sources: %a"
-                  Fmt.(list ~sep:(unit ", ") Mirage_crypto_rng.Entropy.pp_source)
+                  Fmt.(list ~sep:(any ", ") Mirage_crypto_rng.Entropy.pp_source)
                   (Mirage_crypto_rng.Entropy.sources ())) ;
     Logs.info (fun m -> m "32 byte random:@ %a" Cstruct.hexdump_pp (R.generate 32)) ;
     let open Randomconv in
