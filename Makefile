@@ -52,16 +52,17 @@ all:
 
 configure: $(CONFIGS)
 clean: $(CLEANS)
-	rm -f *.opam $(LOCK)
+	rm -f $(LOCK)
 	rm -rf duniverse
 
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
+OPAMFILES = $(shell for i in $(TESTS); do (cd $$i/mirage; ls *-monorepo.opam | sed -e 's/\.opam$$//'); done)
+	
 lock:
-	@for i in $(TESTS); do cp $$i/mirage/*-monorepo.opam .; done
 	@$(MAKE) -s repo-add
-	$(OPAM) monorepo lock --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
+	$(OPAM) monorepo lock --recurse-opam $(OPAMFILES) --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
 	@$(MAKE) -s repo-rm
 
 depends:
