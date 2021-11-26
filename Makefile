@@ -59,9 +59,8 @@ clean: $(CLEANS)
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
 lock:
-	@for i in $(TESTS); do cp $$i/mirage/*-monorepo.opam .; done
 	@$(MAKE) -s repo-add
-	$(OPAM) monorepo lock --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
+	$(OPAM) monorepo lock --recurse-opam --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
 	@$(MAKE) -s repo-rm
 
 depends:
