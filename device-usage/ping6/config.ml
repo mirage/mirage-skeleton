@@ -2,6 +2,7 @@ open Mirage
 
 let main =
   foreign
+    ~packages:[ package ~min:"3.0.0" "ethernet" ; package ~min:"7.0.0" "tcpip"]
     "Unikernel.Main" (console @-> network @-> ethernet @-> ipv6 @-> job)
 let net = default_network
 let ethif = etif net

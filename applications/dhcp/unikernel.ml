@@ -38,7 +38,7 @@ module Main (C: Mirage_console.S) (N: Mirage_net.S) (MClock : Mirage_clock.MCLOC
         Lwt.return leases
       | Reply (reply, leases) ->
         log console (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt)) >>= fun () ->
-        N.write net ~size:(N.mtu net + Ethernet_wire.sizeof_ethernet) (Dhcp_wire.pkt_into_buf reply) >>= fun _ ->
+        N.write net ~size:(N.mtu net + Ethernet.Packet.sizeof_ethernet) (Dhcp_wire.pkt_into_buf reply) >>= fun _ ->
         log console (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply)) >>= fun () ->
         Lwt.return leases
 
@@ -60,17 +60,17 @@ module Main (C: Mirage_console.S) (N: Mirage_net.S) (MClock : Mirage_clock.MCLOC
         ~options:DC.options ()
     in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
-    let listener = N.listen net ~header_size:Ethernet_wire.sizeof_ethernet (fun buf ->
-        match Ethernet_packet.Unmarshal.of_cstruct buf with
+    let listener = N.listen net ~header_size:Ethernet.Packet.sizeof_ethernet (fun buf ->
+        match Ethernet.Packet.of_cstruct buf with
         | Result.Error s ->
           log c (red "Can't parse packet: %s" s)
         | Result.Ok (ethif_header, ethif_payload) ->
-          if of_interest ethif_header.Ethernet_packet.destination net &&
+          if of_interest ethif_header.Ethernet.Packet.destination net &&
              Dhcp_wire.is_dhcp buf (Cstruct.length buf) then begin
             input_dhcp c clock net config !leases buf >>= fun new_leases ->
             leases := new_leases;
             Lwt.return_unit
-          end else if ethif_header.Ethernet_packet.ethertype = `ARP then
+          end else if ethif_header.Ethernet.Packet.ethertype = `ARP then
             A.input a ethif_payload
           else Lwt.return_unit
       ) in
