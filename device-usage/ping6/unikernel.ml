@@ -8,8 +8,8 @@ let blue fmt = Printf.sprintf ("\027[36m" ^^ fmt ^^ "\027[m")
 module Main
     (C : Mirage_console.S)
     (N : Mirage_net.S)
-    (E : Mirage_protocols.ETHERNET)
-    (I : Mirage_protocols.IPV6) =
+    (E : Ethernet.S)
+    (I : Tcpip.Ip.S with type ipaddr = Ipaddr.V6.t) =
 struct
   let start c n e i =
     let handler s ~src ~dst _data =
@@ -17,7 +17,7 @@ struct
         (yellow "%s > %s %s" (Ipaddr.V6.to_string src) (Ipaddr.V6.to_string dst)
            s)
     in
-    N.listen n ~header_size:Ethernet_wire.sizeof_ethernet
+    N.listen n ~header_size:Ethernet.Packet.sizeof_ethernet
       (E.input
          ~arpv4:(fun _ -> C.log c (red "ARP4"))
          ~ipv4:(fun _ -> C.log c (red "IP4"))

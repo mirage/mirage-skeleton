@@ -25,7 +25,26 @@ struct
   let input_dhcp console clock net config leases buf =
     match Dhcp_wire.pkt_of_buf buf (Cstruct.length buf) with
     | Error e ->
-        log console (red "Can't parse packet: %s" e) >>= fun () ->
+      log console (red "Can't parse packet: %s" e) >>= fun () ->
+      Lwt.return leases
+    | Ok pkt ->
+      let open Dhcp_server.Input in
+      let now = MClock.elapsed_ns clock |> Duration.to_sec |> Int32.of_int in
+      match input_pkt config leases pkt now with
+      | Silence -> Lwt.return leases
+      | Update leases ->
+        log console (blue "Received packet %s - updated lease database" (Dhcp_wire.pkt_to_string pkt)) >>= fun () ->
+        Lwt.return leases
+      | Warning w ->
+        log console (yellow "%s" w) >>= fun () ->
+        Lwt.return leases
+      | Dhcp_server.Input.Error e ->
+        log console (red "%s" e) >>= fun () ->
+        Lwt.return leases
+      | Reply (reply, leases) ->
+        log console (blue "Received packet %s" (Dhcp_wire.pkt_to_string pkt)) >>= fun () ->
+        N.write net ~size:(N.mtu net + Ethernet.Packet.sizeof_ethernet) (Dhcp_wire.pkt_into_buf reply) >>= fun _ ->
+        log console (blue "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply)) >>= fun () ->
         Lwt.return leases
     | Ok pkt -> (
         let open Dhcp_server.Input in
@@ -68,18 +87,18 @@ struct
     in
     let leases = ref (Dhcp_server.Lease.make_db ()) in
     let listener =
-      N.listen net ~header_size:Ethernet_wire.sizeof_ethernet (fun buf ->
-          match Ethernet_packet.Unmarshal.of_cstruct buf with
+      N.listen net ~header_size:Ethernet.Packet.sizeof_ethernet (fun buf ->
+          match Ethernet.Packet.of_cstruct buf with
           | Result.Error s -> log c (red "Can't parse packet: %s" s)
           | Result.Ok (ethif_header, ethif_payload) ->
               if
-                of_interest ethif_header.Ethernet_packet.destination net
+                of_interest ethif_header.Ethernet.Packet.destination net
                 && Dhcp_wire.is_dhcp buf (Cstruct.length buf)
               then (
                 input_dhcp c clock net config !leases buf >>= fun new_leases ->
                 leases := new_leases;
                 Lwt.return_unit)
-              else if ethif_header.Ethernet_packet.ethertype = `ARP then
+              else if ethif_header.Ethernet.Packet.ethertype = `ARP then
                 A.input a ethif_payload
               else Lwt.return_unit)
     in
