@@ -8,4 +8,4 @@ dev-repo:     "git+https://github.com/mirage/mirage-skeleton.git"
 tags:         ["org:mirage" "org:xapi-project"]
 
 synopsis: "Example MirageOS unikernels"
-depends: [ "mirage" {>= "3.10.2"} ]
+depends: [ "mirage" {>= "3.10.8"} ]
