@@ -93,7 +93,7 @@ let git = typ Git
 
 let git_conf ?path () =
   let keys = match path with Some path -> [ Key.v path ] | None -> [] in
-  let packages = [ package ~min:"3.3.2" "git"; package "digestif" ] in
+  let packages = [ package ~min:"3.3.2" ~max:"3.7.0" "git"; package "digestif" ] in
   let connect _ modname _ =
     match path with
     | None ->
