@@ -6,7 +6,7 @@ open Lwt.Infix
 
 let target_ip = Ipaddr.V4.of_string_exn "10.0.0.1"
 
-module Main (S : Mirage_stack.V4) = struct
+module Main (S : Tcpip.Stack.V4) = struct
   let buffer = Io_page.get 1 |> Io_page.to_cstruct
 
   let start s =
