@@ -22,7 +22,7 @@ let mimic_conf () =
 let merge ctx0 ctx1 = mimic_conf () $ ctx0 $ ctx1
 
 let mimic_tcp_conf =
-  let packages = [ package "git-mirage" ~sublibs:[ "tcp" ] ] in
+  let packages = [ package "git-mirage" ~max:"3.7.0" ~sublibs:[ "tcp" ] ] in
   let connect _ modname = function
     | [ stack ] ->
         Fmt.str {ocaml|Lwt.return (%s.with_stack %s %s.ctx)|ocaml} modname stack
@@ -37,7 +37,7 @@ let mimic_ssh_conf ~kind ~seed ~auth =
   let seed = Key.v seed in
   let auth = Key.v auth in
   let keys = [ seed; auth ] in
-  let packages = [ package "git-mirage" ~sublibs:[ "ssh" ] ] in
+  let packages = [ package "git-mirage" ~max:"3.7.0" ~sublibs:[ "ssh" ] ] in
   let connect _ modname = function
     | [ _; tcp_ctx; _ ] ->
         let with_key =
@@ -63,7 +63,7 @@ let mimic_ssh_impl ~kind ~seed ~auth stackv4v6 mimic_git mclock =
 (* TODO(dinosaure): user-defined nameserver and port. *)
 
 let mimic_dns_conf =
-  let packages = [ package "git-mirage" ~min:"3.6.0" ~sublibs:[ "dns" ] ] in
+  let packages = [ package "git-mirage" ~min:"3.6.0" ~max:"3.7.0" ~sublibs:[ "dns" ] ] in
   let connect _ modname = function
     | [ _; _; _; _; stack; tcp_ctx ] ->
         Fmt.str
