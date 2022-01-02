@@ -118,7 +118,7 @@ let git_conf ?path () =
 let git_impl ?path hash = git_conf ?path () $ hash
 
 let mimic_paf_conf () =
-  let packages = [ package "git-paf" ] in
+  let packages = [ package "git-paf" ~max:"3.7.0" ] in
   let connect _ modname = function
     | [ _; _; _; tcp_ctx ] ->
         Fmt.str
