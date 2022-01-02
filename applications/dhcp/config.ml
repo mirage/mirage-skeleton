@@ -8,8 +8,8 @@ let () =
     [
       package ~min:"1.0.0" "charrua";
       package "charrua-server";
-      package ~min:"2.3.0" ~sublibs:[ "mirage" ] "arp";
-      package "ethernet";
+      package ~min:"3.0.0" ~sublibs:[ "mirage" ] "arp";
+      package ~min:"3.0.0" "ethernet";
     ]
   in
   register "dhcp" ~packages
