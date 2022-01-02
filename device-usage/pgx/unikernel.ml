@@ -5,7 +5,7 @@ module Make
     (TIME : Mirage_time.S)
     (PCLOCK : Mirage_clock.PCLOCK)
     (MCLOCK : Mirage_clock.MCLOCK)
-    (STACK : Mirage_stack.V4) =
+    (STACK : Tcpip.Stack.V4) =
 struct
   module Pgx_mirage = Pgx_lwt_mirage.Make (RANDOM) (TIME) (MCLOCK) (STACK)
   module Logs_reporter = Mirage_logs.Make (PCLOCK)
