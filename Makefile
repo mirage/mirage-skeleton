@@ -78,9 +78,16 @@ build:
 %-clean:
 	mirage clean -f $*/config.ml
 
+comma := ,
 repo-add:
-	$(OPAM) repo add dune-universe $(OVERLAY) ||\
-	$(OPAM) repo set-url dune-universe $(OVERLAY)
+	$(foreach OVERLAY,$(subst $(comma), ,$(MIRAGE_EXTRA_REPOS)), \
+		$(eval NAME = $(shell echo -n $(OVERLAY) | cut -d: -f1)) \
+		$(eval URL  = $(shell echo -n $(OVERLAY) | cut -d: -f2-)) \
+		$(OPAM) repo add $(NAME) $(URL) || $(OPAM) repo set-url $(NAME) $(URL) ; \
+	)
 
 repo-rm:
-	$(OPAM) repo remove dune-universe
+	$(foreach OVERLAY,$(subst $(comma), ,$(MIRAGE_EXTRA_REPOS)), \
+	  $(eval NAME = $(echo -n $(OVERLAY) | cut -d: -f1)) \
+	  $(OPAM) repo remove $(NAME) ; \
+	)
