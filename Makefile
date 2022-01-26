@@ -78,16 +78,16 @@ build:
 %-clean:
 	mirage clean -f $*/config.ml
 
+comma := ,
 repo-add:
-	$(foreach OVERLAY,$(MIRAGE_EXTRA_REPOS), \
+	$(foreach OVERLAY,$(subst $(comma), ,$(MIRAGE_EXTRA_REPOS)), \
 		$(eval NAME = $(shell echo -n $(OVERLAY) | cut -d: -f1)) \
 		$(eval URL  = $(shell echo -n $(OVERLAY) | cut -d: -f2-)) \
-		echo "$(NAME) => $(URL)" ; \
 		$(OPAM) repo add $(NAME) $(URL) || $(OPAM) repo set-url $(NAME) $(URL) ; \
 	)
 
 repo-rm:
-	$(foreach OVERLAY,$(MIRAGE_EXTRA_REPOS), \
+	$(foreach OVERLAY,$(subst $(comma), ,$(MIRAGE_EXTRA_REPOS)), \
 	  $(eval NAME = $(echo -n $(OVERLAY) | cut -d: -f1)) \
 	  $(OPAM) repo remove $(NAME) ; \
 	)
