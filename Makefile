@@ -79,7 +79,7 @@ build:
 	mirage clean -f $*/config.ml
 
 repo-add:
-	$(foreach OVERLAY,$(OVERLAYS), \
+	$(foreach OVERLAY,$(MIRAGE_EXTRA_REPOS), \
 		$(eval NAME = $(shell echo -n $(OVERLAY) | cut -d: -f1)) \
 		$(eval URL  = $(shell echo -n $(OVERLAY) | cut -d: -f2-)) \
 		echo "$(NAME) => $(URL)" ; \
@@ -87,7 +87,7 @@ repo-add:
 	)
 
 repo-rm:
-	$(foreach OVERLAY,$(OVERLAYS), \
+	$(foreach OVERLAY,$(MIRAGE_EXTRA_REPOS), \
 	  $(eval NAME = $(echo -n $(OVERLAY) | cut -d: -f1)) \
 	  $(OPAM) repo remove $(NAME) ; \
 	)
