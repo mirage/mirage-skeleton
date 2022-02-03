@@ -17,7 +17,7 @@ let merge ctx0 ctx1 = mimic_impl $ ctx0 $ ctx1
 let git_happy_eyeballs =
   let packages = [ package "git-mirage"
                      ~sublibs:[ "happy-eyeballs" ]
-                     ~min:"3.7.0" ~max:"3.8.0" ] in
+                     ~min:"3.8.0" ~max:"3.9.0" ] in
   let connect _ modname = function
     | [ _random; _time; _mclock; _pclock; stackv4v6; ] ->
       Fmt.str {ocaml|%s.connect %s|ocaml} modname stackv4v6
@@ -28,7 +28,7 @@ let git_happy_eyeballs =
 let git_tcp =
   let packages = [ package "git-mirage"
                      ~sublibs:[ "tcp" ]
-                     ~min:"3.7.0" ~max:"3.8.0" ] in
+                     ~min:"3.8.0" ~max:"3.9.0" ] in
   let connect _ modname = function
     | [ _tcpv4v6; ctx ] ->
       Fmt.str {ocaml|%s.connect %s|ocaml} modname ctx
@@ -39,9 +39,9 @@ let git_tcp =
 let git_ssh ?authenticator key =
   let packages = [ package "git-mirage"
                      ~sublibs:[ "ssh" ]
-                     ~min:"3.7.0" ~max:"3.8.0" ] in
+                     ~min:"3.8.0" ~max:"3.9.0" ] in
   let connect _ modname = function
-    | [ _mclock; _tcpv4v6; ctx ] ->
+    | [ _mclock; _tcpv4v6; _time; ctx ] ->
       ( match authenticator with
       | None ->
         Fmt.str {ocaml|%s.connect %s >>= %s.with_optionnal_key ~key:%a|ocaml}
@@ -56,50 +56,29 @@ let git_ssh ?authenticator key =
     | Some authenticator -> [ Key.v key; Key.v authenticator ]
     | None -> [ Key.v key ] in
   impl ~packages ~connect ~keys "Git_mirage_ssh.Make"
-    (mclock @-> tcpv4v6 @-> mimic @-> mimic)
+    (mclock @-> tcpv4v6 @-> time @-> mimic @-> mimic)
 
-let git_http ?tls_key_fingerprint ?tls_cert_fingerprint headers =
+let git_http ?authenticator headers =
   let packages = [ package "git-mirage"
                      ~sublibs:[ "http" ]
-                     ~min:"3.7.0" ~max:"3.8.0" ] in
-  let keys = match tls_key_fingerprint, tls_cert_fingerprint with
-    | Some tls_key_fingerprint, None ->
-      let keys = match headers with Some headers -> [ Key.v headers ] | None -> [] in
-      [ Key.v tls_key_fingerprint ] @ keys
-    | None, Some tls_cert_fingerprint ->
-      let keys = match headers with Some headers -> [ Key.v headers ] | None -> [] in
-      [ Key.v tls_cert_fingerprint ] @ keys
-    | Some tls_key_fingerprint, Some tls_cert_fingerprint ->
-      let keys = match headers with Some headers -> [ Key.v headers ] | None -> [] in
-      [ Key.v tls_key_fingerprint; Key.v tls_cert_fingerprint ] @ keys
-    | None, None -> ( match headers with Some headers -> [ Key.v headers ] | None -> [] ) in
+                     ~min:"3.8.0" ~max:"3.9.0" ] in
+  let keys =
+    let keys = [] in
+    let keys = match headers with Some headers -> Key.v headers :: keys | None -> keys in
+    let keys = match authenticator with Some authenticator -> Key.v authenticator :: keys | None -> [] in
+    keys in
   let connect _ modname = function
     | [ _time; _pclock; _tcpv4v6; ctx; ] ->
       let serialize_headers ppf = function
         | None -> ()
-        | Some headers -> Fmt.pf ppf "?headers:%a" Key.serialize_call (Key.v headers) in
-      ( match tls_key_fingerprint, tls_cert_fingerprint with
-      | Some tls_key_fingerprint, None ->
-        Fmt.str {ocaml|%s.connect %s >>= %s.with_optional_tls_config_and_headers ?tls_key_fingerprint:%a%a|ocaml}
-          modname ctx modname
-          Key.serialize_call (Key.v tls_key_fingerprint)
-          Fmt.((const string " ") ++ serialize_headers) headers
-      | None, Some tls_cert_fingerprint ->
-        Fmt.str {ocaml|%s.connect %s >>= %s.with_optional_tls_config_and_headers ?tls_cert_fingerprint:%a%a|ocaml}
-          modname ctx modname
-          Key.serialize_call (Key.v tls_cert_fingerprint)
-          Fmt.((const string " ") ++ serialize_headers) headers
-      | None, None ->
-        Fmt.str {ocaml|%s.connect %s >>= %s.with_optional_tls_config_and_headers%a|ocaml}
-          modname ctx modname
-          Fmt.((const string " ") ++ serialize_headers) headers
-      | Some tls_key_fingerprint, Some tls_cert_fingerprint ->
-        Fmt.str {ocaml|%s.connect %s >>= %s.with_optional_tls_config_and_headers
-                         ?tls_key_fingerprint:%a ?tls_cert_fingerprint:%a%a|ocaml}
-          modname ctx modname
-          Key.serialize_call (Key.v tls_key_fingerprint)
-          Key.serialize_call (Key.v tls_cert_fingerprint)
-          Fmt.((const string " ") ++ serialize_headers) headers )
+        | Some headers -> Fmt.pf ppf " ?headers:%a" Key.serialize_call (Key.v headers) in
+      let serialize_authenticator ppf = function
+        | None -> ()
+        | Some authenticator -> Fmt.pf ppf " ?authenticator:%a" Key.serialize_call (Key.v authenticator) in
+      Fmt.str {ocaml|%s.connect %s >>= fun ctx -> %s.with_optional_tls_config_and_headers%a%a ctx|ocaml}
+        modname ctx modname
+        serialize_authenticator authenticator
+        serialize_headers headers
     | _ -> assert false in
   impl ~packages ~connect ~keys "Git_mirage_http.Make"
     (time @-> pclock @-> tcpv4v6 @-> mimic @-> mimic)
@@ -122,7 +101,7 @@ type git = Git
 let git = typ Git
 
 let git_impl path =
-  let packages = [ package "git" ~min:"3.7.0" ~max:"3.8.0" ] in
+  let packages = [ package "git" ~min:"3.8.0" ~max:"3.9.0" ] in
   let keys = match path with
     | None -> []
     | Some path -> [ Key.v path ] in
@@ -152,19 +131,15 @@ let remote =
 
 let ssh_key =
   let doc = Key.Arg.info ~doc:"The private SSH key." [ "ssh-key" ] in
-  Key.(create "ssh_key" Arg.(opt (some string) None doc))
+  Key.(create "ssh_seed" Arg.(opt (some string) None doc))
 
 let ssh_authenticator =
   let doc = Key.Arg.info ~doc:"SSH public key of the remote Git repository." [ "ssh-authenticator" ] in
   Key.(create "ssh_authenticator" Arg.(opt (some string) None doc))
 
-let tls_key_fingerprint =
-  let doc = Key.Arg.info ~doc:"The fingerprint of the TLS key." [ "tls-key-fingerprint" ] in
-  Key.(create "tls_key_fingerprint" Arg.(opt (some string) None doc))
-
-let tls_cert_fingerprint =
-  let doc = Key.Arg.info ~doc:"The fingerprint of the TLS certificate." [ "tls-cert-fingerprint" ] in
-  Key.(create "tls_cert_fingerprint" Arg.(opt (some string) None doc))
+let https_authenticator =
+  let doc = Key.Arg.info ~doc:"SSH public key of the remote Git repository." [ "https-authenticator" ] in
+  Key.(create "https_authenticator" Arg.(opt (some string) None doc))
 
 let branch =
   let doc = Key.Arg.info ~doc:"The Git remote branch." [ "branch" ] in
@@ -181,8 +156,8 @@ let mimic random stackv4v6 mclock pclock time =
   let mtcp  = git_tcp
     $ tcpv4v6 $ mhappy_eyeballs in
   let mssh  = git_ssh ~authenticator:ssh_authenticator ssh_key
-    $ mclock $ tcpv4v6 $ mhappy_eyeballs in
-  let mhttp = git_http ~tls_key_fingerprint ~tls_cert_fingerprint None
+    $ mclock $ tcpv4v6 $ time $ mhappy_eyeballs in
+  let mhttp = git_http ~authenticator:https_authenticator None
     $ time $ pclock $ tcpv4v6 $ mhappy_eyeballs in
   merge mhttp (merge mtcp mssh)
 
@@ -196,6 +171,5 @@ let git       = git_impl None $ sha1
 let mimic     = mimic random stackv4v6 mclock pclock time
 
 let () =
-  register "minigit"
-    ~packages:[ package "ptime"; ]
+  register "minigit" ~packages:[ package "ptime" ]
     [ minigit $ git $ mimic ]
