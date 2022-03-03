@@ -20,6 +20,7 @@ BASE_TESTS = \
   device-usage/network \
   device-usage/ping6 \
   device-usage/prng \
+  applications/docteur \
   applications/dhcp \
   applications/git \
   applications/crypto \
