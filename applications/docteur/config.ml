@@ -9,6 +9,6 @@ let unikernel = foreign "Unikernel.Make"
   (console @-> kv_ro @-> job)
 
 let console = default_console
-let remote = "git://github.com/mirage/mirage"
+let remote = "https://github.com/mirage/mirage"
 
 let () = register "docteur" [ unikernel $ console $ docteur ~branch:"refs/heads/main" remote ]
