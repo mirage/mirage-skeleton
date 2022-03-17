@@ -23,6 +23,7 @@ BASE_TESTS = \
   applications/docteur \
   applications/dhcp \
   applications/git \
+  applications/dns \
   applications/crypto \
   applications/static_website_tls
 # disabled as it is using an old version of conduit:
