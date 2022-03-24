@@ -83,13 +83,6 @@ let git_http ?authenticator headers =
   impl ~packages ~connect ~keys "Git_mirage_http.Make"
     (time @-> pclock @-> tcpv4v6 @-> mimic @-> mimic)
 
-let tcpv4v6_of_stackv4v6 =
-  let connect _ modname = function
-    | [ stackv4v6 ] -> Fmt.str {ocaml|%s.connect %s|ocaml} modname stackv4v6
-    | _ -> assert false in
-  impl ~connect "Git_mirage_happy_eyeballs.TCPV4V6"
-    (stackv4v6 @-> tcpv4v6)
-
 type hash = Hash
 
 let hash = typ Hash
@@ -151,7 +144,7 @@ let minigit =
     (git @-> mimic @-> job)
 
 let mimic random stackv4v6 mclock pclock time =
-  let tcpv4v6 = tcpv4v6_of_stackv4v6 $ stackv4v6 in
+  let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6 in
   let mhappy_eyeballs = git_happy_eyeballs $ random $ time $ mclock $ pclock $ stackv4v6 in
   let mtcp  = git_tcp
     $ tcpv4v6 $ mhappy_eyeballs in
