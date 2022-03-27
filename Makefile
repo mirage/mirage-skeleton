@@ -61,7 +61,7 @@ clean: $(CLEANS)
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
 OPAMFILES = $(shell for i in $(TESTS); do (cd $$i/mirage; ls *-monorepo.opam | sed -e 's/\.opam$$//'); done)
-	
+
 lock:
 	@$(MAKE) -s repo-add
 	$(OPAM) monorepo lock --recurse-opam $(OPAMFILES) --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
@@ -83,8 +83,8 @@ build:
 comma := ,
 repo-add:
 	$(foreach OVERLAY,$(subst $(comma), ,$(MIRAGE_EXTRA_REPOS)), \
-		$(eval NAME = $(shell echo -n $(OVERLAY) | cut -d: -f1)) \
-		$(eval URL  = $(shell echo -n $(OVERLAY) | cut -d: -f2-)) \
+		$(eval NAME = $(shell echo --no $(OVERLAY) | cut -d: -f1)) \
+		$(eval URL  = $(shell echo --no $(OVERLAY) | cut -d: -f2-)) \
 		$(OPAM) repo add $(NAME) $(URL) || $(OPAM) repo set-url $(NAME) $(URL) ; \
 	)
 
