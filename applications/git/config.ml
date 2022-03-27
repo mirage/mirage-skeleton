@@ -3,7 +3,6 @@ open Mirage
 type hash = Hash
 
 let hash = typ Hash
-
 let sha1 = impl ~packages:[ package "digestif" ] "Digestif.SHA1" hash
 
 type git = Git
@@ -12,10 +11,9 @@ let git = typ Git
 
 let git_impl path =
   let packages = [ package "git" ~min:"3.8.0" ] in
-  let keys = match path with
-    | None -> []
-    | Some path -> [ Key.v path ] in
-  let connect _ modname _ = match path with
+  let keys = match path with None -> [] | Some path -> [ Key.v path ] in
+  let connect _ modname _ =
+    match path with
     | None ->
         Fmt.str
           {ocaml|%s.v (Fpath.v ".") >>= function
@@ -30,7 +28,8 @@ let git_impl path =
                  | None -> %s.v (Fpath.v ".") ) >>= function
                  | Ok v -> Lwt.return v
                  | Error err -> Fmt.failwith "%%a" %s.pp_error err|ocaml}
-          Key.serialize_call (Key.v key) modname modname modname in
+          Key.serialize_call (Key.v key) modname modname modname
+  in
   impl ~packages ~keys ~connect "Git.Mem.Make" (hash @-> git)
 
 (* User space *)
@@ -48,11 +47,17 @@ let nameservers =
   Key.(create "nameservers" Arg.(opt_all string doc))
 
 let ssh_authenticator =
-  let doc = Key.Arg.info ~doc:"SSH public key of the remote Git repository." [ "ssh-authenticator" ] in
+  let doc =
+    Key.Arg.info ~doc:"SSH public key of the remote Git repository."
+      [ "ssh-authenticator" ]
+  in
   Key.(create "ssh_authenticator" Arg.(opt (some string) None doc))
 
 let https_authenticator =
-  let doc = Key.Arg.info ~doc:"SSH public key of the remote Git repository." [ "https-authenticator" ] in
+  let doc =
+    Key.Arg.info ~doc:"SSH public key of the remote Git repository."
+      [ "https-authenticator" ]
+  in
   Key.(create "https_authenticator" Arg.(opt (some string) None doc))
 
 let branch =
@@ -66,23 +71,28 @@ let minigit =
 
 let mimic stackv4v6 dns_client happy_eyeballs =
   let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6 in
-  let mhappy_eyeballs = git_happy_eyeballs stackv4v6 dns_client happy_eyeballs in
-  let mtcp  = git_tcp tcpv4v6 mhappy_eyeballs in
-  let mssh  = git_ssh ~authenticator:ssh_authenticator ~key:ssh_key tcpv4v6 mhappy_eyeballs in
-  let mhttp = git_http ~authenticator:https_authenticator tcpv4v6 mhappy_eyeballs in
+  let mhappy_eyeballs =
+    git_happy_eyeballs stackv4v6 dns_client happy_eyeballs
+  in
+  let mtcp = git_tcp tcpv4v6 mhappy_eyeballs in
+  let mssh =
+    git_ssh ~authenticator:ssh_authenticator ~key:ssh_key tcpv4v6
+      mhappy_eyeballs
+  in
+  let mhttp =
+    git_http ~authenticator:https_authenticator tcpv4v6 mhappy_eyeballs
+  in
   merge_git_clients mhttp (merge_git_clients mtcp mssh)
 
-let stackv4v6      = generic_stackv4v6 default_network
-let mclock         = default_monotonic_clock
-let pclock         = default_posix_clock
-let time           = default_time
-let random         = default_random
-let dns_client     = generic_dns_client ~nameservers stackv4v6
+let stackv4v6 = generic_stackv4v6 default_network
+let mclock = default_monotonic_clock
+let pclock = default_posix_clock
+let time = default_time
+let random = default_random
+let dns_client = generic_dns_client ~nameservers stackv4v6
 let happy_eyeballs = generic_happy_eyeballs stackv4v6 dns_client
-
-let git       = git_impl None $ sha1
-let mimic     = mimic stackv4v6 dns_client happy_eyeballs
+let git = git_impl None $ sha1
+let mimic = mimic stackv4v6 dns_client happy_eyeballs
 
 let () =
-  register "minigit" ~packages:[ package "ptime" ]
-    [ minigit $ git $ mimic ]
+  register "minigit" ~packages:[ package "ptime" ] [ minigit $ git $ mimic ]

@@ -12,10 +12,17 @@ let timeout =
   let doc = Key.Arg.info ~doc:"Timeout of DNS requests." [ "timeout" ] in
   Key.(create "timeout" Arg.(opt (some int64) None doc))
 
-let unikernel = foreign "Unikernel.Make"
-  ~keys:[ Key.v domain_name; Key.v nameservers ]
-  (console @-> dns_client @-> job)
+let unikernel =
+  foreign "Unikernel.Make"
+    ~keys:[ Key.v domain_name; Key.v nameservers ]
+    (console @-> dns_client @-> job)
 
 let stackv4v6 = generic_stackv4v6 default_network
 
-let () = register "resolve" [ unikernel $ default_console $ generic_dns_client ~timeout ~nameservers stackv4v6 ]
+let () =
+  register "resolve"
+    [
+      unikernel
+      $ default_console
+      $ generic_dns_client ~timeout ~nameservers stackv4v6;
+    ]
