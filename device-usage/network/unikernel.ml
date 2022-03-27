@@ -3,7 +3,7 @@ open Lwt.Infix
 module Main (S : Tcpip.Stack.V4) = struct
   let start s =
     let port = Key_gen.port () in
-    S.listen_tcpv4 s ~port (fun flow ->
+    S.TCPV4.listen (S.tcpv4 s) ~port (fun flow ->
         let dst, dst_port = S.TCPV4.dst flow in
         Logs.info (fun f ->
             f "new tcp connection from IP %s on port %d"

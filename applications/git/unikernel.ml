@@ -76,7 +76,7 @@ module Make (Store : Git.S) (_ : sig end) = struct
     >>= failwith Sync.pp_error
     >>= fun () ->
     Sync.fetch ~capabilities ~ctx edn git ~deepen:(`Depth 1) `All >>= function
-    | Ok (Some (hash, references)) -> Lwt.return_unit
+    | Ok (Some _) -> Lwt.return_unit
     | Ok None -> Lwt.return_unit
     | Error err -> Fmt.failwith "%a" Sync.pp_error err
 end
