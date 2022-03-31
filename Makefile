@@ -1,5 +1,25 @@
 -include Makefile.config
 
+
+expected_opam_version_major := 2
+expected_opam_version_minor := 1
+current_opam_version := $(shell opam --version)
+current_opam_version_major := $(shell echo $(current_opam_version) | cut -f1 -d.)
+current_opam_version_minor := $(shell echo $(current_opam_version) | cut -f2 -d.)
+OPAM_VERSION_OK := $(shell [ $(current_opam_version_major) -gt $(expected_opam_version_major) -o \( $(current_opam_version_major) -eq $(expected_opam_version_major) -a $(current_opam_version_minor) -ge $(expected_opam_version_minor) \) ] && echo true)
+
+ifneq ($(OPAM_VERSION_OK),true)
+$(error Unexpected opam version (found: ${current_opam_version}, expected: >=${expected_opam_version_major}.${expected_opam_version_minor}.*))
+endif
+
+expected_mirage_version:= v4
+current_mirage_version := $(shell mirage --version)
+
+ifeq ($(filter ${expected_mirage_version}.%,${current_mirage_version}),)
+$(error Unexpected mirage version (found: ${current_mirage_version}, expected: ${expected_mirage_version}.*))
+endif
+
+
 BASE_TESTS = \
   tutorial/noop \
   tutorial/noop-functor \
