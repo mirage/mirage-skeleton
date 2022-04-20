@@ -11,5 +11,5 @@ let console = default_console
 let remote = "https://github.com/mirage/mirage"
 
 let () =
-  register "docteur"
+  register "static_kv_ro"
     [ unikernel $ console $ docteur ~branch:"refs/heads/main" remote ]
