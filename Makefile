@@ -43,7 +43,7 @@ endif
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
-OPAM_SWITCH = $(patsubst %, %/mirage/*-switch.opam, $(TESTS))
+OPAM_SWITCH = $(patsubst %, %/mirage/*.opam, $(TESTS))
 
 all:
 	$(MAKE) configure
@@ -60,7 +60,7 @@ clean: $(CLEANS)
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
-OPAMFILES = $(shell for i in $(TESTS); do (cd $$i/mirage; ls *-monorepo.opam | sed -e 's/\.opam$$//'); done)
+OPAMFILES = $(shell for i in $(TESTS); do (cd $$i/mirage; ls *.opam | sed -e 's/\.opam$$//'); done)
 
 lock:
 	@$(MAKE) -s repo-add
@@ -68,7 +68,7 @@ lock:
 	@$(MAKE) -s repo-rm
 
 depends:
-	opam install $(OPAM_SWITCH) --deps-only --yes
+	env OPAMVAR_switch="" opam install $(OPAM_SWITCH) --deps-only --yes
 	opam monorepo depext -y -l $(LOCK)
 
 pull:
