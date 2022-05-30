@@ -64,15 +64,15 @@ OPAMFILES = $(shell for i in $(TESTS); do (cd $$i/mirage; ls *.opam | sed -e 's/
 
 lock:
 	@$(MAKE) -s repo-add
-	env OPAMVAR_switch="monorepo" $(OPAM) monorepo lock --recurse-opam $(OPAMFILES) --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
+	env OPAMVAR_monorepo="opam-monorepo" $(OPAM) monorepo lock --recurse-opam $(OPAMFILES) --build-only --ocaml-version $(shell ocamlc --version) -l $(LOCK)
 	@$(MAKE) -s repo-rm
 
 depends:
 	$(OPAM) install $(OPAM_SWITCH) --deps-only --yes
-	env OPAMVAR_switch="monorepo" $(OPAM) monorepo depext -y -l $(LOCK)
+	env OPAMVAR_monorepo="opam-monorepo" $(OPAM) monorepo depext -y -l $(LOCK)
 
 pull:
-	env OPAMVAR_switch="monorepo" $(OPAM) monorepo pull
+	env OPAMVAR_monorepo="opam-monorepo" $(OPAM) monorepo pull
 
 build:
 	dune build
