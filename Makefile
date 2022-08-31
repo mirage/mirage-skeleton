@@ -81,10 +81,11 @@ build:
 	mirage clean -f $*/config.ml
 
 comma := ,
+comment := \#
 repo-add:
 	$(foreach OVERLAY,$(subst $(comma), ,$(MIRAGE_EXTRA_REPOS)), \
 		$(eval NAME = $(shell echo --no $(OVERLAY) | cut -d: -f1)) \
-		$(eval URL  = $(shell echo --no $(OVERLAY) | cut -d: -f2-)) \
+		$(eval URL  = $(subst $(comment),\\\#,$(shell echo --no $(OVERLAY) | cut -d: -f2-))) \
 		$(OPAM) repo add $(NAME) $(URL) || $(OPAM) repo set-url $(NAME) $(URL) ; \
 	)
 
