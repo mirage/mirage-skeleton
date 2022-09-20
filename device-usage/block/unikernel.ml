@@ -100,11 +100,7 @@ module Main (Time : Mirage_time.S) (B : Mirage_block.S) = struct
 
   let start _time b () =
     B.get_info b >>= fun info ->
-    (* FIXME(samoht): this should probably move into
-       Mirage_block.pp_info *)
-    Log.info (fun f ->
-        f "sectors = %Ld\nread_write=%b\nsector_size=%d\n%!" info.size_sectors
-          info.read_write info.sector_size);
+    Log.info (fun f -> f "%a" Mirage_block.pp_info info);
 
     check_sector_write b "local" "51712" 0L 1 >>= fun () ->
     check_sector_write b "local" "51712" (Int64.sub info.size_sectors 1L) 1
