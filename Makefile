@@ -22,6 +22,7 @@ BASE_TESTS = \
   device-usage/prng \
   applications/docteur \
   applications/dhcp \
+  applications/http \
   applications/git \
   applications/dns \
   applications/crypto \
