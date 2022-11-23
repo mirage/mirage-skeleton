@@ -36,7 +36,7 @@ let conn =
       Fmt.str {ocaml|%s.connect %s|ocaml} modname ctx
     | _ -> assert false in
   impl ~connect "Connect.Make"
-    (pclock @-> tcpv4v6 @-> git_client @-> conn)
+    (pclock @-> tcpv4v6 @-> mimic @-> conn)
 
 let stackv4v6 = generic_stackv4v6 default_network
 let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6
@@ -45,7 +45,7 @@ let certificates = crunch "certificates"
 let keys = crunch "keys"
 
 let conn =
-  let happy_eyeballs = git_happy_eyeballs stackv4v6 dns
+  let happy_eyeballs = mimic_happy_eyeballs stackv4v6 dns
     (generic_happy_eyeballs stackv4v6 dns) in
   conn $ default_posix_clock $ tcpv4v6 $ happy_eyeballs
 
