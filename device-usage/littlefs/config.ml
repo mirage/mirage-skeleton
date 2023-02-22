@@ -1,7 +1,10 @@
 open Mirage
 
 let unikernel = foreign "Unikernel.Make"
-  ~packages:[ package "hxd" ~sublibs:[ "core"; "string" ] ]
+    ~packages:[
+      package "hxd" ~sublibs:[ "core"; "string" ];
+      package ~build:true ~max:"3.7.0" "dune";
+    ]
   (random @-> console @-> kv_rw @-> job)
 
 let aes_ccm_key =
