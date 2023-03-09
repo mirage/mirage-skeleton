@@ -20,7 +20,6 @@ BASE_TESTS = \
   device-usage/network \
   device-usage/ping6 \
   device-usage/prng \
-  device-usage/littlefs \
   applications/docteur \
   applications/dhcp \
   applications/http \
@@ -30,6 +29,8 @@ BASE_TESTS = \
   applications/static_website_tls
 # disabled as it is using an old version of conduit:
 # device-usage/pgx
+# disabled as it is incompatible with dune 3.7
+# device-usage/littlefs
 
 ifeq ($(MODE),muen)
 	TESTS = $(BASE_TESTS)
