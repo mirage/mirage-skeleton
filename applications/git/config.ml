@@ -42,6 +42,10 @@ let ssh_key =
   let doc = Key.Arg.info ~doc:"The private SSH key." [ "ssh-key" ] in
   Key.(create "ssh_seed" Arg.(opt (some string) None doc))
 
+let ssh_password =
+  let doc = Key.Arg.info ~doc:"The private SSH password." [ "ssh-password" ] in
+  Key.(create "ssh_password" Arg.(opt (some string) None doc))
+
 let nameservers =
   let doc = Key.Arg.info ~doc:"DNS nameservers." [ "nameserver" ] in
   Key.(create "nameservers" Arg.(opt_all string doc))
@@ -76,8 +80,8 @@ let mimic stackv4v6 dns_client happy_eyeballs =
   in
   let mtcp = git_tcp tcpv4v6 mhappy_eyeballs in
   let mssh =
-    git_ssh ~authenticator:ssh_authenticator ~key:ssh_key tcpv4v6
-      mhappy_eyeballs
+    git_ssh ~authenticator:ssh_authenticator ~key:ssh_key ~password:ssh_password
+      tcpv4v6 mhappy_eyeballs
   in
   let mhttp =
     git_http ~authenticator:https_authenticator tcpv4v6 mhappy_eyeballs
