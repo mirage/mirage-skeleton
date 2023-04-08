@@ -3,7 +3,10 @@ open Mirage
 let main = main "Unikernel.Main" (random @-> job)
 
 let () =
-  let packages =
-    [ package "randomconv"; package ~min:"0.7.0" "mirage-crypto-rng" ]
+  let packages = [
+    package "randomconv";
+    package ~min:"0.7.0" "mirage-crypto-rng";
+    package "fmt";
+  ]
   in
   register ~packages "prng" [ main $ default_random ]
