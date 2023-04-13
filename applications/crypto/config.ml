@@ -5,6 +5,7 @@ let main = foreign "Unikernel.Main" (random @-> job)
 let () =
   let packages =
     [
+      package "fmt";
       package "mirage-crypto-rng";
       package "mirage-crypto-pk";
       package "mirage-crypto";
