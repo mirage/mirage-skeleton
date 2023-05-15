@@ -24,6 +24,7 @@ let minipaf =
     ~packages:[ package "digestif"
               ; package "mimic-happy-eyeballs"
               ; package "hxd" ~sublibs:[ "core"; "string" ]
+              ; package "rresult"
               ; package "base64" ~sublibs:[ "rfc2045" ] ]
     ~keys:[ Key.v tls_port
           ; Key.v tls
