@@ -19,27 +19,27 @@ module Make
     Lwt.Infix.(Certificate.list certificate_ro Mirage_kv.Key.empty
     >|= R.reword_error (R.msgf "%a" Certificate.pp_error)) >>= fun certificates ->
     let certificates, _ = List.partition (fun (_, t) -> t = `Value) certificates in
-    let fold acc (name, _) = match Mirage_kv.Key.to_string name with
+    let fold acc (name, _) = match Mirage_kv.Key.basename name with
       | ".gitkeep" -> Lwt.return acc
       | _ ->
         let open Lwt_result.Infix in
         Lwt.Infix.(Certificate.get certificate_ro
-          Mirage_kv.Key.(empty // name) >|= R.reword_error (R.msgf "%a" Certificate.pp_error))
+          name >|= R.reword_error (R.msgf "%a" Certificate.pp_error))
         >|= Cstruct.of_string
         >>= (Lwt.return <.> X509.Certificate.decode_pem_multiple)
         >>= fun certificates -> Lwt.return acc >>= fun acc ->
-        Lwt.return_ok ((Mirage_kv.Key.to_string name, certificates) :: acc) in
+        Lwt.return_ok ((name, certificates) :: acc) in
     Lwt_list.fold_left_s fold (Ok []) certificates >>= fun certificates ->
-    let fold acc (name, _) = match Mirage_kv.Key.to_string name with
+    let fold acc (name, _) = match Mirage_kv.Key.basename name with
       | ".gitkeep" -> Lwt.return acc
       | _ ->
         let open Lwt_result.Infix in
         Lwt.Infix.(Key.get key_ro 
-          Mirage_kv.Key.(empty // name) >|= R.reword_error (R.msgf "%a" Key.pp_error))
+          name >|= R.reword_error (R.msgf "%a" Key.pp_error))
         >|= Cstruct.of_string
         >>= (Lwt.return <.> X509.Private_key.decode_pem)
         >>= fun key -> Lwt.return acc
-        >>= fun acc -> Lwt.return_ok ((Mirage_kv.Key.to_string name, key) :: acc) in
+        >>= fun acc -> Lwt.return_ok ((name, key) :: acc) in
     Lwt_list.fold_left_s fold (Ok []) keys >>= fun keys ->
     let tbl = Hashtbl.create 0x10 in
     List.iter (fun (name, certificates) -> match List.assoc_opt name keys with
