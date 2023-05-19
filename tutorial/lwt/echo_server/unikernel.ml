@@ -13,7 +13,7 @@ struct
 
   let start c _time _r =
     let rec echo_server = function
-      | 0 -> Lwt.return ()
+      | n when (n<=0) -> Lwt.return ()
       | n ->
           read_line () >>= fun s ->
           C.log c s >>= fun () -> echo_server (n - 1)

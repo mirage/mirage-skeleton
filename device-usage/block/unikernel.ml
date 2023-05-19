@@ -45,7 +45,7 @@ module Main (Time : Mirage_time.S) (B : Mirage_block.S) = struct
 
   let alloc sector_size n =
     let rec loop = function
-      | 0 -> []
+      | n when (n<=0) -> []
       | n ->
           let page = Io_page.(to_cstruct (get 1)) in
           let phrase =
