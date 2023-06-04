@@ -1,7 +1,7 @@
 open Mirage
 
 let main =
-  main "Unikernel.Main" (console @-> network @-> mclock @-> time @-> job)
+  main "Unikernel.Main" (network @-> mclock @-> time @-> job)
 
 let () =
   let packages =
@@ -15,7 +15,6 @@ let () =
   register "dhcp" ~packages
     [
       main
-      $ default_console
       $ default_network
       $ default_monotonic_clock
       $ default_time;
