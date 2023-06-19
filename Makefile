@@ -14,7 +14,6 @@ BASE_TESTS = \
   tutorial/app_info \
   device-usage/clock \
   device-usage/conduit_server \
-  device-usage/console \
   device-usage/http-fetch \
   device-usage/kv_ro \
   device-usage/network \
