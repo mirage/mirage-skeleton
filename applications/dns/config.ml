@@ -15,7 +15,7 @@ let timeout =
 let unikernel =
   foreign "Unikernel.Make"
     ~keys:[ Key.v domain_name; Key.v nameservers ]
-    (console @-> dns_client @-> job)
+    (dns_client @-> job)
 
 let stackv4v6 = generic_stackv4v6 default_network
 
@@ -23,6 +23,5 @@ let () =
   register "resolve"
     [
       unikernel
-      $ default_console
       $ generic_dns_client ~timeout ~nameservers stackv4v6;
     ]
