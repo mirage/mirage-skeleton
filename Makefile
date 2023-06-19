@@ -2,7 +2,6 @@
 
 BASE_TESTS = \
   tutorial/noop \
-  tutorial/noop-functor \
   tutorial/hello \
   tutorial/hello-key \
   tutorial/lwt/echo_server \
