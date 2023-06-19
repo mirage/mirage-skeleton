@@ -1,33 +1,27 @@
 open Lwt.Infix
 
-let red fmt = Printf.sprintf ("\027[31m" ^^ fmt ^^ "\027[m")
-let green fmt = Printf.sprintf ("\027[32m" ^^ fmt ^^ "\027[m")
-let yellow fmt = Printf.sprintf ("\027[33m" ^^ fmt ^^ "\027[m")
-let blue fmt = Printf.sprintf ("\027[36m" ^^ fmt ^^ "\027[m")
-
 module Main
-    (C : Mirage_console.S)
     (N : Mirage_net.S)
     (E : Ethernet.S)
     (I : Tcpip.Ip.S with type ipaddr = Ipaddr.V6.t) =
 struct
-  let start c n e i =
+  let start n e i =
     let handler s ~src ~dst _data =
-      C.log c
-        (yellow "%s > %s %s" (Ipaddr.V6.to_string src) (Ipaddr.V6.to_string dst)
-           s)
+      Logs.warn (fun m -> m "%a > %a %s" Ipaddr.V6.pp src Ipaddr.V6.pp dst s);
+      Lwt.return_unit
     in
     N.listen n ~header_size:Ethernet.Packet.sizeof_ethernet
       (E.input
-         ~arpv4:(fun _ -> C.log c (red "ARP4"))
-         ~ipv4:(fun _ -> C.log c (red "IP4"))
+         ~arpv4:(fun _ -> Logs.err (fun m -> m "ARP4"); Lwt.return_unit)
+         ~ipv4:(fun _ -> Logs.err (fun m -> m "IP4"); Lwt.return_unit)
          ~ipv6:
            (I.input ~tcp:(handler "TCP") ~udp:(handler "UDP")
               ~default:(fun ~proto ~src:_ ~dst:_ _data ->
-                C.log c (red "%d DEFAULT" proto))
+                  Logs.err (fun m -> m "%d DEFAULT" proto);
+                  Lwt.return_unit)
               i)
          e)
-    >>= function
-    | Result.Ok () -> C.log c (green "done!")
-    | Result.Error _ -> C.log c (red "ipv6 ping failed!")
+    >|= function
+    | Result.Ok () -> Logs.info (fun m -> m "done!")
+    | Result.Error _ -> Logs.err (fun m -> m "ipv6 ping failed!")
 end

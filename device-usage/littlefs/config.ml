@@ -2,7 +2,7 @@ open Mirage
 
 let unikernel = foreign "Unikernel.Make"
   ~packages:[ package "hxd" ~sublibs:[ "core"; "string" ] ]
-  (random @-> console @-> kv_rw @-> job)
+  (random @-> kv_rw @-> job)
 
 let aes_ccm_key =
   let doc = Key.Arg.info [ "aes-ccm-key" ] ~doc:"The key of the block device (hex formatted)" in
@@ -17,4 +17,4 @@ let encrypted_block = ccm_block aes_ccm_key block
 let fs = chamelon ~program_block_size encrypted_block
 
 let () = register "elittlefs"
-  [ unikernel $ default_random $ default_console $ fs ]
+  [ unikernel $ default_random $ fs ]
