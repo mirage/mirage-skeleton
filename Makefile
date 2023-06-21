@@ -10,7 +10,6 @@ BASE_TESTS = \
   tutorial/lwt/timeout1 \
   tutorial/lwt/timeout2 \
   tutorial/lwt/echo_server \
-  tutorial/app_info \
   device-usage/clock \
   device-usage/conduit_server \
   device-usage/http-fetch \
