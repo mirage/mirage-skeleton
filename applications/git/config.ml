@@ -70,6 +70,7 @@ let branch =
 
 let minigit =
   foreign "Unikernel.Make"
+    ~packages:[ package "ptime" ]
     ~keys:[ Key.v remote; Key.v branch ]
     (git @-> git_client @-> job)
 
@@ -99,4 +100,4 @@ let git = git_impl None $ sha1
 let mimic = mimic stackv4v6 dns_client happy_eyeballs
 
 let () =
-  register "minigit" ~packages:[ package "ptime" ] [ minigit $ git $ mimic ]
+  register "minigit" [ minigit $ git $ mimic ]
