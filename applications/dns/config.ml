@@ -21,7 +21,4 @@ let stackv4v6 = generic_stackv4v6 default_network
 
 let () =
   register "resolve"
-    [
-      unikernel
-      $ generic_dns_client ~timeout ~nameservers stackv4v6;
-    ]
+    [ unikernel $ generic_dns_client ~timeout ~nameservers stackv4v6 ]

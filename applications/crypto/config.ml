@@ -9,5 +9,4 @@ let packages =
   ]
 
 let main = foreign "Unikernel.Main" ~packages (random @-> job)
-
 let () = register "crypto-test" [ main $ default_random ]

@@ -7,6 +7,7 @@ module Make (DNS : Dns_client_mirage.S) = struct
         let open Lwt.Infix in
         DNS.gethostbyname dns domain_name >|= function
         | Ok ipv4 ->
-          Logs.info (fun m -> m "%a: %a" Domain_name.pp domain_name Ipaddr.V4.pp ipv4)
+            Logs.info (fun m ->
+                m "%a: %a" Domain_name.pp domain_name Ipaddr.V4.pp ipv4)
         | Error (`Msg err) -> failwith err)
 end

@@ -26,7 +26,9 @@ let main =
       package ~build:true "fpath";
     ]
   in
-  main ~packages ~extra_deps:[ dep config_shell ] "Unikernel.Main"
+  main ~packages
+    ~extra_deps:[ dep config_shell ]
+    "Unikernel.Main"
     (time @-> block @-> job)
 
 let img =

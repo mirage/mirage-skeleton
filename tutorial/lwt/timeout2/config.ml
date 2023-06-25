@@ -6,5 +6,4 @@ let main =
     "Unikernel.Timeout2"
     (time @-> random @-> job)
 
-let () =
-  register "timeout2" [ main $ default_time $ default_random ]
+let () = register "timeout2" [ main $ default_time $ default_random ]

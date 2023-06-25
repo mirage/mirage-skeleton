@@ -5,7 +5,9 @@ let hello =
   Key.(create "hello" Arg.(opt string "Hello World!" doc))
 
 let main =
-  main ~keys:[ key hello ] ~packages:[ package "duration" ] "Unikernel.Hello"
-    (time @-> job)
+  main
+    ~keys:[ key hello ]
+    ~packages:[ package "duration" ]
+    "Unikernel.Hello" (time @-> job)
 
 let () = register "hello-key" [ main $ default_time ]

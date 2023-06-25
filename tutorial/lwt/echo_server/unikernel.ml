@@ -1,9 +1,6 @@
 open Lwt.Infix
 
-module Echo_server
-    (Time : Mirage_time.S)
-    (R : Mirage_random.S) =
-struct
+module Echo_server (Time : Mirage_time.S) (R : Mirage_random.S) = struct
   let generate n = R.generate n
 
   let read_line () =

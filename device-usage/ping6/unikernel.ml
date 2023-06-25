@@ -12,13 +12,17 @@ struct
     in
     N.listen n ~header_size:Ethernet.Packet.sizeof_ethernet
       (E.input
-         ~arpv4:(fun _ -> Logs.err (fun m -> m "ARP4"); Lwt.return_unit)
-         ~ipv4:(fun _ -> Logs.err (fun m -> m "IP4"); Lwt.return_unit)
+         ~arpv4:(fun _ ->
+           Logs.err (fun m -> m "ARP4");
+           Lwt.return_unit)
+         ~ipv4:(fun _ ->
+           Logs.err (fun m -> m "IP4");
+           Lwt.return_unit)
          ~ipv6:
            (I.input ~tcp:(handler "TCP") ~udp:(handler "UDP")
               ~default:(fun ~proto ~src:_ ~dst:_ _data ->
-                  Logs.err (fun m -> m "%d DEFAULT" proto);
-                  Lwt.return_unit)
+                Logs.err (fun m -> m "%d DEFAULT" proto);
+                Lwt.return_unit)
               i)
          e)
     >|= function

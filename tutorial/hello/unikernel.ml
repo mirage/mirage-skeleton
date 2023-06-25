@@ -5,7 +5,7 @@ module Hello (_ : sig end) = struct
       | n ->
           Logs.info (fun f -> f "hello");
           loop (n - 1)
-          (* Time.sleep_ns (Duration.of_sec 1) >>= fun () -> loop (n - 1) *)
+      (* Time.sleep_ns (Duration.of_sec 1) >>= fun () -> loop (n - 1) *)
     in
     loop 4
 end

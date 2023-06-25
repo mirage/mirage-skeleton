@@ -8,8 +8,7 @@ let packages =
     package ~min:"3.0.0" "ethernet";
   ]
 
-let main =
-  main "Unikernel.Main" ~packages (network @-> mclock @-> time @-> job)
+let main = main "Unikernel.Main" ~packages (network @-> mclock @-> time @-> job)
 
 let () =
   register "dhcp"

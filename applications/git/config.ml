@@ -98,6 +98,4 @@ let dns_client = generic_dns_client ~nameservers stackv4v6
 let happy_eyeballs = generic_happy_eyeballs stackv4v6 dns_client
 let git = git_impl None $ sha1
 let mimic = mimic stackv4v6 dns_client happy_eyeballs
-
-let () =
-  register "minigit" [ minigit $ git $ mimic ]
+let () = register "minigit" [ minigit $ git $ mimic ]
