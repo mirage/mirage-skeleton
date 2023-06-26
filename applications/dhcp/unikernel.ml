@@ -15,33 +15,34 @@ struct
   let input_dhcp clock net config leases buf =
     match Dhcp_wire.pkt_of_buf buf (Cstruct.length buf) with
     | Error e ->
-      Logs.err (fun m -> m "Can't parse packet: %s" e);
-      Lwt.return leases
+        Logs.err (fun m -> m "Can't parse packet: %s" e);
+        Lwt.return leases
     | Ok pkt -> (
         let open Dhcp_server.Input in
         let now = MClock.elapsed_ns clock |> Duration.to_sec |> Int32.of_int in
         match input_pkt config leases pkt now with
         | Silence -> Lwt.return leases
         | Update leases ->
-          Logs.info (fun m -> m "Received packet %s - updated lease database"
-                        (Dhcp_wire.pkt_to_string pkt));
-          Lwt.return leases
+            Logs.info (fun m ->
+                m "Received packet %s - updated lease database"
+                  (Dhcp_wire.pkt_to_string pkt));
+            Lwt.return leases
         | Warning w ->
-          Logs.warn (fun m -> m "%s" w);
-          Lwt.return leases
+            Logs.warn (fun m -> m "%s" w);
+            Lwt.return leases
         | Dhcp_server.Input.Error e ->
-          Logs.err (fun m -> m "%s" e);
-          Lwt.return leases
+            Logs.err (fun m -> m "%s" e);
+            Lwt.return leases
         | Reply (reply, leases) ->
-          Logs.info (fun m -> m "Received packet %s"
-                        (Dhcp_wire.pkt_to_string pkt));
-          N.write net
-            ~size:(N.mtu net + Ethernet.Packet.sizeof_ethernet)
-            (Dhcp_wire.pkt_into_buf reply)
-          >>= fun _ ->
-          Logs.info (fun m -> m "Sent reply packet %s"
-                        (Dhcp_wire.pkt_to_string reply));
-          Lwt.return leases)
+            Logs.info (fun m ->
+                m "Received packet %s" (Dhcp_wire.pkt_to_string pkt));
+            N.write net
+              ~size:(N.mtu net + Ethernet.Packet.sizeof_ethernet)
+              (Dhcp_wire.pkt_into_buf reply)
+            >>= fun _ ->
+            Logs.info (fun m ->
+                m "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
+            Lwt.return leases)
 
   let start net clock _time =
     (* Get an ARP stack *)
@@ -61,8 +62,8 @@ struct
       N.listen net ~header_size:Ethernet.Packet.sizeof_ethernet (fun buf ->
           match Ethernet.Packet.of_cstruct buf with
           | Result.Error s ->
-            Logs.err (fun m -> m "Can't parse packet: %s" s);
-            Lwt.return_unit
+              Logs.err (fun m -> m "Can't parse packet: %s" s);
+              Lwt.return_unit
           | Result.Ok (ethif_header, ethif_payload) ->
               if
                 of_interest ethif_header.Ethernet.Packet.destination net

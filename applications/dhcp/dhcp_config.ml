@@ -5,9 +5,7 @@ let net = Ipaddr.V4.Prefix.of_string_exn
 let mac = Macaddr.of_string_exn
 let hostname = "charrua-dhcp-server"
 let default_lease_time = 60 * 60 * 1 (* 1 hour *)
-
 let max_lease_time = 60 * 60 * 24 (* A day *)
-
 let ip_address = ip "192.168.1.5"
 let network = net "192.168.1.5/24"
 let range = Some (ip "192.168.1.70", ip "192.168.1.100")

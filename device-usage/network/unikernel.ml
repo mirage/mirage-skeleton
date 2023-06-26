@@ -6,8 +6,8 @@ module Main (S : Tcpip.Stack.V4V6) = struct
     S.TCP.listen (S.tcp s) ~port (fun flow ->
         let dst, dst_port = S.TCP.dst flow in
         Logs.info (fun f ->
-            f "new tcp connection from IP %s on port %d"
-              (Ipaddr.to_string dst) dst_port);
+            f "new tcp connection from IP %s on port %d" (Ipaddr.to_string dst)
+              dst_port);
         S.TCP.read flow >>= function
         | Ok `Eof ->
             Logs.info (fun f -> f "Closing connection!");

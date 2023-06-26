@@ -12,7 +12,7 @@ DHCP, DNS, and Web servers.
 
 ## Prerequisites
 
-- Install latest OPAM (at least 2.0.0), following instructions at
+- Install latest OPAM (at least 2.1.0), following instructions at
 <https://opam.ocaml.org/>
 
 - Install the `mirage` package with OPAM, updating your package first if
@@ -24,12 +24,12 @@ necessary:
     $ eval `opam config env`
 ```
 
-- Please ensure that your Mirage command-line version is at least 3.7.0 before
+- Please ensure that your Mirage command-line version is at least 4.4.0 before
 proceeding:
 
 ```
     $ mirage --version
-    3.7.0
+    4.4.0
 ```
 
 ## Trivial example
