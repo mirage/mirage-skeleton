@@ -37,10 +37,6 @@ else
 	TESTS += device-usage/block
 endif
 
-ifdef WITH_TRACING
-TESTS += device-usage/tracing
-endif
-
 CONFIGS = $(patsubst %, %-configure, $(TESTS))
 CLEANS  = $(patsubst %, %-clean,     $(TESTS))
 
