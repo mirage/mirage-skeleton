@@ -57,6 +57,8 @@ clean: $(CLEANS)
 %-configure:
 	$(MIRAGE) configure -f $*/config.ml -t $(MODE) $(MIRAGE_FLAGS)
 
+device-usage/block-configure: device-usage/block/disk.img
+
 OPAMFILES = $(shell for i in $(TESTS); do (cd $$i/mirage; ls *.opam | sed -e 's/\.opam$$//'); done)
 
 lock:
@@ -76,6 +78,9 @@ build:
 
 %-clean:
 	mirage clean -f $*/config.ml
+
+device-usage/block/disk.img:
+	dd if=/dev/zero of=disk.img count=100000
 
 comma := ,
 comment := \#
