@@ -5,7 +5,8 @@ let filename =
   Key.(create "filename" Arg.(required string doc))
 
 let unikernel = foreign "Unikernel.Make" ~keys:[ Key.v filename ] (kv_ro @-> job)
-let remote = "https://github.com/mirage/mirage"
+(* dotgit is a symlink to ../../.git. See https://github.com/mirage/mirage/issues/1445 for a discussion *)
+let remote = "relativize://dotgit"
 
 let () =
   register "static_kv_ro"
