@@ -2,7 +2,7 @@ open Mirage
 
 let domain_name =
   let doc = Key.Arg.info ~doc:"The domain-name to resolve." [ "domain-name" ] in
-  Key.(create "domain-name" Arg.(required string doc))
+  Key.(create "domain-name" Arg.(required ~stage:`Run string doc))
 
 let nameservers =
   let doc = Key.Arg.info ~doc:"Nameserver." [ "nameserver" ] in

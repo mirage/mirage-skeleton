@@ -36,7 +36,7 @@ let git_impl path =
 
 let remote =
   let doc = Key.Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
-  Key.(create "remote" Arg.(required string doc))
+  Key.(create "remote" Arg.(required ~stage:`Run string doc))
 
 let ssh_key =
   let doc = Key.Arg.info ~doc:"The private SSH key." [ "ssh-key" ] in
@@ -66,7 +66,7 @@ let https_authenticator =
 
 let branch =
   let doc = Key.Arg.info ~doc:"The Git remote branch." [ "branch" ] in
-  Key.(create "branch" Arg.(opt string "refs/heads/master" doc))
+  Key.(create "branch" Arg.(opt ~stage:`Run string "refs/heads/master" doc))
 
 let minigit =
   foreign "Unikernel.Make"

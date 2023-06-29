@@ -8,17 +8,17 @@ let tls =
   let doc =
     Key.Arg.info ~doc:"Start an HTTP server with a TLS certificate." [ "tls" ]
   in
-  Key.(create "tls" Arg.(flag doc))
+  Key.(create "tls" Arg.(flag ~stage:`Run doc))
 
 let tls_port =
   let doc = Key.Arg.info ~doc:"Port of HTTPS service." [ "tls-port" ] in
-  Key.(create "tls-port" Arg.(opt int 4343 doc))
+  Key.(create "tls-port" Arg.(opt ~stage:`Run int 4343 doc))
 
 let alpn =
   let doc =
     Key.Arg.info ~doc:"Protocols handled by the HTTP server." [ "alpn" ]
   in
-  Key.(create "alpn" Arg.(opt (some string) None doc))
+  Key.(create "alpn" Arg.(opt ~stage:`Run (some string) None doc))
 
 type conn = Connect
 
