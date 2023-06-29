@@ -2,23 +2,7 @@ open Mirage
 
 let port =
   let doc = Key.Arg.info ~doc:"Port of HTTP service." [ "p"; "port" ] in
-  Key.(create "ports" Arg.(opt int 8080 doc))
-
-let tls =
-  let doc =
-    Key.Arg.info ~doc:"Start an HTTP server with a TLS certificate." [ "tls" ]
-  in
-  Key.(create "tls" Arg.(flag ~stage:`Run doc))
-
-let tls_port =
-  let doc = Key.Arg.info ~doc:"Port of HTTPS service." [ "tls-port" ] in
-  Key.(create "tls-port" Arg.(opt ~stage:`Run int 4343 doc))
-
-let alpn =
-  let doc =
-    Key.Arg.info ~doc:"Protocols handled by the HTTP server." [ "alpn" ]
-  in
-  Key.(create "alpn" Arg.(opt ~stage:`Run (some string) None doc))
+  Key.(create "ports" Arg.(opt ~stage:`Run int 8080 doc))
 
 type conn = Connect
 
@@ -34,7 +18,6 @@ let minipaf =
         package "rresult";
         package "base64" ~sublibs:[ "rfc2045" ];
       ]
-    ~keys:[ Key.v tls_port; Key.v tls; Key.v alpn ]
     (random @-> kv_ro @-> kv_ro @-> tcpv4v6 @-> conn @-> http_server @-> job)
 
 let conn =

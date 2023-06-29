@@ -1,9 +1,20 @@
+open Cmdliner
 open Lwt.Infix
+
+let branch =
+  let doc = Arg.info ~doc:"The Git remote branch." [ "branch" ] in
+  let key = Arg.(value & opt string "refs/heads/master" doc) in
+  Mirage_runtime.key key
+
+let remote =
+  let doc = Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
+  let key = Arg.(required & opt (some string) None doc) in
+  Mirage_runtime.key key
 
 module Make (Store : Git.S) (_ : sig end) = struct
   module Sync = Git.Mem.Sync (Store)
 
-  let main = lazy (Git.Reference.v (Key_gen.branch ()))
+  let main = lazy (Git.Reference.v (branch ()))
 
   let author () =
     {
@@ -62,7 +73,7 @@ module Make (Store : Git.S) (_ : sig end) = struct
 
   let start git ctx =
     let edn =
-      match Smart_git.Endpoint.of_string (Key_gen.remote ()) with
+      match Smart_git.Endpoint.of_string (remote ()) with
       | Ok edn -> edn
       | Error (`Msg err) -> Fmt.failwith "%s" err
     in

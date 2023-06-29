@@ -1,8 +1,17 @@
 open Lwt.Infix
+open Cmdliner
+
+let port =
+  let doc =
+    Arg.info ~doc:"The TCP port on which to listen for incoming connections."
+      [ "port" ]
+  in
+  let key = Arg.(value & opt int 8080 doc) in
+  Mirage_runtime.key key
 
 module Main (S : Tcpip.Stack.V4V6) = struct
   let start s =
-    let port = Key_gen.port () in
+    let port = port () in
     S.TCP.listen (S.tcp s) ~port (fun flow ->
         let dst, dst_port = S.TCP.dst flow in
         Logs.info (fun f ->

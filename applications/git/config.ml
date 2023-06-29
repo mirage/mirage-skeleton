@@ -34,44 +34,36 @@ let git_impl path =
 
 (* User space *)
 
-let remote =
-  let doc = Key.Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
-  Key.(create "remote" Arg.(required ~stage:`Run string doc))
-
 let ssh_key =
   let doc = Key.Arg.info ~doc:"The private SSH key." [ "ssh-key" ] in
-  Key.(create "ssh_seed" Arg.(opt (some string) None doc))
+  Key.(create "ssh_seed" Arg.(opt ~stage:`Run (some string) None doc))
 
 let ssh_password =
   let doc = Key.Arg.info ~doc:"The private SSH password." [ "ssh-password" ] in
-  Key.(create "ssh_password" Arg.(opt (some string) None doc))
+  Key.(create "ssh_password" Arg.(opt ~stage:`Run (some string) None doc))
 
 let nameservers =
   let doc = Key.Arg.info ~doc:"DNS nameservers." [ "nameserver" ] in
-  Key.(create "nameservers" Arg.(opt_all string doc))
+  Key.(create "nameservers" Arg.(opt_all ~stage:`Run string doc))
 
 let ssh_authenticator =
   let doc =
     Key.Arg.info ~doc:"SSH public key of the remote Git repository."
       [ "ssh-authenticator" ]
   in
-  Key.(create "ssh_authenticator" Arg.(opt (some string) None doc))
+  Key.(create "ssh_authenticator" Arg.(opt ~stage:`Run (some string) None doc))
 
 let https_authenticator =
   let doc =
     Key.Arg.info ~doc:"SSH public key of the remote Git repository."
       [ "https-authenticator" ]
   in
-  Key.(create "https_authenticator" Arg.(opt (some string) None doc))
-
-let branch =
-  let doc = Key.Arg.info ~doc:"The Git remote branch." [ "branch" ] in
-  Key.(create "branch" Arg.(opt ~stage:`Run string "refs/heads/master" doc))
+  Key.(
+    create "https_authenticator" Arg.(opt ~stage:`Run (some string) None doc))
 
 let minigit =
   foreign "Unikernel.Make"
     ~packages:[ package "ptime" ]
-    ~keys:[ Key.v remote; Key.v branch ]
     (git @-> git_client @-> job)
 
 let mimic stackv4v6 dns_client happy_eyeballs =

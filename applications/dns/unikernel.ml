@@ -1,7 +1,14 @@
+open Cmdliner
+
+let domain_name =
+  let doc = Arg.info ~doc:"The domain-name to resolve." [ "domain-name" ] in
+  let key = Arg.(required & opt (some string) None doc) in
+  Mirage_runtime.key key
+
 module Make (DNS : Dns_client_mirage.S) = struct
   let start dns =
     let ( >>= ) = Result.bind in
-    match Domain_name.(of_string (Key_gen.domain_name ()) >>= host) with
+    match Domain_name.(of_string (domain_name ()) >>= host) with
     | Error (`Msg err) -> failwith err
     | Ok domain_name -> (
         let open Lwt.Infix in
