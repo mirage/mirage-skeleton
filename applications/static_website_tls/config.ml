@@ -9,7 +9,7 @@ let https_srv = cohttp_server @@ conduit_direct ~tls:true stack
 
 let http_port =
   let doc = Key.Arg.info ~doc:"Listening HTTP port." [ "http" ] in
-  Key.(create "http_port" Arg.(opt int 8080 doc))
+  Key.(create "http_port" Arg.(opt ~stage:`Run int 8080 doc))
 
 let certs_key = Key.(value @@ kv_ro ~group:"certs" ())
 
@@ -19,7 +19,7 @@ let certs = generic_kv_ro ~key:certs_key "tls"
 
 let https_port =
   let doc = Key.Arg.info ~doc:"Listening HTTPS port." [ "https" ] in
-  Key.(create "https_port" Arg.(opt int 4433 doc))
+  Key.(create "https_port" Arg.(opt ~stage:`Run int 4433 doc))
 
 let main =
   let packages = [ package "uri"; package "magic-mime" ] in

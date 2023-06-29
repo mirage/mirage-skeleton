@@ -2,7 +2,7 @@ open Mirage
 
 let uri =
   let doc = Key.Arg.info ~doc:"URL to fetch" [ "uri" ] in
-  Key.(create "uri" Arg.(opt string "https://mirage.io" doc))
+  Key.(create "uri" Arg.(opt ~stage:`Run string "https://mirage.io" doc))
 
 let client =
   let packages = [ package "cohttp-mirage"; package "duration" ] in
