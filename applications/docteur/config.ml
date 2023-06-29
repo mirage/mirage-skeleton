@@ -8,5 +8,5 @@ let unikernel = foreign "Unikernel.Make" ~keys:[ Key.v filename ] (kv_ro @-> job
 let remote = "https://github.com/mirage/mirage"
 
 let () =
-  register "static_kv_ro"
+  register "docteur_kv_ro"
     [ unikernel $ docteur ~branch:"refs/heads/main" remote ]
