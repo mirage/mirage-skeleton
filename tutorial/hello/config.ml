@@ -1,4 +1,6 @@
 open Mirage
 
-let main = main ~packages:[ package "duration" ] "Unikernel.Hello" (job @-> job)
-let () = register "hello" [ main $ noop ]
+let main =
+  main "Unikernel.Hello" (time @-> job) ~packages:[ package "duration" ]
+
+let () = register "hello" [ main $ default_time ]
