@@ -1,5 +1,11 @@
 open Lwt.Infix
 open Printf
+open Cmdliner
+
+let uri =
+  let doc = Arg.info ~doc:"URL to fetch" [ "uri" ] in
+  let key = Arg.(value & opt string "https://mirage.io" doc) in
+  Mirage_runtime.key key
 
 let red fmt = sprintf ("\027[31m" ^^ fmt ^^ "\027[m")
 let green fmt = sprintf ("\027[32m" ^^ fmt ^^ "\027[m")
@@ -16,6 +22,6 @@ module Client (Client : Cohttp_lwt.S.Client) = struct
     Fmt.pr "Cohttp fetch done\n------------\n"
 
   let start ctx =
-    let uri = Uri.of_string (Key_gen.uri ()) in
+    let uri = Uri.of_string (uri ()) in
     http_fetch ctx uri
 end
