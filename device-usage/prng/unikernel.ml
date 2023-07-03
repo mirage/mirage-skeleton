@@ -1,8 +1,20 @@
 module Main (R : Mirage_random.S) = struct
+  let t_to_str = function
+    | `Unix -> "unix"
+    | `Xen -> "xen"
+    | `Muen -> "muen"
+    | `Qubes -> "qubes"
+    | `MacOSX -> "macosx"
+    | `Virtio -> "virtio"
+    | `Hvt -> "hvt"
+    | `Spt -> "spt"
+
   let generate i = R.generate i
 
   let start _r =
-    Logs.info (fun m -> m "PRNG example running on %s" Sys.os_type);
+    let t = Key_gen.target () in
+    Logs.info (fun m ->
+        m "PRNG example running on %s (target %s)" Sys.os_type (t_to_str t));
     Logs.info (fun m ->
         m "using Fortuna, entropy sources: %a"
           Fmt.(list ~sep:(any ", ") Mirage_crypto_rng.Entropy.pp_source)
