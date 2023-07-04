@@ -23,7 +23,7 @@ let https_port =
 
 let main =
   let packages = [ package "uri"; package "magic-mime" ] in
-  let keys = List.map key [ http_port; https_port ] in
+  let keys = List.map Key.v [ http_port; https_port ] in
   main ~packages ~keys "Dispatch.HTTPS"
     (pclock @-> kv_ro @-> kv_ro @-> http @-> job)
 

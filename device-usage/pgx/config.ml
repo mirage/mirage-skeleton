@@ -35,7 +35,7 @@ let password =
 
 let server =
   main "Unikernel.Make"
-    ~keys:[ key port; key hostname; key user; key password; key database ]
+    ~keys:[ Key.v port; Key.v hostname; Key.v user; Key.v password; Key.v database ]
     ~packages
     (random @-> time @-> pclock @-> mclock @-> stackv4 @-> job)
 

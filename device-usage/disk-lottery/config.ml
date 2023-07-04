@@ -25,7 +25,7 @@ let reset =
 let main =
   main "Unikernel.Main"
     (block @-> random @-> job)
-    ~keys:[ key reset_all; key reset; key sector ]
+    ~keys:[ Key.v reset_all; Key.v reset; Key.v sector ]
     ~packages:[ package "checkseum"; package "cstruct"; package "fmt" ]
 
 let img =

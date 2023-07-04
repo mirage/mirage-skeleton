@@ -6,7 +6,7 @@ let hello =
 
 let main =
   main
-    ~keys:[ key hello ]
+    ~keys:[ Key.v hello ]
     ~packages:[ package "duration" ]
     "Unikernel.Hello" (time @-> job)
 

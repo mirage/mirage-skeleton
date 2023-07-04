@@ -6,7 +6,7 @@ let uri =
 
 let client =
   let packages = [ package "cohttp-mirage"; package "duration" ] in
-  main ~keys:[ key uri ] ~packages "Unikernel.Client" @@ http_client @-> job
+  main ~keys:[ Key.v uri ] ~packages "Unikernel.Client" @@ http_client @-> job
 
 let () =
   let stack = generic_stackv4v6 default_network in
