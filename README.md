@@ -1,5 +1,7 @@
 # mirage-skeleton
 
+TEST
+
 This repository is a collection of **tutorial code** referred to from [the Mirage
 website](https://mirage.io), **example code** for using specific devices like
 filesystems and networks, and **higher-level applications** like
