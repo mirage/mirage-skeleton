@@ -23,7 +23,7 @@ let https_port =
 
 let main =
   let packages =
-    [ package "uri"; package "magic-mime"; package "cohttp" ~max:"6.0.0" ]
+    [ package "uri"; package "magic-mime"; package "cohttp" ~max:"6" ]
   in
   let keys = List.map Key.v [ http_port; https_port ] in
   main ~packages ~keys "Dispatch.HTTPS"
