@@ -22,7 +22,9 @@ let https_port =
   Key.(create "https_port" Arg.(opt ~stage:`Run int 4433 doc))
 
 let main =
-  let packages = [ package "uri"; package "magic-mime" ] in
+  let packages =
+    [ package "uri"; package "magic-mime"; package "cohttp" ~max:"6.0.0" ]
+  in
   let keys = List.map Key.v [ http_port; https_port ] in
   main ~packages ~keys "Dispatch.HTTPS"
     (pclock @-> kv_ro @-> kv_ro @-> http @-> job)
