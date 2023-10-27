@@ -1,4 +1,23 @@
 open Lwt.Infix
+open Cmdliner
+
+let reset_all =
+  let doc = Arg.info ~doc:"Reset all state on disk and quit" [ "reset-all" ] in
+  Mirage_runtime.key Arg.(value & flag doc)
+
+let sector =
+  let doc = Arg.info ~doc:"Sector to read and write game state to" [ "slot" ] in
+  Mirage_runtime.key Arg.(value & opt int64 0L doc)
+
+let reset =
+  let doc =
+    Arg.info
+      ~doc:
+        "Reset the state on disk at the specified slot (using --slot, default \
+         0) and quit"
+      [ "reset" ]
+  in
+  Mirage_runtime.key Arg.(value & flag doc)
 
 module Main (Disk : Mirage_block.S) (Random : Mirage_random.S) = struct
   let write_state disk info sector state =
@@ -48,9 +67,7 @@ module Main (Disk : Mirage_block.S) (Random : Mirage_random.S) = struct
     loop 0L
 
   let start disk _random =
-    let sector = Key_gen.sector ()
-    and reset_all = Key_gen.reset_all ()
-    and reset = Key_gen.reset () in
+    let sector = sector () and reset_all = reset_all () and reset = reset () in
     Disk.get_info disk >>= fun info ->
     if info.sector_size < Lotto.len then (
       Logs.err (fun m ->

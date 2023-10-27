@@ -1,8 +1,6 @@
 open Mirage
 
-let port =
-  let doc = Key.Arg.info ~doc:"Port of HTTP service." [ "p"; "port" ] in
-  Key.(create "ports" Arg.(opt ~stage:`Run int 8080 doc))
+let port = Runtime_key.create "Key.port"
 
 type conn = Connect
 
