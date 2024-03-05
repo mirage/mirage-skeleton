@@ -7,17 +7,17 @@ let use_tls =
     Arg.info ~doc:"Start an HTTP server with a TLS certificate." [ "tls" ]
   in
   let key = Arg.(value & flag doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 let tls_port =
   let doc = Arg.info ~doc:"Port of HTTPS service." [ "tls-port" ] in
   let key = Arg.(value & opt int 4343 doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 let alpn =
   let doc = Arg.info ~doc:"Protocols handled by the HTTP server." [ "alpn" ] in
   let key = Arg.(value & opt (some string) None doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 let ( <.> ) f g x = f (g x)
 let always x _ = x

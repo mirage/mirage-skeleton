@@ -3,7 +3,7 @@ open Cmdliner
 let domain_name =
   let doc = Arg.info ~doc:"The domain-name to resolve." [ "domain-name" ] in
   let key = Arg.(required & opt (some string) None doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 module Make (DNS : Dns_client_mirage.S) = struct
   let start dns =

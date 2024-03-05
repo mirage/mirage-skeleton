@@ -5,7 +5,7 @@ open Cmdliner
 let uri =
   let doc = Arg.info ~doc:"URL to fetch" [ "uri" ] in
   let key = Arg.(value & opt string "https://mirage.io" doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 let red fmt = sprintf ("\027[31m" ^^ fmt ^^ "\027[m")
 let green fmt = sprintf ("\027[32m" ^^ fmt ^^ "\027[m")

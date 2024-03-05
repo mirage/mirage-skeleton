@@ -7,7 +7,7 @@ let port =
       [ "port" ]
   in
   let key = Arg.(value & opt int 8080 doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 module Main (S : Tcpip.Stack.V4V6) = struct
   let start s =

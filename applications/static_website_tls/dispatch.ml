@@ -4,12 +4,12 @@ open Cmdliner
 let http_port =
   let doc = Arg.info ~doc:"Listening HTTP port." [ "http" ] in
   let key = Arg.(value & opt int 8080 doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 let https_port =
   let doc = Arg.info ~doc:"Listening HTTPS port." [ "https" ] in
   let key = Arg.(value & opt int 4433 doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 module type HTTP = Cohttp_mirage.Server.S
 (** Common signature for http and https. *)

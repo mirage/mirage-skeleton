@@ -1,6 +1,6 @@
 open Mirage
 
-let port = Runtime_key.create "Key.port"
+let port = Runtime_arg.create "Key.port"
 
 type conn = Connect
 
