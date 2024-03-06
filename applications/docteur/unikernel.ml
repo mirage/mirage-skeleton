@@ -4,7 +4,7 @@ open Cmdliner
 let filename =
   let doc = Arg.info ~doc:"The filename to print out." [ "filename" ] in
   let key = Arg.(required & opt (some string) None doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 module Make (Store : Mirage_kv.RO) = struct
   module Key = Mirage_kv.Key

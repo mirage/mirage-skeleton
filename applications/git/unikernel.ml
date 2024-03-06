@@ -4,12 +4,12 @@ open Lwt.Infix
 let branch =
   let doc = Arg.info ~doc:"The Git remote branch." [ "branch" ] in
   let key = Arg.(value & opt string "refs/heads/master" doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 let remote =
   let doc = Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
   let key = Arg.(required & opt (some string) None doc) in
-  Mirage_runtime.key key
+  Mirage_runtime.register key
 
 module Make (Store : Git.S) (_ : sig end) = struct
   module Sync = Git.Mem.Sync (Store)

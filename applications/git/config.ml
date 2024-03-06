@@ -11,8 +11,8 @@ let git = typ Git
 
 let git_impl path =
   let packages = [ package "git" ~min:"3.8.0" ] in
-  let runtime_keys =
-    match path with None -> [] | Some path -> [ Runtime_key.v path ]
+  let runtime_args =
+    match path with None -> [] | Some path -> [ Runtime_arg.v path ]
   in
   let connect _ modname _ =
     match path with
@@ -30,17 +30,17 @@ let git_impl path =
                  | None -> %s.v (Fpath.v ".") ) >>= function
                  | Ok v -> Lwt.return v
                  | Error err -> Fmt.failwith "%%a" %s.pp_error err|ocaml}
-          Runtime_key.call key modname modname modname
+          Runtime_arg.call key modname modname modname
   in
-  impl ~packages ~runtime_keys ~connect "Git.Mem.Make" (hash @-> git)
+  impl ~packages ~runtime_args ~connect "Git.Mem.Make" (hash @-> git)
 
 (* User space *)
 
-let ssh_key = Runtime_key.create "Key.ssh_key"
-let ssh_password = Runtime_key.create "Key.ssh_password"
-let nameservers = Runtime_key.create "Key.nameservers"
-let ssh_authenticator = Runtime_key.create "Key.ssh_authenticator"
-let https_authenticator = Runtime_key.create "Key.https_authenticator"
+let ssh_key = Runtime_arg.create "Key.ssh_key"
+let ssh_password = Runtime_arg.create "Key.ssh_password"
+let nameservers = Runtime_arg.create "Key.nameservers"
+let ssh_authenticator = Runtime_arg.create "Key.ssh_authenticator"
+let https_authenticator = Runtime_arg.create "Key.https_authenticator"
 
 let minigit =
   foreign "Unikernel.Make"
