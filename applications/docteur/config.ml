@@ -1,6 +1,6 @@
 open Mirage
 
-let unikernel = foreign "Unikernel.Make" (kv_ro @-> job)
+let unikernel = main "Unikernel.Make" (kv_ro @-> job)
 let remote = "https://github.com/mirage/mirage"
 
 let () =

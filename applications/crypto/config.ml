@@ -8,5 +8,5 @@ let packages =
     package "mirage-crypto";
   ]
 
-let main = foreign "Unikernel.Main" ~packages (random @-> job)
+let main = main "Unikernel.Main" ~packages (random @-> job)
 let () = register "crypto-test" [ main $ default_random ]

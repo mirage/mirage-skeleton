@@ -1,7 +1,7 @@
 open Mirage
 
 let main =
-  foreign
+  main
     ~packages:[ package ~min:"3.0.0" "ethernet"; package ~min:"7.0.0" "tcpip" ]
     "Unikernel.Main"
     (network @-> ethernet @-> ipv6 @-> job)

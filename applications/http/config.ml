@@ -7,7 +7,7 @@ type conn = Connect
 let conn = typ Connect
 
 let minipaf =
-  foreign "Unikernel.Make"
+  main "Unikernel.Make"
     ~packages:
       [
         package "digestif";
