@@ -21,7 +21,7 @@ let minipaf =
 let conn =
   let connect _ modname = function
     | [ _pclock; _tcpv4v6; ctx ] ->
-        Fmt.str {ocaml|%s.connect %s|ocaml} modname ctx
+        code ~pos:__POS__ {ocaml|%s.connect %s|ocaml} modname ctx
     | _ -> assert false
   in
   impl ~connect "Connect.Make" (pclock @-> tcpv4v6 @-> mimic @-> conn)

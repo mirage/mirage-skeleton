@@ -17,13 +17,13 @@ let git_impl path =
   let connect _ modname _ =
     match path with
     | None ->
-        Fmt.str
+        code ~pos:__POS__
           {ocaml|%s.v (Fpath.v ".") >>= function
                  | Ok v -> Lwt.return v
                  | Error err -> Fmt.failwith "%%a" %s.pp_error err|ocaml}
           modname modname
     | Some key ->
-        Fmt.str
+        code ~pos:__POS__
           {ocaml|( match Option.map Fpath.of_string %a with
                  | Some (Ok path) -> %s.v path
                  | Some (Error (`Msg err)) -> failwith err
