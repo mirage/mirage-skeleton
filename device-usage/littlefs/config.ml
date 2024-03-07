@@ -1,7 +1,7 @@
 open Mirage
 
 let unikernel =
-  foreign "Unikernel.Make"
+  main "Unikernel.Make"
     ~packages:[ package "hxd" ~sublibs:[ "core"; "string" ] ]
     (random @-> kv_rw @-> job)
 

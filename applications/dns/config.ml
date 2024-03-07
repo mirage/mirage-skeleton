@@ -2,7 +2,7 @@ open Mirage
 
 let timeout = Runtime_arg.create "Key.timeout"
 let nameservers = Runtime_arg.create "Key.nameservers"
-let unikernel = foreign "Unikernel.Make" (dns_client @-> job)
+let unikernel = main "Unikernel.Make" (dns_client @-> job)
 let stackv4v6 = generic_stackv4v6 default_network
 
 let () =

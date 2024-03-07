@@ -43,7 +43,7 @@ let ssh_authenticator = Runtime_arg.create "Key.ssh_authenticator"
 let https_authenticator = Runtime_arg.create "Key.https_authenticator"
 
 let minigit =
-  foreign "Unikernel.Make"
+  main "Unikernel.Make"
     ~packages:[ package "ptime" ]
     (git @-> git_client @-> job)
 
