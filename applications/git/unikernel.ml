@@ -1,20 +1,50 @@
 open Cmdliner
 open Lwt.Infix
 
+let ssh_key =
+  let doc = Arg.info ~doc:"The private SSH key." [ "ssh-key" ] in
+  Arg.(value & opt (some string) None doc)
+
+let ssh_password =
+  let doc = Arg.info ~doc:"The private SSH password." [ "ssh-password" ] in
+  Arg.(value & opt (some string) None doc)
+
+let nameservers =
+  let doc = Arg.info ~doc:"DNS nameservers." [ "nameserver" ] in
+  Arg.(value & opt_all string [] doc)
+
+let ssh_authenticator =
+  let doc =
+    Arg.info ~doc:"SSH public key of the remote Git repository."
+      [ "ssh-authenticator" ]
+  in
+  Arg.(value & opt (some string) None doc)
+
+let https_authenticator =
+  let doc =
+    Arg.info ~doc:"SSH public key of the remote Git repository."
+      [ "https-authenticator" ]
+  in
+  Arg.(value & opt (some string) None doc)
+
 let branch =
   let doc = Arg.info ~doc:"The Git remote branch." [ "branch" ] in
-  let key = Arg.(value & opt string "refs/heads/master" doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt string "refs/heads/master" doc)
 
 let remote =
   let doc = Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
-  let key = Arg.(required & opt (some string) None doc) in
-  Mirage_runtime.register key
+  Arg.(required & opt (some string) None doc)
+
+type t = { branch : Git.Reference.t; remote : string }
+
+let setup =
+  Term.(
+    const (fun b remote -> { branch = Git.Reference.v b; remote })
+    $ branch
+    $ remote)
 
 module Make (Store : Git.S) (_ : sig end) = struct
   module Sync = Git.Mem.Sync (Store)
-
-  let main = lazy (Git.Reference.v (branch ()))
 
   let author () =
     {
@@ -46,21 +76,18 @@ module Make (Store : Git.S) (_ : sig end) = struct
     | Ok v -> Lwt.return v
     | Error err -> Lwt.fail (Failure (Fmt.str "%a" pp err))
 
-  let empty_commit git = function
+  let empty_commit branch git = function
     | None ->
         Store.write git empty_tree >>? fun (tree, _) ->
         Store.write git (commit ~tree ~author:(author ()) None)
-        >>? fun (hash, _) ->
-        Store.Ref.write git (Lazy.force main) (Git.Reference.uid hash)
+        >>? fun (hash, _) -> Store.Ref.write git branch (Git.Reference.uid hash)
     | Some (_, _) ->
-        Store.Ref.resolve git (Lazy.force main) >>= failwith Store.pp_error
-        >>= fun hash ->
+        Store.Ref.resolve git branch >>= failwith Store.pp_error >>= fun hash ->
         Store.read_exn git hash >>= fun obj ->
         let[@warning "-8"] (Git.Value.Commit parent) = obj in
         let tree = Store.Value.Commit.tree parent in
         Store.write git (commit ~parent:hash ~tree ~author:(author ()) None)
-        >>? fun (hash, _) ->
-        Store.Ref.write git (Lazy.force main) (Git.Reference.uid hash)
+        >>? fun (hash, _) -> Store.Ref.write git branch (Git.Reference.uid hash)
 
   let capabilities =
     [
@@ -71,19 +98,18 @@ module Make (Store : Git.S) (_ : sig end) = struct
       `Report_status;
     ]
 
-  let start git ctx =
+  let start git ctx { branch; remote } =
     let edn =
-      match Smart_git.Endpoint.of_string (remote ()) with
+      match Smart_git.Endpoint.of_string remote with
       | Ok edn -> edn
       | Error (`Msg err) -> Fmt.failwith "%s" err
     in
     Sync.fetch ~capabilities ~ctx edn git ~deepen:(`Depth 1) `All
     >>= failwith Sync.pp_error
-    >>= empty_commit git
+    >>= empty_commit branch git
     >>= failwith Store.pp_error
     >>= fun () ->
-    Sync.push ~capabilities ~ctx edn git
-      [ `Update (Lazy.force main, Lazy.force main) ]
+    Sync.push ~capabilities ~ctx edn git [ `Update (branch, branch) ]
     >>= failwith Sync.pp_error
     >>= fun () ->
     Sync.fetch ~capabilities ~ctx edn git ~deepen:(`Depth 1) `All >>= function

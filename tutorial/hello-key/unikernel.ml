@@ -3,13 +3,10 @@ open Cmdliner
 
 let hello =
   let doc = Arg.info ~doc:"How to say hello." [ "hello" ] in
-  let key = Arg.(value & opt string "Hello World!" doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt string "Hello World!" doc)
 
 module Hello (Time : Mirage_time.S) = struct
-  let start _time =
-    let hello = hello () in
-
+  let start _time hello =
     let rec loop = function
       | 0 -> Lwt.return_unit
       | n ->
