@@ -1,4 +1,43 @@
 open Lwt.Infix
+open Cmdliner
+
+let database =
+  let doc = Arg.info ~doc:"database to use" [ "db"; "pgdatabase" ] in
+  Arg.(value & opt string "postgres" doc)
+
+let port =
+  let doc = Arg.info ~doc:"port to use for postgresql" [ "p"; "pgport" ] in
+  Arg.(value & opt int 5432 doc)
+
+let hostname =
+  let doc = Arg.info ~doc:"host for postgres database" [ "h"; "pghost" ] in
+  Arg.(required & opt (some string) None doc)
+
+let user =
+  let doc = Arg.info ~doc:"postgres user" [ "u"; "pguser" ] in
+  Arg.(required & opt (some string) None doc)
+
+let password =
+  let doc = Key.Arg.info ~doc:"postgres password" [ "pgpassword" ] in
+  Arg.(required & opt (some string) None doc)
+
+type t = {
+  password : string;
+  database : string;
+  port : int;
+  host : string;
+  user : string;
+}
+
+let setup =
+  Term.(
+    const (fun password database port host user ->
+        { password; database; port; host; user })
+    $ password
+    $ database
+    $ port
+    $ host
+    $ user)
 
 module Make
     (RANDOM : Mirage_random.S)
@@ -54,14 +93,10 @@ struct
         Logs.info (fun m -> m "{id = %d; email = %s}\n" id email))
       users
 
-  let start _random _time _pclock _mclock stack =
+  let start _random _time _pclock _mclock stack
+      { password; database; port; host; user } =
     Logs.(set_level (Some Info));
     Logs_reporter.(create () |> run) @@ fun () ->
-    let port = Key_gen.pgport () in
-    let host = Key_gen.pghost () in
-    let user = Key_gen.pguser () in
-    let password = Key_gen.pgpassword () in
-    let database = Key_gen.pgdatabase () in
     let pgx = Pgx_mirage.connect stack in
     setup_database ~port ~host ~user ~password ~database pgx () >>= fun () ->
     print_users (get_users ~port ~host ~user ~password ~database pgx ())

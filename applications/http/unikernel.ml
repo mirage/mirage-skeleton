@@ -2,22 +2,32 @@ open Rresult
 open Lwt.Infix
 open Cmdliner
 
+let port =
+  let doc = Arg.info ~doc:"Port of HTTP service." [ "p"; "port" ] in
+  Arg.(value & opt int 8080 doc)
+
 let use_tls =
   let doc =
     Arg.info ~doc:"Start an HTTP server with a TLS certificate." [ "tls" ]
   in
-  let key = Arg.(value & flag doc) in
-  Mirage_runtime.register key
+  Arg.(value & flag doc)
 
 let tls_port =
   let doc = Arg.info ~doc:"Port of HTTPS service." [ "tls-port" ] in
-  let key = Arg.(value & opt int 4343 doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt int 4343 doc)
 
 let alpn =
   let doc = Arg.info ~doc:"Protocols handled by the HTTP server." [ "alpn" ] in
-  let key = Arg.(value & opt (some string) None doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt (some string) None doc)
+
+type t = { use_tls : bool; tls_port : int; alpn : string option }
+
+let setup =
+  Term.(
+    const (fun use_tls tls_port alpn -> { use_tls; tls_port; alpn })
+    $ use_tls
+    $ tls_port
+    $ alpn)
 
 let ( <.> ) f g x = f (g x)
 let always x _ = x
@@ -134,23 +144,24 @@ struct
     in
     Paf.serve http_1_1_service http_server |> fun (`Initialized th) -> th
 
-  let start _random certificate_ro key_ro tcpv4v6 ctx http_server =
+  let start _random certificate_ro key_ro tcpv4v6 ctx http_server
+      { use_tls; alpn; tls_port } =
     let open Lwt.Infix in
     let authenticator = Connect.authenticator in
     tls key_ro certificate_ro >>= fun tls ->
-    match (use_tls (), tls, alpn ()) with
+    match (use_tls, tls, alpn) with
     | true, Ok certificates, None ->
         run_with_tls ~ctx ~authenticator
           ~tls:
             (Tls.Config.server ~certificates
                ~alpn_protocols:[ "h2"; "http/1.1" ] ())
-          http_server (tls_port ()) tcpv4v6
+          http_server tls_port tcpv4v6
     | true, Ok certificates, Some (("http/1.1" | "h2") as alpn_protocol) ->
         run_with_tls ~ctx ~authenticator
           ~tls:
             (Tls.Config.server ~certificates ~alpn_protocols:[ alpn_protocol ]
                ())
-          http_server (tls_port ()) tcpv4v6
+          http_server tls_port tcpv4v6
     | false, _, _ -> run ~ctx ~authenticator http_server
     | _, _, Some protocol -> Fmt.failwith "Invalid protocol %S" protocol
     | true, Error _, _ ->

@@ -1,6 +1,7 @@
 open Mirage
 
-let unikernel = main "Unikernel.Make" (kv_ro @-> job)
+let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.filename" ]
+let unikernel = main ~runtime_args "Unikernel.Make" (kv_ro @-> job)
 let remote = "https://github.com/mirage/mirage"
 
 let () =

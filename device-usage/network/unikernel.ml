@@ -6,12 +6,10 @@ let port =
     Arg.info ~doc:"The TCP port on which to listen for incoming connections."
       [ "port" ]
   in
-  let key = Arg.(value & opt int 8080 doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt int 8080 doc)
 
 module Main (S : Tcpip.Stack.V4V6) = struct
-  let start s =
-    let port = port () in
+  let start s port =
     S.TCP.listen (S.tcp s) ~port (fun flow ->
         let dst, dst_port = S.TCP.dst flow in
         Logs.info (fun f ->

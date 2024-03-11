@@ -1,14 +1,21 @@
 open Cmdliner
 
+let nameservers =
+  let doc = Arg.info ~doc:"Nameserver." [ "nameserver" ] in
+  Arg.(value & opt_all string [] doc)
+
+let timeout =
+  let doc = Arg.info ~doc:"Timeout of DNS requests." [ "timeout" ] in
+  Arg.(value & opt (some int64) None doc)
+
 let domain_name =
   let doc = Arg.info ~doc:"The domain-name to resolve." [ "domain-name" ] in
-  let key = Arg.(required & opt (some string) None doc) in
-  Mirage_runtime.register key
+  Arg.(required & opt (some string) None doc)
 
 module Make (DNS : Dns_client_mirage.S) = struct
-  let start dns =
+  let start dns domain_name =
     let ( >>= ) = Result.bind in
-    match Domain_name.(of_string (domain_name ()) >>= host) with
+    match Domain_name.(of_string domain_name >>= host) with
     | Error (`Msg err) -> failwith err
     | Ok domain_name -> (
         let open Lwt.Infix in

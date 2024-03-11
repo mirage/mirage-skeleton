@@ -1,13 +1,14 @@
 open Mirage
 
-let port = Runtime_arg.create "Key.port"
+let port = Runtime_arg.create ~pos:__POS__ "Unikernel.port"
+let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.setup" ]
 
 type conn = Connect
 
 let conn = typ Connect
 
 let minipaf =
-  main "Unikernel.Make"
+  main "Unikernel.Make" ~runtime_args
     ~packages:
       [
         package "digestif";

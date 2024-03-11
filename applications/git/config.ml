@@ -14,36 +14,42 @@ let git_impl path =
   let runtime_args =
     match path with None -> [] | Some path -> [ Runtime_arg.v path ]
   in
-  let connect _ modname _ =
-    match path with
-    | None ->
+  let connect _ modname = function
+    | [ _hash ] ->
         code ~pos:__POS__
           {ocaml|%s.v (Fpath.v ".") >>= function
                  | Ok v -> Lwt.return v
                  | Error err -> Fmt.failwith "%%a" %s.pp_error err|ocaml}
           modname modname
-    | Some key ->
+    | [ _hash; path ] ->
         code ~pos:__POS__
-          {ocaml|( match Option.map Fpath.of_string %a with
+          {ocaml|( match Option.map Fpath.of_string %s with
                  | Some (Ok path) -> %s.v path
                  | Some (Error (`Msg err)) -> failwith err
                  | None -> %s.v (Fpath.v ".") ) >>= function
                  | Ok v -> Lwt.return v
                  | Error err -> Fmt.failwith "%%a" %s.pp_error err|ocaml}
-          Runtime_arg.call key modname modname modname
+          path modname modname modname
+    | _ -> Mirage_impl_misc.connect_err "git_impl" 1 ~max:2
   in
   impl ~packages ~runtime_args ~connect "Git.Mem.Make" (hash @-> git)
 
 (* User space *)
 
-let ssh_key = Runtime_arg.create "Key.ssh_key"
-let ssh_password = Runtime_arg.create "Key.ssh_password"
-let nameservers = Runtime_arg.create "Key.nameservers"
-let ssh_authenticator = Runtime_arg.create "Key.ssh_authenticator"
-let https_authenticator = Runtime_arg.create "Key.https_authenticator"
+let ssh_key = Runtime_arg.create ~pos:__POS__ "Unikernel.ssh_key"
+let ssh_password = Runtime_arg.create ~pos:__POS__ "Unikernel.ssh_password"
+let nameservers = Runtime_arg.create ~pos:__POS__ "Unikernel.nameservers"
+
+let ssh_authenticator =
+  Runtime_arg.create ~pos:__POS__ "Unikernel.ssh_authenticator"
+
+let https_authenticator =
+  Runtime_arg.create ~pos:__POS__ "Unikernel.https_authenticator"
+
+let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.setup" ]
 
 let minigit =
-  main "Unikernel.Make"
+  main "Unikernel.Make" ~runtime_args
     ~packages:[ package "ptime" ]
     (git @-> git_client @-> job)
 

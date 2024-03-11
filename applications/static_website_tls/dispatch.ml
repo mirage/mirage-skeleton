@@ -3,13 +3,19 @@ open Cmdliner
 
 let http_port =
   let doc = Arg.info ~doc:"Listening HTTP port." [ "http" ] in
-  let key = Arg.(value & opt int 8080 doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt int 8080 doc)
 
 let https_port =
   let doc = Arg.info ~doc:"Listening HTTPS port." [ "https" ] in
-  let key = Arg.(value & opt int 4433 doc) in
-  Mirage_runtime.register key
+  Arg.(value & opt int 4433 doc)
+
+type t = { http_port : int; https_port : int }
+
+let setup =
+  Term.(
+    const (fun http_port https_port -> { http_port; https_port })
+    $ http_port
+    $ https_port)
 
 module type HTTP = Cohttp_mirage.Server.S
 (** Common signature for http and https. *)
@@ -81,11 +87,9 @@ struct
     let conf = Tls.Config.server ~certificates:(`Single cert) () in
     Lwt.return conf
 
-  let start _clock data keys http =
+  let start _clock data keys http { http_port; https_port } =
     tls_init keys >>= fun cfg ->
-    let https_port = https_port () in
     let tls = `TLS (cfg, `TCP https_port) in
-    let http_port = http_port () in
     let tcp = `TCP http_port in
     let https =
       Https_log.info (fun f -> f "listening on %d/TCP" https_port);

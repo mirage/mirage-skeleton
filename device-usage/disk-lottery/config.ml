@@ -1,7 +1,14 @@
 open Mirage
 
+let runtime_args =
+  [
+    runtime_arg ~pos:__POS__ "Unikernel.sector";
+    runtime_arg ~pos:__POS__ "Unikernel.reset_all";
+    runtime_arg ~pos:__POS__ "Unikernel.reset";
+  ]
+
 let main =
-  main "Unikernel.Main"
+  main "Unikernel.Main" ~runtime_args
     (block @-> random @-> job)
     ~packages:[ package "checkseum"; package "cstruct"; package "fmt" ]
 
