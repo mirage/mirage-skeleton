@@ -30,7 +30,7 @@ let git_impl path =
                  | Ok v -> Lwt.return v
                  | Error err -> Fmt.failwith "%%a" %s.pp_error err|ocaml}
           path modname modname modname
-    | _ -> Mirage_impl_misc.connect_err "git_impl" 1 ~max:2
+    | _ -> connect_err "git_impl" 1 ~max:2
   in
   impl ~packages ~runtime_args ~connect "Git.Mem.Make" (hash @-> git)
 
