@@ -5,7 +5,7 @@ module Timeout2 (Time : Mirage_time.S) (R : Mirage_random.S) = struct
     let tmout = Time.sleep_ns delay in
     Lwt.pick [ (tmout >|= fun () -> None); (t >|= fun v -> Some v) ]
 
-  let generate i = R.generate i
+  let generate i = R.generate i |> Cstruct.to_string
 
   let start _time _r =
     let t =
