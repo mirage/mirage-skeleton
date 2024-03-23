@@ -10,7 +10,7 @@ module Timeout1 (Time : Mirage_time.S) (R : Mirage_random.S) = struct
     | Lwt.Return v -> Lwt.return (Some v)
     | Lwt.Fail ex -> Lwt.fail ex
 
-  let generate i = R.generate i |> Cstruct.to_string
+  let generate i = R.generate i
 
   let start _time _r =
     let t =
