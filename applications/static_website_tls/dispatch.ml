@@ -3,11 +3,11 @@ open Cmdliner
 
 let http_port =
   let doc = Arg.info ~doc:"Listening HTTP port." [ "http" ] in
-  Arg.(value & opt int 8080 doc)
+  Arg.(value & opt int 80 doc)
 
 let https_port =
   let doc = Arg.info ~doc:"Listening HTTPS port." [ "https" ] in
-  Arg.(value & opt int 4433 doc)
+  Arg.(value & opt int 433 doc)
 
 type t = { http_port : int; https_port : int }
 
