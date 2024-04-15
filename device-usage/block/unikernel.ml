@@ -101,8 +101,8 @@ module Main (B : Mirage_block.S) = struct
     check_sector_read_failure b info.size_sectors 1 >>= fun () ->
     check_sector_read_failure b (Int64.sub info.size_sectors 11L) 12
     >|= fun () ->
-    Log.info (fun f -> f "Test sequence finished\n");
-    Log.info (fun f -> f "Total tests started: %d\n" !tests_started);
-    Log.info (fun f -> f "Total tests passed:  %d\n" !tests_passed);
-    Log.info (fun f -> f "Total tests failed:  %d\n%!" !tests_failed)
+    Log.info (fun f -> f "Test sequence finished");
+    Log.info (fun f -> f "Total tests started: %d" !tests_started);
+    Log.info (fun f -> f "Total tests passed:  %d" !tests_passed);
+    Log.info (fun f -> f "Total tests failed:  %d" !tests_failed)
 end
