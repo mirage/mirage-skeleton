@@ -7,7 +7,7 @@ let http_port =
 
 let https_port =
   let doc = Arg.info ~doc:"Listening HTTPS port." [ "https" ] in
-  Arg.(value & opt int 433 doc)
+  Arg.(value & opt int 443 doc)
 
 type t = { http_port : int; https_port : int }
 
