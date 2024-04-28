@@ -76,5 +76,7 @@ struct
                 A.input a ethif_payload
               else Lwt.return_unit)
     in
-    listener
+    listener >|= function
+    | Ok () -> Logs.info (fun m -> m "done!")
+    | Error e -> Logs.err (fun m -> m "network listen failed! %a" N.pp_error e)
 end
