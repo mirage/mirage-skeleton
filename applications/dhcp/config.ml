@@ -9,8 +9,10 @@ let packages =
     package ~min:"3.0.0" "ethernet";
   ]
 
-let main = main "Unikernel.Main" ~packages (network @-> mclock @-> time @-> job)
+let main =
+  let extra_deps = [ dep default_time ] in
+  main ~extra_deps "Unikernel.Main" ~packages (network @-> mclock @-> job)
 
 let () =
   register "dhcp"
-    [ main $ default_network $ default_monotonic_clock $ default_time ]
+    [ main $ default_network $ default_monotonic_clock ]

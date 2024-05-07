@@ -2,6 +2,7 @@
 open Mirage
 
 let main =
-  main ~packages:[ package "duration" ] "Unikernel.Heads1" (time @-> job)
+  let extra_deps = [ dep default_time ] in
+  main ~extra_deps ~packages:[ package "duration" ] "Unikernel" job
 
-let () = register "heads1" [ main $ default_time ]
+let () = register "heads1" [ main ]
