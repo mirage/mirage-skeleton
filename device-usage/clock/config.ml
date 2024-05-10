@@ -1,6 +1,9 @@
+(* mirage >= 4.4.0 & < 4.6.0 *)
 open Mirage
 
-let main = main "Unikernel.Main" (time @-> pclock @-> mclock @-> job)
+let main =
+  let packages = [ package "duration" ] in
+  main ~packages "Unikernel.Main" (time @-> pclock @-> mclock @-> job)
 
 let () =
   register "speaking_clock"

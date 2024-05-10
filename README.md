@@ -24,12 +24,12 @@ necessary:
     $ eval `opam config env`
 ```
 
-- Please ensure that your Mirage command-line version is at least 4.4.0 before
+- Please ensure that your Mirage command-line version is at least 4.5.0 before
 proceeding:
 
 ```
     $ mirage --version
-    4.4.0
+    4.5.0
 ```
 
 ## Trivial example
@@ -104,10 +104,6 @@ directly.
 The boot target is selected via the `-t` flag. The default target is `unix`.
 Depending on what devices are present in `config.ml`, there may be additional
 configuration options for the unikernel.  To list the options,
-
-**Note:** the option `hvt` needs `mirage ≥ 3.2.0` - which you can get via
-[opam 2](https://opam.ocaml.org/doc/Install.html)
-
 
 ```
     $ mirage help configure

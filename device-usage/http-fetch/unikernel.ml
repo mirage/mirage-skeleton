@@ -1,24 +1,19 @@
 open Lwt.Infix
-open Printf
 open Cmdliner
 
 let uri =
   let doc = Arg.info ~doc:"URL to fetch" [ "uri" ] in
   Arg.(value & opt string "https://mirage.io" doc)
 
-let red fmt = sprintf ("\027[31m" ^^ fmt ^^ "\027[m")
-let green fmt = sprintf ("\027[32m" ^^ fmt ^^ "\027[m")
-let yellow fmt = sprintf ("\027[33m" ^^ fmt ^^ "\027[m")
-let blue fmt = sprintf ("\027[36m" ^^ fmt ^^ "\027[m")
-
 module Client (Client : Cohttp_lwt.S.Client) = struct
   let http_fetch ctx uri =
     Fmt.pr "Fetching %a with Cohttp\n" Uri.pp uri;
     Client.get ~ctx uri >>= fun (response, body) ->
     Cohttp_lwt.Body.to_string body >|= fun body ->
-    Fmt.pr "%a\n" Sexplib.Sexp.pp_hum (Cohttp.Response.sexp_of_t response);
-    Fmt.pr "Received body length: %d\n" (String.length body);
-    Fmt.pr "Cohttp fetch done\n------------\n"
+    Logs.app (fun m ->
+        m "%a" Sexplib.Sexp.pp_hum (Cohttp.Response.sexp_of_t response));
+    Logs.app (fun m -> m "Received body length: %d\n" (String.length body));
+    Logs.app (fun m -> m "Cohttp fetch done\n------------\n")
 
   let start ctx uri =
     let uri = Uri.of_string uri in
