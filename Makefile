@@ -21,6 +21,7 @@ BASE_TESTS = \
   device-usage/disk-lottery \
   applications/docteur \
   applications/dhcp \
+  applications/dream \
   applications/http \
   applications/git \
   applications/dns \
