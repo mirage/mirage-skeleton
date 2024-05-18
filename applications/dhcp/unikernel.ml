@@ -2,11 +2,10 @@ open Lwt.Infix
 
 module Main
     (N : Mirage_net.S)
-    (MClock : Mirage_clock.MCLOCK)
-    (Time : Mirage_time.S) =
+    (MClock : Mirage_clock.MCLOCK) =
 struct
   module E = Ethernet.Make (N)
-  module A = Arp.Make (E) (Time)
+  module A = Arp.Make (E)
   module DC = Dhcp_config
 
   let of_interest dest net =

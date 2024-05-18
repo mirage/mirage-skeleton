@@ -2,9 +2,10 @@
 open Mirage
 
 let main =
-  main
+  let extra_deps = [ dep default_time ] in
+  main ~extra_deps
     ~packages:[ package "duration"; package ~max:"0.2.0" "randomconv" ]
     "Unikernel.Timeout2"
-    (time @-> random @-> job)
+    (random @-> job)
 
-let () = register "timeout2" [ main $ default_time $ default_random ]
+let () = register "timeout2" [ main $ default_random ]

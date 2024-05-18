@@ -3,6 +3,7 @@ open Mirage
 
 let main =
   let packages = [ package "duration"; package ~max:"0.2.0" "randomconv" ] in
-  main ~packages "Unikernel.Echo_server" (time @-> random @-> job)
+  let extra_deps = [ dep default_time ] in
+  main ~extra_deps ~packages "Unikernel.Echo_server" (random @-> job)
 
-let () = register "echo_server" [ main $ default_time $ default_random ]
+let () = register "echo_server" [ main $ default_random ]

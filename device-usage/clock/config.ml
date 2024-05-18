@@ -2,9 +2,10 @@
 open Mirage
 
 let main =
+  let extra_deps = [ dep default_time ] in
   let packages = [ package "duration" ] in
-  main ~packages "Unikernel.Main" (time @-> pclock @-> mclock @-> job)
+  main ~extra_deps ~packages "Unikernel.Main" (pclock @-> mclock @-> job)
 
 let () =
   register "speaking_clock"
-    [ main $ default_time $ default_posix_clock $ default_monotonic_clock ]
+    [ main $ default_posix_clock $ default_monotonic_clock ]
