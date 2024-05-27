@@ -19,7 +19,6 @@ BASE_TESTS = \
   device-usage/ping6 \
   device-usage/prng \
   device-usage/disk-lottery \
-  applications/docteur \
   applications/dhcp \
   applications/http \
   applications/git \
@@ -30,6 +29,8 @@ BASE_TESTS = \
 # device-usage/pgx
 # disabled as it is incompatible with dune 3.7
 # device-usage/littlefs
+# disabled since docteur uses the old git & mirage-flow
+# applications/docteur
 
 ifeq ($(MODE),muen)
 	TESTS = $(BASE_TESTS)
