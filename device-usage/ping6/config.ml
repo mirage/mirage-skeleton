@@ -8,6 +8,6 @@ let main =
     (network @-> ethernet @-> ipv6 @-> job)
 
 let net = default_network
-let ethif = etif net
+let ethif = ethif net
 let ipv6 = create_ipv6 net ethif
 let () = register "ping" [ main $ default_network $ ethif $ ipv6 ]
