@@ -38,7 +38,8 @@ module Make
     (Key : Mirage_kv.RO)
     (Tcp : Tcpip.Tcp.S with type ipaddr = Ipaddr.t)
     (Connect : Connect.S)
-    (HTTP_server : Paf_mirage.S) =
+    (HTTP_server : Paf_mirage.S)
+    (_ : Dns_client_mirage.S) =
 struct
   let tls key_ro certificate_ro =
     let open Lwt_result.Infix in
@@ -144,7 +145,7 @@ struct
     in
     Paf.serve http_1_1_service http_server |> fun (`Initialized th) -> th
 
-  let start _random certificate_ro key_ro tcpv4v6 ctx http_server
+  let start _random certificate_ro key_ro tcpv4v6 ctx http_server _dns
       { use_tls; alpn; tls_port } =
     let open Lwt.Infix in
     let authenticator = Connect.authenticator in

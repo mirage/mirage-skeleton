@@ -52,12 +52,12 @@ let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.setup" ]
 let minigit =
   main "Unikernel.Make" ~runtime_args
     ~packages:[ package "ptime" ]
-    (git @-> git_client @-> job)
+    (git @-> git_client @-> dns_client @-> job)
 
-let mimic stackv4v6 dns_client happy_eyeballs =
+let mimic stackv4v6 happy_eyeballs =
   let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6 in
   let mhappy_eyeballs =
-    mimic_happy_eyeballs stackv4v6 dns_client happy_eyeballs
+    mimic_happy_eyeballs stackv4v6 happy_eyeballs
   in
   let mtcp = git_tcp tcpv4v6 mhappy_eyeballs in
   let mssh =
@@ -77,5 +77,5 @@ let random = default_random
 let happy_eyeballs = generic_happy_eyeballs stackv4v6
 let dns_client = generic_dns_client ~nameservers stackv4v6 happy_eyeballs
 let git = git_impl None $ sha1
-let mimic = mimic stackv4v6 dns_client happy_eyeballs
-let () = register "minigit" [ minigit $ git $ mimic ]
+let mimic = mimic stackv4v6 happy_eyeballs
+let () = register "minigit" [ minigit $ git $ mimic $ dns_client ]
