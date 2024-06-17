@@ -13,12 +13,12 @@ let minipaf =
     ~packages:
       [
         package "digestif";
-        package ~min:"0.0.8" "mimic-happy-eyeballs";
+        package ~min:"0.0.9" "mimic-happy-eyeballs";
         package "hxd" ~sublibs:[ "core"; "string" ];
         package "rresult";
         package "base64" ~sublibs:[ "rfc2045" ];
       ]
-    (random @-> kv_ro @-> kv_ro @-> tcpv4v6 @-> conn @-> http_server @-> dns_client @-> job)
+    (random @-> kv_ro @-> kv_ro @-> tcpv4v6 @-> conn @-> http_server @-> job)
 
 let conn =
   let connect _ modname = function
@@ -36,7 +36,7 @@ let certificates = crunch "certificates"
 let keys = crunch "keys"
 
 let conn =
-  let happy_eyeballs = mimic_happy_eyeballs stackv4v6 he in
+  let happy_eyeballs = mimic_happy_eyeballs stackv4v6 he dns in
   conn $ default_posix_clock $ tcpv4v6 $ happy_eyeballs
 
 let http_server = paf_server ~port tcpv4v6
@@ -50,6 +50,5 @@ let () =
       $ keys
       $ tcpv4v6
       $ conn
-      $ http_server
-      $ dns;
+      $ http_server;
     ]

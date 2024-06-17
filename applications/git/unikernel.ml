@@ -43,7 +43,7 @@ let setup =
     $ branch
     $ remote)
 
-module Make (Store : Git.S) (_ : sig end) (_ : Dns_client_mirage.S) = struct
+module Make (Store : Git.S) (_ : sig end) = struct
   module Sync = Git.Mem.Sync (Store)
 
   let author () =
@@ -98,7 +98,7 @@ module Make (Store : Git.S) (_ : sig end) (_ : Dns_client_mirage.S) = struct
       `Report_status;
     ]
 
-  let start git ctx _dns { branch; remote } =
+  let start git ctx { branch; remote } =
     let edn =
       match Smart_git.Endpoint.of_string remote with
       | Ok edn -> edn
