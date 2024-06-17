@@ -57,7 +57,7 @@ let minigit =
 let mimic stackv4v6 happy_eyeballs dns_client =
   let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6 in
   let mhappy_eyeballs =
-    mimic_happy_eyeballs stackv4v6 dns_client happy_eyeballs
+    mimic_happy_eyeballs stackv4v6 happy_eyeballs dns_client
   in
   let mtcp = git_tcp tcpv4v6 mhappy_eyeballs in
   let mssh =
