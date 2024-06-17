@@ -36,7 +36,7 @@ let certificates = crunch "certificates"
 let keys = crunch "keys"
 
 let conn =
-  let happy_eyeballs = mimic_happy_eyeballs stackv4v6 he dns in
+  let happy_eyeballs = mimic_happy_eyeballs stackv4v6 dns he in
   conn $ default_posix_clock $ tcpv4v6 $ happy_eyeballs
 
 let http_server = paf_server ~port tcpv4v6
