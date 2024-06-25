@@ -54,10 +54,10 @@ let minigit =
     ~packages:[ package "ptime" ]
     (git @-> git_client @-> job)
 
-let mimic stackv4v6 dns_client happy_eyeballs =
+let mimic stackv4v6 happy_eyeballs dns_client =
   let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6 in
   let mhappy_eyeballs =
-    mimic_happy_eyeballs stackv4v6 dns_client happy_eyeballs
+    mimic_happy_eyeballs stackv4v6 happy_eyeballs dns_client
   in
   let mtcp = git_tcp tcpv4v6 mhappy_eyeballs in
   let mssh =
@@ -74,8 +74,8 @@ let mclock = default_monotonic_clock
 let pclock = default_posix_clock
 let time = default_time
 let random = default_random
-let dns_client = generic_dns_client ~nameservers stackv4v6
-let happy_eyeballs = generic_happy_eyeballs stackv4v6 dns_client
+let happy_eyeballs = generic_happy_eyeballs stackv4v6
+let dns_client = generic_dns_client ~nameservers stackv4v6 happy_eyeballs
 let git = git_impl None $ sha1
-let mimic = mimic stackv4v6 dns_client happy_eyeballs
+let mimic = mimic stackv4v6 happy_eyeballs dns_client
 let () = register "minigit" [ minigit $ git $ mimic ]
