@@ -1,4 +1,4 @@
-(* mirage >= 4.5.0 & < 4.6.0 *)
+(* mirage >= 4.6.0 & < 4.7.0 *)
 open Mirage
 
 let port = Runtime_arg.create ~pos:__POS__ "Unikernel.port"
