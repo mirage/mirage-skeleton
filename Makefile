@@ -13,6 +13,7 @@ BASE_TESTS = \
   tutorial/app_info \
   device-usage/clock \
   device-usage/conduit_server \
+  applications/docteur \
   device-usage/http-fetch \
   device-usage/kv_ro \
   device-usage/network \
@@ -29,8 +30,6 @@ BASE_TESTS = \
 # device-usage/pgx
 # disabled as it is incompatible with dune 3.7
 # device-usage/littlefs
-# disabled since docteur uses the old git & mirage-flow
-# applications/docteur
 
 ifeq ($(MODE),muen)
 	TESTS = $(BASE_TESTS)
