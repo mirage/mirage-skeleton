@@ -19,7 +19,8 @@ let reset =
   in
   Arg.(value & flag doc)
 
-module Main (Disk : Mirage_block.S) (Random : Mirage_crypto_rng_mirage.S) = struct
+module Main (Disk : Mirage_block.S) (Random : Mirage_crypto_rng_mirage.S) =
+struct
   let write_state disk info sector state =
     let buf = Cstruct.create info.Mirage_block.sector_size in
     Lotto.marshal buf state;

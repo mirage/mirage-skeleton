@@ -10,4 +10,7 @@ let happy_eyeballs = generic_happy_eyeballs stackv4v6
 
 let () =
   register "resolve"
-    [ unikernel $ generic_dns_client ~timeout ~nameservers stackv4v6 happy_eyeballs ]
+    [
+      unikernel
+      $ generic_dns_client ~timeout ~nameservers stackv4v6 happy_eyeballs;
+    ]

@@ -84,7 +84,9 @@ struct
 
   let tls_init kv =
     X509.certificate kv `Default >>= fun cert ->
-    let conf = Result.get_ok (Tls.Config.server ~certificates:(`Single cert) ()) in
+    let conf =
+      Result.get_ok (Tls.Config.server ~certificates:(`Single cert) ())
+    in
     Lwt.return conf
 
   let start _clock data keys http { http_port; https_port } =

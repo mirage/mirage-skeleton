@@ -149,24 +149,25 @@ struct
     tls key_ro certificate_ro >>= fun tls ->
     if use_tls then
       let tls =
-        let certificates = match tls with
+        let certificates =
+          match tls with
           | Ok certificates -> certificates
-          | Error `Msg m ->
-            Fmt.failwith
-              "A TLS server requires, at least, one certificate and one \
-               private key. Received error %s." m
+          | Error (`Msg m) ->
+              Fmt.failwith
+                "A TLS server requires, at least, one certificate and one \
+                 private key. Received error %s."
+                m
         in
-        let alpn_protocols = match alpn with
+        let alpn_protocols =
+          match alpn with
           | None -> [ "h2"; "http/1.1" ]
           | Some (("http/1.1" | "h2") as proto) -> [ proto ]
           | Some proto -> Fmt.failwith "Invalid ALPN protocol %S" proto
         in
         match Tls.Config.server ~certificates ~alpn_protocols () with
-        | Error `Msg m ->
-          Fmt.failwith "TLS configuration error: %s." m
+        | Error (`Msg m) -> Fmt.failwith "TLS configuration error: %s." m
         | Ok tls -> tls
       in
       run_with_tls ~ctx ~authenticator ~tls http_server tls_port tcpv4v6
-    else
-      run ~ctx ~authenticator http_server
+    else run ~ctx ~authenticator http_server
 end
