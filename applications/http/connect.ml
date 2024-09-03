@@ -148,10 +148,10 @@ let tls_config ?tls_config authenticator =
     | Some cfg -> Ok (`Custom cfg)
     | None ->
         let alpn_protocols = [ "h2"; "http/1.1" ] in
-        Result.map
-          (fun authenticator ->
-            `Default (Tls.Config.client ~alpn_protocols ~authenticator ()))
-          authenticator)
+        let ( let* ) = Result.bind in
+        let* authenticator = authenticator in
+        let* cfg = Tls.Config.client ~alpn_protocols ~authenticator () in
+        Ok (`Default cfg))
 
 let create_connection ?tls_config:cfg ~ctx ~authenticator uri =
   let tls_config = tls_config ?tls_config:cfg authenticator in

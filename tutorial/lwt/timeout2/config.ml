@@ -3,7 +3,7 @@ open Mirage
 
 let main =
   main
-    ~packages:[ package "duration"; package ~max:"0.2.0" "randomconv" ]
+    ~packages:[ package "duration"; package "randomconv" ]
     "Unikernel.Timeout2"
     (time @-> random @-> job)
 

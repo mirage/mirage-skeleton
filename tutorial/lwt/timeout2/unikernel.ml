@@ -1,6 +1,6 @@
 open Lwt.Infix
 
-module Timeout2 (Time : Mirage_time.S) (R : Mirage_random.S) = struct
+module Timeout2 (Time : Mirage_time.S) (R : Mirage_crypto_rng_mirage.S) = struct
   let timeout delay t =
     let tmout = Time.sleep_ns delay in
     Lwt.pick [ (tmout >|= fun () -> None); (t >|= fun v -> Some v) ]

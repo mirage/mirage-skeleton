@@ -17,7 +17,6 @@ BASE_TESTS = \
   device-usage/kv_ro \
   device-usage/network \
   device-usage/ping6 \
-  device-usage/prng \
   device-usage/disk-lottery \
   applications/dhcp \
   applications/http \

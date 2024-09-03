@@ -4,6 +4,8 @@ open Mirage
 let packages =
   [
     package "fmt";
+    package "ohex";
+    package "digestif";
     package "mirage-crypto-rng";
     package "mirage-crypto-pk";
     package "mirage-crypto";
