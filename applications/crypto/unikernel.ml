@@ -5,6 +5,12 @@ module Main (R : Mirage_crypto_rng_mirage.S) = struct
           Fmt.(list ~sep:(any ", ") Mirage_crypto_rng.Entropy.pp_source)
           (Mirage_crypto_rng.Entropy.sources ()));
     Logs.info (fun m ->
+        m "Random numbers: 0x%02X 0x%04X 0x%08lX 0x%016LX"
+          (Randomconv.int8 R.generate)
+          (Randomconv.int16 R.generate)
+          (Randomconv.int32 R.generate)
+          (Randomconv.int64 R.generate));
+    Logs.info (fun m ->
         m "64 byte random:@ %a" (Ohex.pp_hexdump ()) (R.generate 64));
     Logs.info (fun m ->
         m "MD5 of the empty string %a" (Ohex.pp_hexdump ())
