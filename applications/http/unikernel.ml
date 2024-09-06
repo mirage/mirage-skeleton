@@ -33,7 +33,7 @@ let ( <.> ) f g x = f (g x)
 let always x _ = x
 
 module Make
-    (Random : Mirage_random.S)
+    (Random : Mirage_crypto_rng_mirage.S)
     (Certificate : Mirage_kv.RO)
     (Key : Mirage_kv.RO)
     (Tcp : Tcpip.Tcp.S with type ipaddr = Ipaddr.t)
@@ -62,7 +62,6 @@ struct
           Lwt.Infix.(
             Certificate.get certificate_ro name
             >|= R.reword_error (R.msgf "%a" Certificate.pp_error))
-          >|= Cstruct.of_string
           >>= (Lwt.return <.> X509.Certificate.decode_pem_multiple)
           >>= fun certificates ->
           Lwt.return acc >>= fun acc ->
@@ -76,7 +75,6 @@ struct
           let open Lwt_result.Infix in
           Lwt.Infix.(
             Key.get key_ro name >|= R.reword_error (R.msgf "%a" Key.pp_error))
-          >|= Cstruct.of_string
           >>= (Lwt.return <.> X509.Private_key.decode_pem)
           >>= fun key ->
           Lwt.return acc >>= fun acc -> Lwt.return_ok ((name, key) :: acc)
@@ -149,23 +147,27 @@ struct
     let open Lwt.Infix in
     let authenticator = Connect.authenticator in
     tls key_ro certificate_ro >>= fun tls ->
-    match (use_tls, tls, alpn) with
-    | true, Ok certificates, None ->
-        run_with_tls ~ctx ~authenticator
-          ~tls:
-            (Tls.Config.server ~certificates
-               ~alpn_protocols:[ "h2"; "http/1.1" ] ())
-          http_server tls_port tcpv4v6
-    | true, Ok certificates, Some (("http/1.1" | "h2") as alpn_protocol) ->
-        run_with_tls ~ctx ~authenticator
-          ~tls:
-            (Tls.Config.server ~certificates ~alpn_protocols:[ alpn_protocol ]
-               ())
-          http_server tls_port tcpv4v6
-    | false, _, _ -> run ~ctx ~authenticator http_server
-    | _, _, Some protocol -> Fmt.failwith "Invalid protocol %S" protocol
-    | true, Error _, _ ->
-        Fmt.failwith
-          "A TLS server requires, at least, one certificate and one private \
-           key."
+    if use_tls then
+      let tls =
+        let certificates =
+          match tls with
+          | Ok certificates -> certificates
+          | Error (`Msg m) ->
+              Fmt.failwith
+                "A TLS server requires, at least, one certificate and one \
+                 private key. Received error %s."
+                m
+        in
+        let alpn_protocols =
+          match alpn with
+          | None -> [ "h2"; "http/1.1" ]
+          | Some (("http/1.1" | "h2") as proto) -> [ proto ]
+          | Some proto -> Fmt.failwith "Invalid ALPN protocol %S" proto
+        in
+        match Tls.Config.server ~certificates ~alpn_protocols () with
+        | Error (`Msg m) -> Fmt.failwith "TLS configuration error: %s." m
+        | Ok tls -> tls
+      in
+      run_with_tls ~ctx ~authenticator ~tls http_server tls_port tcpv4v6
+    else run ~ctx ~authenticator http_server
 end

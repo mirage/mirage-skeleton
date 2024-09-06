@@ -11,7 +11,7 @@ module Client (Client : Cohttp_lwt.S.Client) = struct
     Client.get ~ctx uri >>= fun (response, body) ->
     Cohttp_lwt.Body.to_string body >|= fun body ->
     Logs.app (fun m ->
-        m "%a" Sexplib.Sexp.pp_hum (Cohttp.Response.sexp_of_t response));
+        m "%a" Sexplib0.Sexp.pp_hum (Cohttp.Response.sexp_of_t response));
     Logs.app (fun m -> m "Received body length: %d\n" (String.length body));
     Logs.app (fun m -> m "Cohttp fetch done\n------------\n")
 

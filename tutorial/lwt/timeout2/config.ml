@@ -1,9 +1,9 @@
-(* mirage >= 4.4.0 & < 4.7.0 *)
+(* mirage >= 4.7.0 & < 4.8.0 *)
 open Mirage
 
 let main =
   main
-    ~packages:[ package "duration"; package ~max:"0.2.0" "randomconv" ]
+    ~packages:[ package "duration"; package ~min:"0.2.0" "randomconv" ]
     "Unikernel.Timeout2"
     (time @-> random @-> job)
 
