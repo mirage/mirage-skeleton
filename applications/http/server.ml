@@ -557,13 +557,13 @@ let http_2_0_request_handler ~ctx ~authenticator ~to_close =
                 in
                 let response = H2.Response.create ~headers `OK in
                 let body = H2.Reqd.respond_with_streaming reqd response in
-                let flush body next = H2.Body.Writer.flush body (fun _reason -> next ()) in
+                let flush body next =
+                  H2.Body.Writer.flush body (fun _reason -> next ())
+                in
                 transmit_random
                   ~write_string:(fun body str ->
                     H2.Body.Writer.write_string body str)
-                  ~flush
-                  ~close_writer:H2.Body.Writer.close
-                  ?g length body
+                  ~flush ~close_writer:H2.Body.Writer.close ?g length body
             | _ ->
                 let contents = "Invalid length." in
                 let headers =
