@@ -16,6 +16,7 @@ let minipaf =
         package ~min:"0.0.9" "mimic-happy-eyeballs";
         package "hxd" ~sublibs:[ "core"; "string" ];
         package "rresult";
+        package "h2" ~min:"0.13.0";
         package "base64" ~sublibs:[ "rfc2045" ];
       ]
     (random @-> kv_ro @-> kv_ro @-> tcpv4v6 @-> conn @-> http_server @-> job)
