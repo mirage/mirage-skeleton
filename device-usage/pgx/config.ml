@@ -1,4 +1,4 @@
-(* mirage >= 4.5.0 & < 4.8.0 *)
+(* mirage >= 4.5.0 & < 4.9.0 *)
 open Mirage
 
 let setup = runtime_arg ~pos:__POS__ "Unikernel.setup"
