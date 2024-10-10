@@ -1,4 +1,4 @@
-(* mirage >= 4.7.0 & < 4.8.0 *)
+(* mirage >= 4.7.0 & < 4.9.0 *)
 open Mirage
 
 let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.uri" ]

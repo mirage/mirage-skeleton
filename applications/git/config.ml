@@ -1,4 +1,4 @@
-(* mirage >= 4.6.0 & < 4.8.0 *)
+(* mirage >= 4.8.0 & < 4.9.0 *)
 open Mirage
 
 type hash = Hash
@@ -37,16 +37,6 @@ let git_impl path =
 
 (* User space *)
 
-let ssh_key = Runtime_arg.create ~pos:__POS__ "Unikernel.ssh_key"
-let ssh_password = Runtime_arg.create ~pos:__POS__ "Unikernel.ssh_password"
-let nameservers = Runtime_arg.create ~pos:__POS__ "Unikernel.nameservers"
-
-let ssh_authenticator =
-  Runtime_arg.create ~pos:__POS__ "Unikernel.ssh_authenticator"
-
-let https_authenticator =
-  Runtime_arg.create ~pos:__POS__ "Unikernel.https_authenticator"
-
 let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.setup" ]
 
 let minigit =
@@ -60,13 +50,8 @@ let mimic stackv4v6 happy_eyeballs dns_client =
     mimic_happy_eyeballs stackv4v6 happy_eyeballs dns_client
   in
   let mtcp = git_tcp tcpv4v6 mhappy_eyeballs in
-  let mssh =
-    git_ssh ~authenticator:ssh_authenticator ~key:ssh_key ~password:ssh_password
-      tcpv4v6 mhappy_eyeballs
-  in
-  let mhttp =
-    git_http ~authenticator:https_authenticator tcpv4v6 mhappy_eyeballs
-  in
+  let mssh = git_ssh tcpv4v6 mhappy_eyeballs in
+  let mhttp = git_http tcpv4v6 mhappy_eyeballs in
   merge_git_clients mhttp (merge_git_clients mtcp mssh)
 
 let stackv4v6 = generic_stackv4v6 default_network
@@ -75,7 +60,7 @@ let pclock = default_posix_clock
 let time = default_time
 let random = default_random
 let happy_eyeballs = generic_happy_eyeballs stackv4v6
-let dns_client = generic_dns_client ~nameservers stackv4v6 happy_eyeballs
+let dns_client = generic_dns_client stackv4v6 happy_eyeballs
 let git = git_impl None $ sha1
 let mimic = mimic stackv4v6 happy_eyeballs dns_client
 let () = register "minigit" [ minigit $ git $ mimic ]
