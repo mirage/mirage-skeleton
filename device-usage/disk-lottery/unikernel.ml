@@ -82,6 +82,6 @@ struct
       Logs.app (fun m -> m "All %Ld game slots reset." info.size_sectors)
     else if reset () then
       reset_game disk info (sector ()) >|= fun () ->
-      Logs.app (fun m -> m "Reset game slot %Ld." ((sector ())))
+      Logs.app (fun m -> m "Reset game slot %Ld." (sector ()))
     else play disk info (sector ())
 end

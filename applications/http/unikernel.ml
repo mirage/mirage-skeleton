@@ -18,9 +18,13 @@ let tls_port =
 
 let alpn =
   let alpns = [ "h2"; "http/1.1" ] in
-  let doc = Printf.sprintf "Protocols handled by the HTTP server. Must be %s." (Arg.doc_alts alpns) in
+  let doc =
+    Printf.sprintf "Protocols handled by the HTTP server. Must be %s."
+      (Arg.doc_alts alpns)
+  in
   let doc = Arg.info ~doc [ "alpn" ] in
-  Mirage_runtime.register_arg Arg.(value & opt_all (enum (List.map (fun v -> (v, v)) alpns)) alpns doc)
+  Mirage_runtime.register_arg
+    Arg.(value & opt_all (enum (List.map (fun v -> (v, v)) alpns)) alpns doc)
 
 let ( <.> ) f g x = f (g x)
 let always x _ = x
