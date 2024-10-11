@@ -15,8 +15,7 @@ let certs = generic_kv_ro ~key:certs_key "tls"
 
 let main =
   let packages = [ package "uri"; package "magic-mime" ] in
-  main ~packages "Dispatch.HTTPS"
-    (pclock @-> kv_ro @-> kv_ro @-> http @-> job)
+  main ~packages "Dispatch.HTTPS" (pclock @-> kv_ro @-> kv_ro @-> http @-> job)
 
 let () =
   register "https" [ main $ default_posix_clock $ data $ certs $ https_srv ]

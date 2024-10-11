@@ -86,7 +86,8 @@ struct
     let tls = `TLS (cfg, `TCP (https_port ())) in
     let tcp = `TCP (http_port ()) in
     let https =
-      Https_log.info (fun f -> f "listening for HTTPS on %d/TCP" (https_port ()));
+      Https_log.info (fun f ->
+          f "listening for HTTPS on %d/TCP" (https_port ()));
       http tls @@ D.serve (D.dispatcher data)
     in
     let http =

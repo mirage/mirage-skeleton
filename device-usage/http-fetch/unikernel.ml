@@ -3,7 +3,8 @@ open Cmdliner
 
 let uri =
   let doc = Arg.info ~doc:"URL to fetch" [ "uri" ] in
-  Mirage_runtime.register_arg Arg.(value & opt string "https://mirageos.org" doc)
+  Mirage_runtime.register_arg
+    Arg.(value & opt string "https://mirageos.org" doc)
 
 module Client (Client : Cohttp_lwt.S.Client) = struct
   let http_fetch ctx uri =

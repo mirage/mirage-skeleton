@@ -5,8 +5,7 @@ let branch =
   let doc = Arg.info ~doc:"The Git remote branch." [ "branch" ] in
   Mirage_runtime.register_arg Arg.(value & opt string "refs/heads/master" doc)
 
-let endp_c =
-  Arg.conv Smart_git.Endpoint.(of_string, pp)
+let endp_c = Arg.conv Smart_git.Endpoint.(of_string, pp)
 
 let remote =
   let doc = Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
@@ -68,9 +67,7 @@ module Make (Store : Git.S) (_ : sig end) = struct
     ]
 
   let start git ctx =
-    let edn = remote ()
-    and branch = branch ()
-    in
+    let edn = remote () and branch = branch () in
     Sync.fetch ~capabilities ~ctx edn git ~deepen:(`Depth 1) `All
     >>= failwith Sync.pp_error
     >>= empty_commit branch git
