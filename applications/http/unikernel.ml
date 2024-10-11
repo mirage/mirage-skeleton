@@ -17,8 +17,10 @@ let tls_port =
   Mirage_runtime.register_arg Arg.(value & opt int 4343 doc)
 
 let alpn =
-  let doc = Arg.info ~doc:"Protocols handled by the HTTP server." [ "alpn" ] in
-  Mirage_runtime.register_arg Arg.(value & opt (some string) None doc)
+  let alpns = [ "h2"; "http/1.1" ] in
+  let doc = Printf.sprintf "Protocols handled by the HTTP server. Must be %s." (Arg.doc_alts alpns) in
+  let doc = Arg.info ~doc [ "alpn" ] in
+  Mirage_runtime.register_arg Arg.(value & opt_all (enum (List.map (fun v -> (v, v)) alpns)) alpns doc)
 
 let ( <.> ) f g x = f (g x)
 let always x _ = x
@@ -148,12 +150,7 @@ struct
                  private key. Received error %s."
                 m
         in
-        let alpn_protocols =
-          match alpn () with
-          | None -> [ "h2"; "http/1.1" ]
-          | Some (("http/1.1" | "h2") as proto) -> [ proto ]
-          | Some proto -> Fmt.failwith "Invalid ALPN protocol %S" proto
-        in
+        let alpn_protocols = alpn () in
         match Tls.Config.server ~certificates ~alpn_protocols () with
         | Error (`Msg m) -> Fmt.failwith "TLS configuration error: %s." m
         | Ok tls -> tls
