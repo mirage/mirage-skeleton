@@ -67,7 +67,7 @@ module Make (Store : Git.S) (_ : sig end) = struct
     ]
 
   let start git ctx =
-    let edn = remote () and branch = branch () in
+    let edn = remote () and branch = Git.Reference.v (branch ()) in
     Sync.fetch ~capabilities ~ctx edn git ~deepen:(`Depth 1) `All
     >>= failwith Sync.pp_error
     >>= empty_commit branch git
