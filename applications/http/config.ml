@@ -37,6 +37,7 @@ let conn =
   let happy_eyeballs = mimic_happy_eyeballs stackv4v6 he dns in
   conn $ default_posix_clock $ tcpv4v6 $ happy_eyeballs
 
+let port = Runtime_arg.create ~pos:__POS__ "Unikernel.port"
 let http_server = paf_server ~port tcpv4v6
 
 let () =

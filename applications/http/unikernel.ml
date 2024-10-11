@@ -2,6 +2,10 @@ open Rresult
 open Lwt.Infix
 open Cmdliner
 
+let port =
+  let doc = Arg.info ~doc:"Port of HTTP service." [ "p"; "port" ] in
+  Arg.(value & opt int 8080 doc)
+
 let use_tls =
   let doc =
     Arg.info ~doc:"Start an HTTP server with a TLS certificate." [ "tls" ]
