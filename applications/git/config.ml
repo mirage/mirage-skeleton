@@ -37,10 +37,8 @@ let git_impl path =
 
 (* User space *)
 
-let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.setup" ]
-
 let minigit =
-  main "Unikernel.Make" ~runtime_args
+  main "Unikernel.Make"
     ~packages:[ package "ptime" ]
     (git @-> git_client @-> job)
 

@@ -3,19 +3,11 @@ open Cmdliner
 
 let http_port =
   let doc = Arg.info ~doc:"Listening HTTP port." [ "http" ] in
-  Arg.(value & opt int 80 doc)
+  Mirage_runtime.register_arg Arg.(value & opt int 80 doc)
 
 let https_port =
   let doc = Arg.info ~doc:"Listening HTTPS port." [ "https" ] in
-  Arg.(value & opt int 443 doc)
-
-type t = { http_port : int; https_port : int }
-
-let setup =
-  Term.(
-    const (fun http_port https_port -> { http_port; https_port })
-    $ http_port
-    $ https_port)
+  Mirage_runtime.register_arg Arg.(value & opt int 443 doc)
 
 module type HTTP = Cohttp_mirage.Server.S
 (** Common signature for http and https. *)
@@ -89,17 +81,17 @@ struct
     in
     Lwt.return conf
 
-  let start _clock data keys http { http_port; https_port } =
+  let start _clock data keys http =
     tls_init keys >>= fun cfg ->
-    let tls = `TLS (cfg, `TCP https_port) in
-    let tcp = `TCP http_port in
+    let tls = `TLS (cfg, `TCP (https_port ())) in
+    let tcp = `TCP (http_port ()) in
     let https =
-      Https_log.info (fun f -> f "listening on %d/TCP" https_port);
+      Https_log.info (fun f -> f "listening for HTTPS on %d/TCP" (https_port ()));
       http tls @@ D.serve (D.dispatcher data)
     in
     let http =
-      Http_log.info (fun f -> f "listening on %d/TCP" http_port);
-      http tcp @@ D.serve (D.redirect https_port)
+      Http_log.info (fun f -> f "listening for HTTP on %d/TCP" (http_port ()));
+      http tcp @@ D.serve (D.redirect (https_port ()))
     in
     Lwt.join [ https; http ]
 end

@@ -1,8 +1,7 @@
 (* mirage >= 4.8.0 & < 4.9.0 *)
 open Mirage
 
-let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.domain_name" ]
-let unikernel = main ~runtime_args "Unikernel.Make" (dns_client @-> job)
+let unikernel = main "Unikernel.Make" (dns_client @-> job)
 let stackv4v6 = generic_stackv4v6 default_network
 let happy_eyeballs = generic_happy_eyeballs stackv4v6
 

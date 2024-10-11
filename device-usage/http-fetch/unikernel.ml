@@ -3,7 +3,7 @@ open Cmdliner
 
 let uri =
   let doc = Arg.info ~doc:"URL to fetch" [ "uri" ] in
-  Arg.(value & opt string "https://mirage.io" doc)
+  Mirage_runtime.register_arg Arg.(value & opt string "https://mirageos.org" doc)
 
 module Client (Client : Cohttp_lwt.S.Client) = struct
   let http_fetch ctx uri =
@@ -15,7 +15,7 @@ module Client (Client : Cohttp_lwt.S.Client) = struct
     Logs.app (fun m -> m "Received body length: %d\n" (String.length body));
     Logs.app (fun m -> m "Cohttp fetch done\n------------\n")
 
-  let start ctx uri =
-    let uri = Uri.of_string uri in
+  let start ctx =
+    let uri = Uri.of_string (uri ()) in
     http_fetch ctx uri
 end

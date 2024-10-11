@@ -12,11 +12,10 @@ let certs_key = Key.(value @@ kv_ro ~group:"certs" ())
 (* some default CAs and self-signed certificates are included in
    the tls/ directory, but you can replace them with your own. *)
 let certs = generic_kv_ro ~key:certs_key "tls"
-let runtime_args = [ runtime_arg ~pos:__POS__ "Dispatch.setup" ]
 
 let main =
   let packages = [ package "uri"; package "magic-mime" ] in
-  main ~packages "Dispatch.HTTPS" ~runtime_args
+  main ~packages "Dispatch.HTTPS"
     (pclock @-> kv_ro @-> kv_ro @-> http @-> job)
 
 let () =

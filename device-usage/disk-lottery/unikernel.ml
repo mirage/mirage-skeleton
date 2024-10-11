@@ -3,11 +3,11 @@ open Cmdliner
 
 let reset_all =
   let doc = Arg.info ~doc:"Reset all state on disk and quit" [ "reset-all" ] in
-  Arg.(value & flag doc)
+  Mirage_runtime.register_arg Arg.(value & flag doc)
 
 let sector =
   let doc = Arg.info ~doc:"Sector to read and write game state to" [ "slot" ] in
-  Arg.(value & opt int64 0L doc)
+  Mirage_runtime.register_arg Arg.(value & opt int64 0L doc)
 
 let reset =
   let doc =
@@ -17,7 +17,7 @@ let reset =
          0) and quit"
       [ "reset" ]
   in
-  Arg.(value & flag doc)
+  Mirage_runtime.register_arg Arg.(value & flag doc)
 
 module Main (Disk : Mirage_block.S) (Random : Mirage_crypto_rng_mirage.S) =
 struct
@@ -67,21 +67,21 @@ struct
     in
     loop 0L
 
-  let start disk _random sector reset_all reset =
+  let start disk _random =
     Disk.get_info disk >>= fun info ->
     if info.sector_size < Lotto.len then (
       Logs.err (fun m ->
           m "Sector size %d is too short for storing lottery data!"
             info.sector_size);
       exit 5);
-    if sector < 0L || sector >= info.size_sectors then (
-      Logs.err (fun m -> m "Invalid sector %Ld" sector);
+    if sector () < 0L || sector () >= info.size_sectors then (
+      Logs.err (fun m -> m "Invalid sector %Ld" sector ());
       exit 5);
-    if reset_all then
+    if reset_all () then
       reset_all_games disk info >|= fun () ->
       Logs.app (fun m -> m "All %Ld game slots reset." info.size_sectors)
-    else if reset then
-      reset_game disk info sector >|= fun () ->
-      Logs.app (fun m -> m "Reset game slot %Ld." sector)
-    else play disk info sector
+    else if reset () then
+      reset_game disk info (sector ()) >|= fun () ->
+      Logs.app (fun m -> m "Reset game slot %Ld." (sector ()))
+    else play disk info (sector ())
 end

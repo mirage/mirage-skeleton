@@ -1,15 +1,8 @@
 (* mirage >= 4.7.0 & < 4.9.0 *)
 open Mirage
 
-let runtime_args =
-  [
-    runtime_arg ~pos:__POS__ "Unikernel.sector";
-    runtime_arg ~pos:__POS__ "Unikernel.reset_all";
-    runtime_arg ~pos:__POS__ "Unikernel.reset";
-  ]
-
 let main =
-  main "Unikernel.Main" ~runtime_args
+  main "Unikernel.Main"
     (block @-> random @-> job)
     ~packages:[ package "checkseum"; package "cstruct"; package "fmt" ]
 
