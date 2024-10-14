@@ -3,19 +3,13 @@ open Lwt.Infix
 
 let branch =
   let doc = Arg.info ~doc:"The Git remote branch." [ "branch" ] in
-  Arg.(value & opt string "refs/heads/master" doc)
+  Mirage_runtime.register_arg Arg.(value & opt string "refs/heads/master" doc)
+
+let endp_c = Arg.conv Smart_git.Endpoint.(of_string, pp)
 
 let remote =
   let doc = Arg.info ~doc:"Remote Git repository." [ "r"; "remote" ] in
-  Arg.(required & opt (some string) None doc)
-
-type t = { branch : Git.Reference.t; remote : string }
-
-let setup =
-  Term.(
-    const (fun b remote -> { branch = Git.Reference.v b; remote })
-    $ branch
-    $ remote)
+  Mirage_runtime.register_arg Arg.(required & opt (some endp_c) None doc)
 
 module Make (Store : Git.S) (_ : sig end) = struct
   module Sync = Git.Mem.Sync (Store)
@@ -72,12 +66,8 @@ module Make (Store : Git.S) (_ : sig end) = struct
       `Report_status;
     ]
 
-  let start git ctx { branch; remote } =
-    let edn =
-      match Smart_git.Endpoint.of_string remote with
-      | Ok edn -> edn
-      | Error (`Msg err) -> Fmt.failwith "%s" err
-    in
+  let start git ctx =
+    let edn = remote () and branch = Git.Reference.v (branch ()) in
     Sync.fetch ~capabilities ~ctx edn git ~deepen:(`Depth 1) `All
     >>= failwith Sync.pp_error
     >>= empty_commit branch git

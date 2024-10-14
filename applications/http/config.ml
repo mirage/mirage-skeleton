@@ -1,15 +1,12 @@
 (* mirage >= 4.7.0 & < 4.9.0 *)
 open Mirage
 
-let port = Runtime_arg.create ~pos:__POS__ "Unikernel.port"
-let runtime_args = [ runtime_arg ~pos:__POS__ "Unikernel.setup" ]
-
 type conn = Connect
 
 let conn = typ Connect
 
 let minipaf =
-  main "Unikernel.Make" ~runtime_args
+  main "Unikernel.Make"
     ~packages:
       [
         package "digestif";
@@ -40,6 +37,7 @@ let conn =
   let happy_eyeballs = mimic_happy_eyeballs stackv4v6 he dns in
   conn $ default_posix_clock $ tcpv4v6 $ happy_eyeballs
 
+let port = Runtime_arg.create ~pos:__POS__ "Unikernel.port"
 let http_server = paf_server ~port tcpv4v6
 
 let () =

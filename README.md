@@ -24,12 +24,12 @@ necessary:
     $ eval `opam config env`
 ```
 
-- Please ensure that your Mirage command-line version is at least 4.5.0 before
+- Please ensure that your Mirage command-line version is at least 4.8.0 before
 proceeding:
 
 ```
     $ mirage --version
-    4.5.0
+    4.8.0
 ```
 
 ## Trivial example
