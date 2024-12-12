@@ -24,8 +24,8 @@ struct
         | Silence -> Lwt.return leases
         | Update leases ->
             Logs.info (fun m ->
-                m "Received packet %s - updated lease database"
-                  (Dhcp_wire.pkt_to_string pkt));
+                m "Received packet %a - updated lease database" Dhcp_wire.pp_pkt
+                  pkt);
             Lwt.return leases
         | Warning w ->
             Logs.warn (fun m -> m "%s" w);
@@ -34,14 +34,12 @@ struct
             Logs.err (fun m -> m "%s" e);
             Lwt.return leases
         | Reply (reply, leases) ->
-            Logs.info (fun m ->
-                m "Received packet %s" (Dhcp_wire.pkt_to_string pkt));
+            Logs.info (fun m -> m "Received packet %a" Dhcp_wire.pp_pkt pkt);
             N.write net
               ~size:(N.mtu net + Ethernet.Packet.sizeof_ethernet)
               (Dhcp_wire.pkt_into_buf reply)
             >>= fun _ ->
-            Logs.info (fun m ->
-                m "Sent reply packet %s" (Dhcp_wire.pkt_to_string reply));
+            Logs.info (fun m -> m "Sent reply packet %a" Dhcp_wire.pp_pkt reply);
             Lwt.return leases)
 
   let start net clock _time =
