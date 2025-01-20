@@ -4,6 +4,7 @@ open Mirage
 let main =
   main
     ~packages:[ package "duration"; package ~min:"0.2.0" "randomconv" ]
-    "Unikernel.Heads2" (time @-> job)
+    ~deps:[ dep noop ]
+    "Unikernel" job
 
-let () = register "heads2" [ main $ default_time ]
+let () = register "heads2" [ main ]

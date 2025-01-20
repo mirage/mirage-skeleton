@@ -16,9 +16,7 @@ let libraries =
 
 let pp_library ppf (name, version) = Fmt.pf ppf "%s.%s" name version
 
-module Main (_ : sig end) = struct
-  let start () =
-    Fmt.pr "libraries:\n";
-    List.iter (Fmt.pr "  - %a\n" pp_library) libraries;
-    Lwt.return_unit
-end
+let start () =
+  Fmt.pr "libraries:\n";
+  List.iter (Fmt.pr "  - %a\n" pp_library) libraries;
+  Lwt.return_unit

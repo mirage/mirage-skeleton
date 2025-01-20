@@ -3,6 +3,6 @@ open Mirage
 
 let main =
   let packages = [ package "duration"; package ~min:"0.2.0" "randomconv" ] in
-  main ~packages "Unikernel.Echo_server" (time @-> random @-> job)
+  main ~packages ~deps:[ dep noop ] "Unikernel" job
 
-let () = register "echo_server" [ main $ default_time $ default_random ]
+let () = register "echo_server" [ main ]

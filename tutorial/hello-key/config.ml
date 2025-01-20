@@ -2,5 +2,5 @@
 open Mirage
 
 let packages = [ package "duration" ]
-let main = main ~packages "Unikernel.Hello" (time @-> job)
-let () = register "hello-key" [ main $ default_time ]
+let main = main ~packages "Unikernel" ~deps:[ dep noop ] job
+let () = register "hello-key" [ main ]

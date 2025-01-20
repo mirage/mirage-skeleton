@@ -2,8 +2,9 @@
 open Mirage
 
 let main =
-  main "Unikernel.Main"
+  main "Unikernel"
+    ~deps:[ dep noop ]
     ~packages:[ package "fmt"; package "dune-build-info" ]
-    (job @-> job)
+    job
 
-let () = register "app-info" [ main $ noop ]
+let () = register "app-info" [ main ]
