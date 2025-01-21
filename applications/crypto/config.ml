@@ -12,5 +12,5 @@ let packages =
     package ~min:"0.2.0" "randomconv";
   ]
 
-let main = main "Unikernel.Main" ~packages (random @-> job)
-let () = register "crypto-test" [ main $ default_random ]
+let main = main "Unikernel" ~packages ~deps:[ dep noop ] job
+let () = register "crypto-test" [ main ]

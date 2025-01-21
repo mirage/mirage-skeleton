@@ -19,9 +19,9 @@ module Make (Store : Git.S) (_ : sig end) = struct
       Git.User.name = "Romain Calascibetta";
       email = "romain.calascibetta@gmail.com";
       date =
-        (let ptime = Ptime.unsafe_of_d_ps (Pclock.now_d_ps ()) in
+        (let ptime = Mirage_ptime.now () in
          let tz =
-           match Pclock.current_tz_offset_s () with
+           match Mirage_ptime.current_tz_offset_s () with
            | Some s ->
                let sign = if s < 0 then `Minus else `Plus in
                let hours = s / 3600 in

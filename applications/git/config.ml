@@ -53,10 +53,6 @@ let mimic stackv4v6 happy_eyeballs dns_client =
   merge_git_clients mhttp (merge_git_clients mtcp mssh)
 
 let stackv4v6 = generic_stackv4v6 default_network
-let mclock = default_monotonic_clock
-let pclock = default_posix_clock
-let time = default_time
-let random = default_random
 let happy_eyeballs = generic_happy_eyeballs stackv4v6
 let dns_client = generic_dns_client stackv4v6 happy_eyeballs
 let git = git_impl None $ sha1
