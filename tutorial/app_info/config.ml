@@ -3,7 +3,6 @@ open Mirage
 
 let main =
   main "Unikernel"
-    ~deps:[ dep noop ]
     ~packages:[ package "fmt"; package "dune-build-info" ]
     job
 

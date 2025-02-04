@@ -2,6 +2,6 @@
 open Mirage
 
 let main =
-  main "Unikernel" job ~deps:[ dep noop ] ~packages:[ package "duration" ]
+  main "Unikernel" job ~packages:[ package "duration" ]
 
 let () = register "hello" [ main ]
