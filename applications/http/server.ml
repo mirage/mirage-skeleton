@@ -271,13 +271,13 @@ end
 
 let transmit src dst =
   let rec on_eof () =
-    H1.Body.close_reader src;
-    H1.Body.close_writer dst
+    H1.Body.Reader.close src;
+    H1.Body.Writer.close dst
   and on_read buf ~off ~len =
-    H1.Body.write_bigstring dst ~off ~len buf;
-    H1.Body.schedule_read src ~on_eof ~on_read
+    H1.Body.Writer.write_bigstring dst ~off ~len buf;
+    H1.Body.Reader.schedule_read src ~on_eof ~on_read
   in
-  H1.Body.schedule_read src ~on_eof ~on_read
+  H1.Body.Reader.schedule_read src ~on_eof ~on_read
 
 let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
   let request = H1.Reqd.request reqd in
@@ -295,7 +295,7 @@ let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
                 H1.Response.create ~reason:"CONNECT" ~headers `OK
               in
               H1.Reqd.respond_with_string reqd response "";
-              H1.Body.close_reader (H1.Reqd.request_body reqd);
+              H1.Body.Reader.close (H1.Reqd.request_body reqd);
               transmit_over_http ~to_close flow dst
           | Error err ->
               Log.err (fun m ->
@@ -402,9 +402,9 @@ let http_1_1_request_handler ~ctx ~authenticator ~to_close =
                 let body = H1.Reqd.respond_with_streaming reqd response in
                 transmit_random
                   ~write_string:(fun body str ->
-                    H1.Body.write_string body str)
-                  ~flush:H1.Body.flush
-                  ~close_writer:H1.Body.close_writer ?g length body
+                    H1.Body.Writer.write_string body str)
+                  ~flush:H1.Body.Writer.flush
+                  ~close_writer:H1.Body.Writer.close ?g length body
             | _ ->
                 let contents = "Invalid length." in
                 let headers =
@@ -625,8 +625,8 @@ let respond_with_string :
   let body = respond headers in
   match protocol with
   | Alpn.HTTP_1_1 _ ->
-      H1.Body.write_string body str;
-      H1.Body.close_writer body
+      H1.Body.Writer.write_string body str;
+      H1.Body.Writer.close body
   | Alpn.H2 _ ->
       H2.Body.Writer.write_string body str;
       H2.Body.Writer.close body
