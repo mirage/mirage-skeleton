@@ -1,4 +1,4 @@
-(* mirage >= 4.7.0 & < 4.9.0 *)
+(* mirage >= 4.9.0 & < 4.10.0 *)
 open Mirage
 
 let packages =
@@ -12,5 +12,5 @@ let packages =
     package ~min:"0.2.0" "randomconv";
   ]
 
-let main = main "Unikernel.Main" ~packages (random @-> job)
-let () = register "crypto-test" [ main $ default_random ]
+let main = main "Unikernel" ~packages job
+let () = register "crypto-test" [ main ]

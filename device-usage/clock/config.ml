@@ -1,10 +1,9 @@
-(* mirage >= 4.4.0 & < 4.9.0 *)
+(* mirage >= 4.9.0 & < 4.10.0 *)
 open Mirage
 
 let main =
   let packages = [ package "duration" ] in
-  main ~packages "Unikernel.Main" (time @-> pclock @-> mclock @-> job)
+  main ~packages "Unikernel" job
 
 let () =
-  register "speaking_clock"
-    [ main $ default_time $ default_posix_clock $ default_monotonic_clock ]
+  register "speaking_clock" [ main ]
