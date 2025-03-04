@@ -10,5 +10,5 @@ tags:         ["org:mirage" "org:xapi-project"]
 synopsis: "Example MirageOS unikernels"
 depends: [
   "dune" {>= "2.9.0"}
-  "mirage" {>= "4.4.0"}
+  "mirage" {>= "4.9.0"}
 ]

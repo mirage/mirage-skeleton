@@ -1,7 +1,7 @@
-(* mirage >= 4.4.0 & < 4.9.0 *)
+(* mirage >= 4.9.0 & < 4.10.0 *)
 open Mirage
 
 let main =
-  main ~packages:[ package "duration" ] "Unikernel.Heads1" (time @-> job)
+  main ~packages:[ package "duration" ] "Unikernel" job
 
-let () = register "heads1" [ main $ default_time ]
+let () = register "heads1" [ main ]

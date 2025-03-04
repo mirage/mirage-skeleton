@@ -19,8 +19,7 @@ let reset =
   in
   Mirage_runtime.register_arg Arg.(value & flag doc)
 
-module Main (Disk : Mirage_block.S) (Random : Mirage_crypto_rng_mirage.S) =
-struct
+module Main (Disk : Mirage_block.S) = struct
   let write_state disk info sector state =
     let buf = Cstruct.create info.Mirage_block.sector_size in
     Lotto.marshal buf state;
@@ -48,7 +47,7 @@ struct
 
   let play disk info sector =
     read_state disk info sector >>= fun state ->
-    let draw = String.get_int32_be (Random.generate 4) 0 in
+    let draw = String.get_int32_be (Mirage_crypto_rng.generate 4) 0 in
     let game, state = Lotto.play state draw in
     Logs.app (fun m -> m "%a" Lotto.pp_game game);
     Logs.info (fun m -> m "Saving new game state...");
@@ -67,7 +66,7 @@ struct
     in
     loop 0L
 
-  let start disk _random =
+  let start disk =
     Disk.get_info disk >>= fun info ->
     if info.sector_size < Lotto.len then (
       Logs.err (fun m ->

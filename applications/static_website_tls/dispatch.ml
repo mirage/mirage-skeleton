@@ -54,24 +54,31 @@ module Dispatch (FS : Mirage_kv.RO) (S : HTTP) = struct
   let serve dispatch =
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
-      let cid = Cohttp.Connection.to_string cid in
+      let cid =
+        begin[@alert "-deprecated"]
+          Cohttp.Connection.to_string cid
+        end
+      in
       Https_log.info (fun f -> f "[%s] serving %s." cid (Uri.to_string uri));
       dispatch uri
     in
     let conn_closed (_, cid) =
-      let cid = Cohttp.Connection.to_string cid in
+      let cid =
+        begin[@alert "-deprecated"]
+          Cohttp.Connection.to_string cid
+        end
+      in
       Https_log.info (fun f -> f "[%s] closing" cid)
     in
     S.make ~conn_closed ~callback ()
 end
 
 module HTTPS
-    (Pclock : Mirage_clock.PCLOCK)
     (DATA : Mirage_kv.RO)
     (KEYS : Mirage_kv.RO)
     (Http : HTTP) =
 struct
-  module X509 = Tls_mirage.X509 (KEYS) (Pclock)
+  module X509 = Tls_mirage.X509 (KEYS)
   module D = Dispatch (DATA) (Http)
 
   let tls_init kv =
@@ -81,7 +88,7 @@ struct
     in
     Lwt.return conf
 
-  let start _clock data keys http =
+  let start data keys http =
     tls_init keys >>= fun cfg ->
     let tls = `TLS (cfg, `TCP (https_port ())) in
     let tcp = `TCP (http_port ()) in

@@ -11,7 +11,6 @@ let connect_hostname = Mimic.make ~name:"connect-hostname"
 let connect_tls_config = Mimic.make ~name:"connect-tls-config"
 
 module Make
-    (Pclock : Mirage_clock.PCLOCK)
     (TCP : Tcpip.Tcp.S)
     (Happy_eyeballs : Mimic_happy_eyeballs.S with type flow = TCP.flow) : S =
 struct
@@ -104,9 +103,7 @@ struct
     in
     Lwt.return ctx
 
-  let authenticator =
-    let module V = Ca_certs_nss.Make (Pclock) in
-    V.authenticator ()
+  let authenticator = Ca_certs_nss.authenticator ()
 end
 
 let decode_uri ~ctx uri =

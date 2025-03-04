@@ -1,4 +1,4 @@
-(* mirage >= 4.4.0 & < 4.9.0 *)
+(* mirage >= 4.9.0 & < 4.10.0 *)
 open Mirage
 
 let packages =
@@ -9,8 +9,7 @@ let packages =
     package ~min:"3.0.0" "ethernet";
   ]
 
-let main = main "Unikernel.Main" ~packages (network @-> mclock @-> time @-> job)
+let main = main "Unikernel.Main" ~packages (network @-> job)
 
 let () =
-  register "dhcp"
-    [ main $ default_network $ default_monotonic_clock $ default_time ]
+  register "dhcp" [ main $ default_network ]

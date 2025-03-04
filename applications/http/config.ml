@@ -1,4 +1,4 @@
-(* mirage >= 4.7.0 & < 4.9.0 *)
+(* mirage >= 4.9.0 & < 4.10.0 *)
 open Mirage
 
 type conn = Connect
@@ -16,15 +16,15 @@ let minipaf =
         package "h2" ~min:"0.13.0";
         package "base64" ~sublibs:[ "rfc2045" ];
       ]
-    (random @-> kv_ro @-> kv_ro @-> tcpv4v6 @-> conn @-> http_server @-> job)
+    (kv_ro @-> kv_ro @-> tcpv4v6 @-> conn @-> http_server @-> job)
 
 let conn =
   let connect _ modname = function
-    | [ _pclock; _tcpv4v6; ctx ] ->
+    | [ _tcpv4v6; ctx ] ->
         code ~pos:__POS__ {ocaml|%s.connect %s|ocaml} modname ctx
     | _ -> assert false
   in
-  impl ~connect "Connect.Make" (pclock @-> tcpv4v6 @-> mimic @-> conn)
+  impl ~connect "Connect.Make" (tcpv4v6 @-> mimic @-> conn)
 
 let stackv4v6 = generic_stackv4v6 default_network
 let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6
@@ -35,7 +35,7 @@ let keys = crunch "keys"
 
 let conn =
   let happy_eyeballs = mimic_happy_eyeballs stackv4v6 he dns in
-  conn $ default_posix_clock $ tcpv4v6 $ happy_eyeballs
+  conn $ tcpv4v6 $ happy_eyeballs
 
 let port = Runtime_arg.create ~pos:__POS__ "Unikernel.port"
 let http_server = paf_server ~port tcpv4v6
@@ -44,7 +44,6 @@ let () =
   register "minipaf"
     [
       minipaf
-      $ default_random
       $ certificates
       $ keys
       $ tcpv4v6

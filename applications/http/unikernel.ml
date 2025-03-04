@@ -30,7 +30,6 @@ let ( <.> ) f g x = f (g x)
 let always x _ = x
 
 module Make
-    (Random : Mirage_crypto_rng_mirage.S)
     (Certificate : Mirage_kv.RO)
     (Key : Mirage_kv.RO)
     (Tcp : Tcpip.Tcp.S with type ipaddr = Ipaddr.t)
@@ -92,7 +91,7 @@ struct
   let http_1_1_request_handler ~ctx ~authenticator flow _edn =
     let module R = (val Mimic.repr HTTP_server.tcp_protocol) in
     fun reqd ->
-      match (Httpaf.Reqd.request reqd).Httpaf.Request.meth with
+      match (H1.Reqd.request reqd).H1.Request.meth with
       | `CONNECT ->
           HTTP_server.TCP.no_close flow;
           let to_close = function
@@ -139,7 +138,7 @@ struct
     in
     Paf.serve http_1_1_service http_server |> fun (`Initialized th) -> th
 
-  let start _random certificate_ro key_ro tcpv4v6 ctx http_server =
+  let start certificate_ro key_ro tcpv4v6 ctx http_server =
     let open Lwt.Infix in
     let authenticator = Connect.authenticator in
     tls key_ro certificate_ro >>= fun tls ->
