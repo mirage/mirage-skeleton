@@ -1,4 +1,4 @@
-(* mirage >= 4.5.0 & < 4.9.0 *)
+(* mirage >= 4.9.0 & < 4.10.0 *)
 open Mirage
 
 let packages = [ package "duration" ]
