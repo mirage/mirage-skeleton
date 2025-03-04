@@ -91,7 +91,7 @@ struct
   let http_1_1_request_handler ~ctx ~authenticator flow _edn =
     let module R = (val Mimic.repr HTTP_server.tcp_protocol) in
     fun reqd ->
-      match (Httpaf.Reqd.request reqd).Httpaf.Request.meth with
+      match (H1.Reqd.request reqd).H1.Request.meth with
       | `CONNECT ->
           HTTP_server.TCP.no_close flow;
           let to_close = function

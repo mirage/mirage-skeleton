@@ -245,43 +245,43 @@ let transmit_over_http : to_close:_ -> Mimic.flow -> Mimic.flow -> unit Lwt.t =
 (***** HTTP/1.1 *****)
 
 module S_HTTP_1_1 = struct
-  type request = Httpaf.Request.t
-  type response = Httpaf.Response.t
+  type request = H1.Request.t
+  type response = H1.Response.t
 
   let version = `HTTP_1_1
-  let get request name = Httpaf.Headers.get request.Httpaf.Request.headers name
+  let get request name = H1.Headers.get request.H1.Request.headers name
 
   let create headers = function
-    | #Httpaf.Status.t as status ->
-        Httpaf.Response.create ~headers:(Httpaf.Headers.of_list headers) status
+    | #H1.Status.t as status ->
+        H1.Response.create ~headers:(H1.Headers.of_list headers) status
     | _ -> assert false
 
   let with_etag etag response =
-    let headers = response.Httpaf.Response.headers in
+    let headers = response.H1.Response.headers in
     {
       response with
-      Httpaf.Response.headers = Httpaf.Headers.add headers "etag" etag;
+      H1.Response.headers = H1.Headers.add headers "etag" etag;
     }
 
   let with_status (status : H2.Status.t) response =
     match status with
-    | #Httpaf.Status.t as status -> { response with Httpaf.Response.status }
+    | #H1.Status.t as status -> { response with H1.Response.status }
     | _ -> assert false
 end
 
 let transmit src dst =
   let rec on_eof () =
-    Httpaf.Body.close_reader src;
-    Httpaf.Body.close_writer dst
+    H1.Body.close_reader src;
+    H1.Body.close_writer dst
   and on_read buf ~off ~len =
-    Httpaf.Body.write_bigstring dst ~off ~len buf;
-    Httpaf.Body.schedule_read src ~on_eof ~on_read
+    H1.Body.write_bigstring dst ~off ~len buf;
+    H1.Body.schedule_read src ~on_eof ~on_read
   in
-  Httpaf.Body.schedule_read src ~on_eof ~on_read
+  H1.Body.schedule_read src ~on_eof ~on_read
 
 let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
-  let request = Httpaf.Reqd.request reqd in
-  match Httpaf.Headers.get request.Httpaf.Request.headers "host" with
+  let request = H1.Reqd.request reqd in
+  match H1.Headers.get request.H1.Request.headers "host" with
   | Some uri ->
       let uri = "http://" ^ uri in
       let open Lwt.Infix in
@@ -289,13 +289,13 @@ let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
           Connect.create_connection ~ctx ~authenticator uri >>= function
           | Ok dst ->
               let headers =
-                Httpaf.Headers.of_list [ ("connection", "close") ]
+                H1.Headers.of_list [ ("connection", "close") ]
               in
               let response =
-                Httpaf.Response.create ~reason:"CONNECT" ~headers `OK
+                H1.Response.create ~reason:"CONNECT" ~headers `OK
               in
-              Httpaf.Reqd.respond_with_string reqd response "";
-              Httpaf.Body.close_reader (Httpaf.Reqd.request_body reqd);
+              H1.Reqd.respond_with_string reqd response "";
+              H1.Body.close_reader (H1.Reqd.request_body reqd);
               transmit_over_http ~to_close flow dst
           | Error err ->
               Log.err (fun m ->
@@ -303,7 +303,7 @@ let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
                     Mimic.pp_error err);
               let contents = Fmt.str "Invalid URI: %S" uri in
               let headers =
-                Httpaf.Headers.of_list
+                H1.Headers.of_list
                   [
                     ("content-length", string_of_int (String.length contents));
                     ("connection", "close");
@@ -311,14 +311,14 @@ let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
                   ]
               in
               let response =
-                Httpaf.Response.create ~reason:"CONNECT" ~headers `Bad_request
+                H1.Response.create ~reason:"CONNECT" ~headers `Bad_request
               in
-              Httpaf.Reqd.respond_with_string reqd response contents;
+              H1.Reqd.respond_with_string reqd response contents;
               Lwt.return_unit)
   | None ->
       let contents = "Missing Host field." in
       let headers =
-        Httpaf.Headers.of_list
+        H1.Headers.of_list
           [
             ("content-length", string_of_int (String.length contents));
             ("connection", "close");
@@ -326,89 +326,89 @@ let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
           ]
       in
       let response =
-        Httpaf.Response.create ~reason:"CONNECT" ~headers `Bad_request
+        H1.Response.create ~reason:"CONNECT" ~headers `Bad_request
       in
-      Httpaf.Reqd.respond_with_string reqd response contents
+      H1.Reqd.respond_with_string reqd response contents
 
 let http_1_1_request_handler ~ctx ~authenticator ~to_close =
   let hash_of_seed = hash_of_seed (module S_HTTP_1_1) in
   fun flow reqd ->
-    let request = Httpaf.Reqd.request reqd in
+    let request = H1.Reqd.request reqd in
     Log.debug (fun m ->
-        m "(HTTP/1.1) request-handler: %S" request.Httpaf.Request.target);
-    match request.Httpaf.Request.meth with
+        m "(HTTP/1.1) request-handler: %S" request.H1.Request.target);
+    match request.H1.Request.meth with
     | `CONNECT ->
         Log.debug (fun m -> m "Start to transmit data over HTTP/1.1.");
         connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd
     | _meth -> (
-        match String.split_on_char '/' request.Httpaf.Request.target with
+        match String.split_on_char '/' request.H1.Request.target with
         | [ ""; "" ] ->
             let headers =
-              Httpaf.Headers.of_list
+              H1.Headers.of_list
                 [
                   ("content-length", string_of_int (String.length root));
                   ("connection", "close");
                   ("content-type", "text/plain");
                 ]
             in
-            let response = Httpaf.Response.create ~reason:"root" ~headers `OK in
-            Httpaf.Reqd.respond_with_string reqd response root
+            let response = H1.Response.create ~reason:"root" ~headers `OK in
+            H1.Reqd.respond_with_string reqd response root
         | [ ""; "transmit" ] ->
             let content_type =
-              Httpaf.Headers.get request.Httpaf.Request.headers "content-type"
+              H1.Headers.get request.H1.Request.headers "content-type"
             in
             let content_type =
               Option.value ~default:"application/octet-stream" content_type
             in
             let headers =
-              Httpaf.Headers.of_list
+              H1.Headers.of_list
                 [
                   ("transfer-encoding", "chunked");
                   ("content-type", content_type);
                 ]
             in
             let response =
-              Httpaf.Response.create ~reason:"transmit" ~headers `OK
+              H1.Response.create ~reason:"transmit" ~headers `OK
             in
-            let src = Httpaf.Reqd.request_body reqd in
-            let dst = Httpaf.Reqd.respond_with_streaming reqd response in
+            let src = H1.Reqd.request_body reqd in
+            let dst = H1.Reqd.respond_with_streaming reqd response in
             transmit src dst
         | [ ""; "hash" ] ->
             let respond response contents =
-              Httpaf.Reqd.respond_with_string reqd response contents
+              H1.Reqd.respond_with_string reqd response contents
             in
             hash_of_seed ~respond request
         | [ ""; "random" ] -> (
             match
-              Httpaf.Headers.get request.Httpaf.Request.headers "x-length"
+              H1.Headers.get request.H1.Request.headers "x-length"
             with
             | Some v when String.for_all is_digit v ->
                 let length = Int64.of_string v in
                 let g =
                   Option.bind
-                    (Httpaf.Headers.get request.Httpaf.Request.headers "x-seed")
+                    (H1.Headers.get request.H1.Request.headers "x-seed")
                     random_state_of_seed
                 in
                 let headers =
-                  Httpaf.Headers.of_list
+                  H1.Headers.of_list
                     [
                       ("content-type", "text/plain");
                       ("transfer-encoding", "chunked");
                     ]
                 in
                 let response =
-                  Httpaf.Response.create ~reason:"random" ~headers `OK
+                  H1.Response.create ~reason:"random" ~headers `OK
                 in
-                let body = Httpaf.Reqd.respond_with_streaming reqd response in
+                let body = H1.Reqd.respond_with_streaming reqd response in
                 transmit_random
                   ~write_string:(fun body str ->
-                    Httpaf.Body.write_string body str)
-                  ~flush:Httpaf.Body.flush
-                  ~close_writer:Httpaf.Body.close_writer ?g length body
+                    H1.Body.write_string body str)
+                  ~flush:H1.Body.flush
+                  ~close_writer:H1.Body.close_writer ?g length body
             | _ ->
                 let contents = "Invalid length." in
                 let headers =
-                  Httpaf.Headers.of_list
+                  H1.Headers.of_list
                     [
                       ("content-length", string_of_int (String.length contents));
                       ("connection", "close");
@@ -416,13 +416,13 @@ let http_1_1_request_handler ~ctx ~authenticator ~to_close =
                     ]
                 in
                 let response =
-                  Httpaf.Response.create ~reason:"random" ~headers `Bad_request
+                  H1.Response.create ~reason:"random" ~headers `Bad_request
                 in
-                Httpaf.Reqd.respond_with_string reqd response contents)
+                H1.Reqd.respond_with_string reqd response contents)
         | _ ->
             let contents = "Not found." in
             let headers =
-              Httpaf.Headers.of_list
+              H1.Headers.of_list
                 [
                   ("content-type", "text/plain");
                   ("connection", "close");
@@ -430,9 +430,9 @@ let http_1_1_request_handler ~ctx ~authenticator ~to_close =
                 ]
             in
             let response =
-              Httpaf.Response.create ~reason:"not-found" ~headers `Not_found
+              H1.Response.create ~reason:"not-found" ~headers `Not_found
             in
-            Httpaf.Reqd.respond_with_string reqd response contents)
+            H1.Reqd.respond_with_string reqd response contents)
 
 (***** H2 *****)
 
@@ -611,7 +611,7 @@ let headers_of_list :
     headers =
  fun protocol lst ->
   match protocol with
-  | Alpn.HTTP_1_1 _ -> Httpaf.Headers.of_list lst
+  | Alpn.HTTP_1_1 _ -> H1.Headers.of_list lst
   | Alpn.H2 _ -> H2.Headers.of_list lst
 
 let respond_with_string :
@@ -625,8 +625,8 @@ let respond_with_string :
   let body = respond headers in
   match protocol with
   | Alpn.HTTP_1_1 _ ->
-      Httpaf.Body.write_string body str;
-      Httpaf.Body.close_writer body
+      H1.Body.write_string body str;
+      H1.Body.close_writer body
   | Alpn.H2 _ ->
       H2.Body.Writer.write_string body str;
       H2.Body.Writer.close body
