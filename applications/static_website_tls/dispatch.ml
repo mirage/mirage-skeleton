@@ -54,12 +54,20 @@ module Dispatch (FS : Mirage_kv.RO) (S : HTTP) = struct
   let serve dispatch =
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
-      let cid = Cohttp.Connection.to_string cid in
+      let cid =
+        begin[@alert "-deprecated"]
+          Cohttp.Connection.to_string cid
+        end
+      in
       Https_log.info (fun f -> f "[%s] serving %s." cid (Uri.to_string uri));
       dispatch uri
     in
     let conn_closed (_, cid) =
-      let cid = Cohttp.Connection.to_string cid in
+      let cid =
+        begin[@alert "-deprecated"]
+          Cohttp.Connection.to_string cid
+        end
+      in
       Https_log.info (fun f -> f "[%s] closing" cid)
     in
     S.make ~conn_closed ~callback ()
