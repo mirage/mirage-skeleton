@@ -167,8 +167,7 @@ module type S = sig
   val get : request -> string -> string option
 end
 
-let hash_of_seed :
-    type response request.
+let hash_of_seed : type response request.
     (module S with type response = response and type request = request) ->
     respond:(response -> string -> unit) ->
     request ->
@@ -258,10 +257,7 @@ module S_HTTP_1_1 = struct
 
   let with_etag etag response =
     let headers = response.H1.Response.headers in
-    {
-      response with
-      H1.Response.headers = H1.Headers.add headers "etag" etag;
-    }
+    { response with H1.Response.headers = H1.Headers.add headers "etag" etag }
 
   let with_status (status : H2.Status.t) response =
     match status with
@@ -288,9 +284,7 @@ let connect_http_1_1 ~ctx ~authenticator ~to_close flow reqd =
       Lwt.async (fun () ->
           Connect.create_connection ~ctx ~authenticator uri >>= function
           | Ok dst ->
-              let headers =
-                H1.Headers.of_list [ ("connection", "close") ]
-              in
+              let headers = H1.Headers.of_list [ ("connection", "close") ] in
               let response =
                 H1.Response.create ~reason:"CONNECT" ~headers `OK
               in
@@ -367,9 +361,7 @@ let http_1_1_request_handler ~ctx ~authenticator ~to_close =
                   ("content-type", content_type);
                 ]
             in
-            let response =
-              H1.Response.create ~reason:"transmit" ~headers `OK
-            in
+            let response = H1.Response.create ~reason:"transmit" ~headers `OK in
             let src = H1.Reqd.request_body reqd in
             let dst = H1.Reqd.respond_with_streaming reqd response in
             transmit src dst
@@ -379,9 +371,7 @@ let http_1_1_request_handler ~ctx ~authenticator ~to_close =
             in
             hash_of_seed ~respond request
         | [ ""; "random" ] -> (
-            match
-              H1.Headers.get request.H1.Request.headers "x-length"
-            with
+            match H1.Headers.get request.H1.Request.headers "x-length" with
             | Some v when String.for_all is_digit v ->
                 let length = Int64.of_string v in
                 let g =
@@ -403,8 +393,8 @@ let http_1_1_request_handler ~ctx ~authenticator ~to_close =
                 transmit_random
                   ~write_string:(fun body str ->
                     H1.Body.Writer.write_string body str)
-                  ~flush:H1.Body.Writer.flush
-                  ~close_writer:H1.Body.Writer.close ?g length body
+                  ~flush:H1.Body.Writer.flush ~close_writer:H1.Body.Writer.close
+                  ?g length body
             | _ ->
                 let contents = "Invalid length." in
                 let headers =
@@ -587,8 +577,7 @@ let http_2_0_request_handler ~ctx ~authenticator ~to_close =
             let response = H2.Response.create ~headers `Not_found in
             H2.Reqd.respond_with_string reqd response contents)
 
-let alpn_request_handler :
-    type reqd headers request response ro wo.
+let alpn_request_handler : type reqd headers request response ro wo.
     ctx:_ ->
     authenticator:_ ->
     to_close:_ ->
@@ -604,8 +593,7 @@ let alpn_request_handler :
   | Alpn.H2 _ ->
       http_2_0_request_handler ~ctx ~authenticator ~to_close flow reqd
 
-let headers_of_list :
-    type reqd headers request response ro wo.
+let headers_of_list : type reqd headers request response ro wo.
     (reqd, headers, request, response, ro, wo) Alpn.protocol ->
     (string * string) list ->
     headers =
@@ -614,8 +602,7 @@ let headers_of_list :
   | Alpn.HTTP_1_1 _ -> H1.Headers.of_list lst
   | Alpn.H2 _ -> H2.Headers.of_list lst
 
-let respond_with_string :
-    type reqd headers request response ro wo.
+let respond_with_string : type reqd headers request response ro wo.
     (reqd, headers, request, response, ro, wo) Alpn.protocol ->
     headers:headers ->
     respond:(headers -> wo) ->
@@ -631,8 +618,7 @@ let respond_with_string :
       H2.Body.Writer.write_string body str;
       H2.Body.Writer.close body
 
-let alpn_error_handler :
-    type reqd headers request response ro wo.
+let alpn_error_handler : type reqd headers request response ro wo.
     _ ->
     (reqd, headers, request, response, ro, wo) Alpn.protocol ->
     ?request:_ ->

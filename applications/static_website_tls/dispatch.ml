@@ -55,7 +55,7 @@ module Dispatch (FS : Mirage_kv.RO) (S : HTTP) = struct
     let callback (_, cid) request _body =
       let uri = Cohttp.Request.uri request in
       let cid =
-        begin[@alert "-deprecated"]
+        begin [@alert "-deprecated"]
           Cohttp.Connection.to_string cid
         end
       in
@@ -64,7 +64,7 @@ module Dispatch (FS : Mirage_kv.RO) (S : HTTP) = struct
     in
     let conn_closed (_, cid) =
       let cid =
-        begin[@alert "-deprecated"]
+        begin [@alert "-deprecated"]
           Cohttp.Connection.to_string cid
         end
       in
@@ -73,11 +73,7 @@ module Dispatch (FS : Mirage_kv.RO) (S : HTTP) = struct
     S.make ~conn_closed ~callback ()
 end
 
-module HTTPS
-    (DATA : Mirage_kv.RO)
-    (KEYS : Mirage_kv.RO)
-    (Http : HTTP) =
-struct
+module HTTPS (DATA : Mirage_kv.RO) (KEYS : Mirage_kv.RO) (Http : HTTP) = struct
   module X509 = Tls_mirage.X509 (KEYS)
   module D = Dispatch (DATA) (Http)
 

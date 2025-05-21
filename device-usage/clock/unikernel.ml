@@ -10,7 +10,6 @@ let start () =
         m "At the stroke, the time will be %a \x07 *BEEP*"
           (Ptime.pp_human ?tz_offset_s:tz ())
           current_time);
-    Mirage_sleep.ns (Duration.of_sec 1) >>= fun () ->
-    speak ()
+    Mirage_sleep.ns (Duration.of_sec 1) >>= fun () -> speak ()
   in
   speak ()

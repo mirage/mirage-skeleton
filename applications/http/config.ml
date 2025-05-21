@@ -42,11 +42,4 @@ let http_server = paf_server ~port tcpv4v6
 
 let () =
   register "minipaf"
-    [
-      minipaf
-      $ certificates
-      $ keys
-      $ tcpv4v6
-      $ conn
-      $ http_server;
-    ]
+    [ minipaf $ certificates $ keys $ tcpv4v6 $ conn $ http_server ]

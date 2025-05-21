@@ -5,5 +5,4 @@ let main =
   let packages = [ package "duration" ] in
   main ~packages "Unikernel" job
 
-let () =
-  register "speaking_clock" [ main ]
+let () = register "speaking_clock" [ main ]

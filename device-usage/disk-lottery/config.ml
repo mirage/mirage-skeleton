@@ -2,8 +2,7 @@
 open Mirage
 
 let main =
-  main "Unikernel.Main"
-    (block @-> job)
+  main "Unikernel.Main" (block @-> job)
     ~packages:[ package "checkseum"; package "cstruct"; package "fmt" ]
 
 let img =

@@ -10,9 +10,8 @@ let start () =
   let rec echo_server = function
     | 0 -> Lwt.return ()
     | n ->
-      read_line () >>= fun s ->
-      Logs.info (fun m -> m "%s" s);
-      echo_server (n - 1)
+        read_line () >>= fun s ->
+        Logs.info (fun m -> m "%s" s);
+        echo_server (n - 1)
   in
   echo_server 10
-

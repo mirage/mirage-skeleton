@@ -15,7 +15,9 @@ module Main (N : Mirage_net.S) = struct
         Lwt.return leases
     | Ok pkt -> (
         let open Dhcp_server.Input in
-        let now = Mirage_mtime.elapsed_ns () |> Duration.to_sec |> Int32.of_int in
+        let now =
+          Mirage_mtime.elapsed_ns () |> Duration.to_sec |> Int32.of_int
+        in
         match input_pkt config leases pkt now with
         | Silence -> Lwt.return leases
         | Update leases ->

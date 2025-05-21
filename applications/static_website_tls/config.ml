@@ -17,5 +17,4 @@ let main =
   let packages = [ package "uri"; package "magic-mime" ] in
   main ~packages "Dispatch.HTTPS" (kv_ro @-> kv_ro @-> http @-> job)
 
-let () =
-  register "https" [ main $ data $ certs $ https_srv ]
+let () = register "https" [ main $ data $ certs $ https_srv ]

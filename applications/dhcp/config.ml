@@ -10,6 +10,4 @@ let packages =
   ]
 
 let main = main "Unikernel.Main" ~packages (network @-> job)
-
-let () =
-  register "dhcp" [ main $ default_network ]
+let () = register "dhcp" [ main $ default_network ]
