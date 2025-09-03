@@ -20,7 +20,7 @@ module Main (N : Mirage_net.S) = struct
         in
         match input_pkt config leases pkt now with
         | Silence -> Lwt.return leases
-        | Update leases ->
+        | Update (_, leases) ->
             Logs.info (fun m ->
                 m "Received packet %a - updated lease database" Dhcp_wire.pp_pkt
                   pkt);
@@ -31,7 +31,7 @@ module Main (N : Mirage_net.S) = struct
         | Dhcp_server.Input.Error e ->
             Logs.err (fun m -> m "%s" e);
             Lwt.return leases
-        | Reply (reply, leases) ->
+        | Reply (reply, _, leases) ->
             Logs.info (fun m -> m "Received packet %a" Dhcp_wire.pp_pkt pkt);
             N.write net
               ~size:(N.mtu net + Ethernet.Packet.sizeof_ethernet)
