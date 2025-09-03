@@ -20,7 +20,6 @@ BASE_TESTS = \
   device-usage/disk-lottery \
   applications/dhcp \
   applications/http \
-  applications/git \
   applications/dns \
   applications/crypto \
   applications/static_website_tls
@@ -30,6 +29,8 @@ BASE_TESTS = \
 # device-usage/littlefs
 # disabled since docteur uses the old git & mirage-flow
 # applications/docteur
+# disabled since git-kv at 0.2.0 now uses git-net, and not git anymore
+# applications/git \
 
 ifeq ($(MODE),muen)
 	TESTS = $(BASE_TESTS)
