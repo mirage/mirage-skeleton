@@ -4,6 +4,7 @@ BASE_TESTS = \
   tutorial/noop \
   tutorial/hello \
   tutorial/hello-key \
+  tutorial/local-library \
   tutorial/lwt/echo_server \
   tutorial/lwt/heads1 \
   tutorial/lwt/heads2 \
