@@ -1,4 +1,4 @@
-(* mirage >= 4.4.0 & < 4.10.0 *)
+(* mirage >= 4.4.0 & < 4.11.0 *)
 open Mirage
 
 let disk = generic_kv_ro "t"

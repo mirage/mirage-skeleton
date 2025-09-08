@@ -1,4 +1,4 @@
-(* mirage >= 4.8.0 & < 4.10.0 *)
+(* mirage >= 4.8.0 & < 4.11.0 *)
 open Mirage
 
 let unikernel = main "Unikernel.Make" (dns_client @-> job)
