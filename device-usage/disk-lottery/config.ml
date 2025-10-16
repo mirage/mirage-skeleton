@@ -6,6 +6,7 @@ let main =
     ~packages:[ package "checkseum"; package "cstruct"; package "fmt" ]
 
 let img =
-  if_impl Key.is_solo5 (block_of_file "storage") (block_of_file "disk.img")
+  if_impl Key.is_solo5 (block_of_file "storage")
+    (if_impl Key.is_unikraft (block_of_file "0") (block_of_file "disk.img"))
 
 let () = register "lottery" [ main $ img ]
