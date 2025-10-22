@@ -16,6 +16,7 @@ BASE_TESTS = \
   device-usage/conduit_server \
   device-usage/http-fetch \
   device-usage/kv_ro \
+  device-usage/littlefs \
   device-usage/network \
   device-usage/ping6 \
   device-usage/disk-lottery \
@@ -26,8 +27,6 @@ BASE_TESTS = \
   applications/static_website_tls
 # disabled as it is using an old version of conduit:
 # device-usage/pgx
-# disabled as it is incompatible with dune 3.7
-# device-usage/littlefs
 # disabled since docteur uses the old git & mirage-flow
 # applications/docteur
 # disabled since git-kv at 0.2.0 now uses git-net, and not git anymore
