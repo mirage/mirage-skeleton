@@ -1,4 +1,4 @@
-(* mirage >= 4.9.0 & < 4.11.0 *)
+(* mirage >= 4.10.0 & < 4.11.0 *)
 open Mirage
 
 let main =
