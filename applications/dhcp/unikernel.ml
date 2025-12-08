@@ -10,7 +10,8 @@ module Main (N : Mirage_net.S) = struct
 
   let input_dhcp net config leases buf =
     match Dhcp_wire.pkt_of_buf buf (Cstruct.length buf) with
-    | Error e ->
+    | Error `Not_dhcp -> Lwt.return leases
+    | Error (`Msg e) ->
         Logs.err (fun m -> m "Can't parse packet: %s" e);
         Lwt.return leases
     | Ok pkt -> (

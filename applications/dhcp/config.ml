@@ -4,7 +4,7 @@ open Mirage
 let packages =
   [
     package ~min:"1.6.0" "charrua";
-    package ~min:"2.1.0" "charrua-server";
+    package ~min:"3.0.0" "charrua-server";
     package ~min:"3.0.0" ~sublibs:[ "mirage" ] "arp";
     package ~min:"3.0.0" "ethernet";
   ]
