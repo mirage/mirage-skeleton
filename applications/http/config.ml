@@ -26,10 +26,11 @@ let conn =
   in
   impl ~connect "Connect.Make" (tcpv4v6 @-> mimic @-> conn)
 
-let stackv4v6 = generic_stackv4v6 default_network
+let dhcp_requests = make_dhcp_requests ()
+let stackv4v6, lease = generic_stackv4v6_with_lease ~dhcp_requests default_network
 let tcpv4v6 = tcpv4v6_of_stackv4v6 stackv4v6
 let he = generic_happy_eyeballs stackv4v6
-let dns = generic_dns_client stackv4v6 he
+let dns = generic_dns_client ~dhcp:(dhcp_requests, lease) stackv4v6 he
 let certificates = crunch "certificates"
 let keys = crunch "keys"
 
