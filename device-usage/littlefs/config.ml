@@ -7,7 +7,9 @@ let unikernel =
     (kv_rw @-> job)
 
 let block = block_of_file "littlefs"
+
 let program_block_size =
   Runtime_arg.create ~pos:__POS__ "Unikernel.program_block_size"
+
 let fs = chamelon ~program_block_size block
 let () = register "elittlefs" [ unikernel $ fs ]
