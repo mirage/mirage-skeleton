@@ -52,9 +52,10 @@ let mimic stackv4v6 happy_eyeballs dns_client =
   let mhttp = git_http tcpv4v6 mhappy_eyeballs in
   merge_git_clients mhttp (merge_git_clients mtcp mssh)
 
-let stackv4v6 = generic_stackv4v6 default_network
+let dhcp_requests = make_dhcp_requests ()
+let stackv4v6, lease = generic_stackv4v6_with_lease ~dhcp_requests default_network
 let happy_eyeballs = generic_happy_eyeballs stackv4v6
-let dns_client = generic_dns_client stackv4v6 happy_eyeballs
+let dns_client = generic_dns_client ~dhcp:(dhcp_requests, lease) stackv4v6 happy_eyeballs
 let git = git_impl None $ sha1
 let mimic = mimic stackv4v6 happy_eyeballs dns_client
 let () = register "minigit" [ minigit $ git $ mimic ]
