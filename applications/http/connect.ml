@@ -117,25 +117,25 @@ let decode_uri ~ctx uri =
        else Error (`Msg "Couldn't decode user and password"))
       >>= fun (_scheme, ctx) ->
       (match String.split_on_char '@' user_pass_host_port with
-      | [ host_port ] -> Ok (None, host_port)
-      | [ _user_pass; host_port ] -> Ok (None, host_port)
-      | _ -> Error (`Msg "Couldn't decode URI"))
+        | [ host_port ] -> Ok (None, host_port)
+        | [ _user_pass; host_port ] -> Ok (None, host_port)
+        | _ -> Error (`Msg "Couldn't decode URI"))
       >>= fun (_user_pass, host_port) ->
       (match String.split_on_char ':' host_port with
-      | [] -> Error (`Msg "Empty host & port")
-      | [ hostname ] -> Ok (hostname, Mimic.add connect_hostname hostname ctx)
-      | hd :: tl -> (
-          let port, hostname =
-            match List.rev (hd :: tl) with
-            | hd :: tl -> (hd, String.concat ":" (List.rev tl))
-            | _ -> assert false
-          in
-          try
-            Ok
-              ( hostname,
-                Mimic.add connect_hostname hostname
-                  (Mimic.add connect_port (int_of_string port) ctx) )
-          with Failure _ -> Error (`Msg "Couldn't decode port")))
+        | [] -> Error (`Msg "Empty host & port")
+        | [ hostname ] -> Ok (hostname, Mimic.add connect_hostname hostname ctx)
+        | hd :: tl -> (
+            let port, hostname =
+              match List.rev (hd :: tl) with
+              | hd :: tl -> (hd, String.concat ":" (List.rev tl))
+              | _ -> assert false
+            in
+            try
+              Ok
+                ( hostname,
+                  Mimic.add connect_hostname hostname
+                    (Mimic.add connect_port (int_of_string port) ctx) )
+            with Failure _ -> Error (`Msg "Couldn't decode port")))
       >>= fun (hostname, ctx) -> Ok (ctx, hostname)
   | _ -> Error (`Msg "Couldn't decode URI on top")
 
