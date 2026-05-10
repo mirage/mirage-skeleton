@@ -21,6 +21,7 @@ BASE_TESTS = \
   device-usage/ping6 \
   device-usage/disk-lottery \
   applications/dhcp \
+  applications/dream \
   applications/http \
   applications/dns \
   applications/crypto \
